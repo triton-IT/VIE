@@ -118,8 +118,8 @@ namespace tech::tritonit::tritone {
 			
 			for (auto const& [noteId, NoteOnEvent] : notes_) {
 				float rawFrequency = MIDI_NOTES_FREQUENCIES[NoteOnEvent.pitch] * (1.0f + frequencyMultiplicator_);
-				//frequency qFrequency = q::frequency(rawFrequency);
-				//phase_.set(qFrequency, processSetup.sampleRate);
+				frequency qFrequency = q::frequency(rawFrequency);
+				phase_.set(qFrequency, processSetup.sampleRate);
 
 				for (int frame = 0; frame < numSamples; ++frame) {
 					auto env_ = (*envelope_)();
