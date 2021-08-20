@@ -1,0 +1,321 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>16.0</VCProjectVersion>
+    <ProjectGuid>{FF99786C-FD10-460B-8FC1-B7194E762C50}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>$(ProjectName)</RootNamespace>
+    <ProjectName>$(ProjectName)</ProjectName>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <PreferredToolArchitecture>x86</PreferredToolArchitecture>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <PreferredToolArchitecture>x86</PreferredToolArchitecture>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <TargetName>$(MSBuildProjectName)</TargetName>
+    <TargetExt>.vst3</TargetExt>
+    <OutDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\$(ProjectName)\build\</OutDir>
+    <IntDir>$(SolutionDir)\bin\$(Platform)\$(Configuration)\$(ProjectName)\intermediate\</IntDir>
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <TargetName>$(MSBuildProjectName)</TargetName>
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\$(ProjectName)\</OutDir>
+    <IntDir>$(SolutionDir)\bin\$(Platform)\$(Configuration)\</IntDir>
+    <TargetExt>.vst3</TargetExt>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <TargetName>$(MSBuildProjectName)</TargetName>
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(SolutionDir)\bin\$(Platform)\$(Configuration)\$(ProjectName).vst3\</OutDir>
+    <IntDir>$(SolutionDir)\bin\$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <TargetName>$(MSBuildProjectName)</TargetName>
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(SolutionDir)\bin\$(Platform)\$(Configuration)\$(ProjectName).vst3\</OutDir>
+    <IntDir>$(SolutionDir)\bin\$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>DEBUG_LOG;WIN32;_WINDOWS;WIN32_LEAN_AND_MEAN;NOMINMAX;DEVELOPMENT=1;SMTG_RENAME_ASSERT=1;ELEMENTS_HOST_UI_LIBRARY_WIN32;_UNICODE;CMAKE_INTDIR="Debug";TriTone_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\dependencies\cycfi\elements\lib\include;$(SolutionDir)..\dependencies\cycfi\elements\lib\external\cairo\include;$(SolutionDir)..\dependencies\cycfi\elements\lib\external\fontconfig\include;$(SolutionDir)..\dependencies\cycfi\elements\lib\external\freetype\include;$(SolutionDir)..\dependencies\cycfi\elements\lib\external\asio\asio\include;$(SolutionDir)..\dependencies\cycfi\elements\lib\infra\include;$(SolutionDir)..\dependencies\cycfi\elements\lib\infra\external\filesystem\include;$(SolutionDir)..\dependencies\cycfi\elements\lib\infra\external\optional-lite\include;$(SolutionDir)..\dependencies\cycfi\elements\lib\infra\external\string-view-lite\include;$(SolutionDir)..\dependencies\steinberg\vst3sdk-3.7.2\vst3sdk;$(SolutionDir)..\dependencies\steinberg\vst3sdk-3.7.2\vst3sdk\vstgui4;$(SolutionDir)..\dependencies\cycfi\q\q_lib\include;$(SolutionDir)..\dependencies\cycfi\q\q_io\include</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <UseFullPaths>false</UseFullPaths>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>cairo.lib;fontconfig.lib;freetype.lib;elements.lib;base.lib;sdk.lib;pluginterfaces.lib;user32.lib;gdi32.lib;winmm.lib;imm32.lib;ole32.lib;oleaut32.lib;version.lib;uuid.lib;ws2_32.lib;dbghelp.lib;d3dcompiler.lib;d3d9.lib;kernel32.lib;winspool.lib;shell32.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalOptions>%(AdditionalOptions) /EXPORT:GetPluginFactory /EXPORT:InitDll /EXPORT:ExitDll</AdditionalOptions>
+      <AdditionalLibraryDirectories>$(SolutionDir)../dependencies\steinberg\vst3sdk-3.7.2\build\lib\Debug;$(SolutionDir)../dependencies\cycfi\elements\build\lib\Debug;$(SolutionDir)../dependencies\cycfi\elements\lib\external\cairo\lib\x64;$(SolutionDir)../dependencies\cycfi\elements\lib\external\fontconfig\x64;$(SolutionDir)../dependencies\cycfi\elements\lib\external\freetype\win64</AdditionalLibraryDirectories>
+      <SubSystem>Console</SubSystem>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+    </Link>
+    <PreLinkEvent>
+      <Command>
+      </Command>
+    </PreLinkEvent>
+    <PostBuildEvent>
+      <Command>setlocal
+"C:/Program Files/CMake/bin/cmake.exe" -E copy $(SolutionDir)Sources/Resources/TriTone.ico "$(SolutionDir)bin/$(Platform)/$(Configuration)/$(ProjectName)/build/TriTone.ico"
+"C:/Program Files/CMake/bin/cmake.exe" -E copy $(SolutionDir)Sources/Resources/desktop.ini "$(SolutionDir)bin/$(Platform)/$(Configuration)/$(ProjectName)/build/desktop.ini"
+attrib +s "$(SolutionDir)bin/$(Platform)/$(Configuration)/$(ProjectName)/build/desktop.ini"
+attrib +s "$(SolutionDir)bin/$(Platform)/$(Configuration)/$(ProjectName)/build/TriTone.ico"
+attrib +s "$(SolutionDir)bin/$(Platform)/$(Configuration)/$(ProjectName)/build"
+
+"C:/Program Files/CMake/bin/cmake.exe" -E copy "$(OutputPath)$(TargetFileName)" "$(ProgramW6432)/Common Files/VST3/$(ProjectName)/$(TargetFileName)"
+"C:/Program Files/CMake/bin/cmake.exe" -E copy $(SolutionDir)Sources/Resources/TriTone.ico "$(ProgramW6432)/Common Files/VST3/$(ProjectName)/TriTone.ico"
+"C:/Program Files/CMake/bin/cmake.exe" -E copy $(SolutionDir)Sources/Resources/desktop.ini "$(ProgramW6432)/Common Files/VST3/$(ProjectName)/desktop.ini"
+endlocal</Command>
+      <Message>
+      </Message>
+    </PostBuildEvent>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;DEVELOPMENT=1;SMTG_RENAME_ASSERT=1;VSTGUI_LIVE_EDITING=1;_UNICODE;CMAKE_INTDIR="Debug";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\dependencies\steinberg\vst3sdk-3.7.2\vst3sdk;$(SolutionDir)..\dependencies\steinberg\vst3sdk-3.7.2\vst3sdk\vstgui4;$(SolutionDir)..\dependencies\cycfi\q\q_lib\include;$(SolutionDir)..\dependencies\cycfi\q\q_io\include;$(SolutionDir)..\dependencies\cycfi\q\infra\include;$(SolutionDir)..\dependencies\cycfi\elements\lib\include</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <OmitFramePointers />
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <UseFullPaths>false</UseFullPaths>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(SolutionDir)/../vst3sdk-Build/lib/Debug/win64;$(SolutionDir)/../dependencies\cycfi\elements\build\lib\Debug</AdditionalLibraryDirectories>
+      <AdditionalDependencies>base.lib;sdk.lib;pluginterfaces.lib;Urho3D.lib;user32.lib;gdi32.lib;winmm.lib;imm32.lib;ole32.lib;oleaut32.lib;version.lib;uuid.lib;ws2_32.lib;dbghelp.lib;d3dcompiler.lib;d3d9.lib;kernel32.lib;winspool.lib;shell32.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+    </Link>
+    <PostBuildEvent>
+      <Command>setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -E copy Resources/logo.ico "$(SolutionDir)bin/$(Platform)/$(Configuration)/$(ProjectName)/logo.ico"
+"C:\Program Files\CMake\bin\cmake.exe" -E copy Resources/desktop.ini "$(SolutionDir)bin/$(Platform)/$(Configuration)/$(ProjectName)/desktop.ini"
+"C:\Program Files\CMake\bin\cmake.exe" -E copy_directory Resources/CoreData/ "$(SolutionDir)bin/$(Platform)/$(Configuration)/$(ProjectName)/CoreData/"
+"C:\Program Files\CMake\bin\cmake.exe" -E copy_directory Resources/Data/ "$(SolutionDir)bin/$(Platform)/$(Configuration)/$(ProjectName)/Data/"
+attrib +s "$(SolutionDir)/bin/$(Platform)/$(Configuration)/$(ProjectName)/desktop.ini"
+attrib +s "$(SolutionDir)/bin/$(Platform)/$(Configuration)/$(ProjectName)/logo.ico"
+attrib +s "$(SolutionDir)/bin/$(Platform)/$(Configuration)/$(ProjectName)"
+
+"C:\Program Files\CMake\bin\cmake.exe" -E copy_directory "$(SolutionDir)bin/$(Platform)/$(Configuration)/$(ProjectName)/" "C:/Program Files/Common Files/VST3/$(ProjectName)/"
+endlocal</Command>
+      <Message>
+      </Message>
+    </PostBuildEvent>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level4</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;WIN32;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\dependencies\steinberg\vst3sdk-3.7.2\vst3sdk;$(SolutionDir)..\dependencies\steinberg\vst3sdk-3.7.2\vst3sdk\vstgui4;$(SolutionDir)..\dependencies\cycfi\q\q_lib\include;$(SolutionDir)..\dependencies\cycfi\q\q_io\include;$(SolutionDir)..\dependencies\cycfi\q\infra\include;$(SolutionDir)..\dependencies\cycfi\elements\lib\include</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <OmitFramePointers>true</OmitFramePointers>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <DebugInformationFormat>None</DebugInformationFormat>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(SolutionDir)/../vst3sdk-Build/lib/Release/x64;$(SolutionDir)/../dependencies\cycfi\elements\build\lib\Release</AdditionalLibraryDirectories>
+      <AdditionalDependencies>base.lib;sdk.lib;vstgui_support.lib;pluginterfaces.lib;vstgui_uidescription.lib;vstgui.lib;Urho3D.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+    </Link>
+    <PostBuildEvent>
+      <Command>setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -E copy Resources/TriTone.ico "$(SolutionDir)bin/$(Platform)/$(Configuration)/TriTone/TriTone.ico"
+"C:\Program Files\CMake\bin\cmake.exe" -E copy Resources/desktop.ini "$(SolutionDir)bin/$(Platform)/$(Configuration)/TriTone/desktop.ini"
+"C:\Program Files\CMake\bin\cmake.exe" -E copy_directory Resources/CoreData/ "$(SolutionDir)bin/$(Platform)/$(Configuration)/TriTone/CoreData/"
+"C:\Program Files\CMake\bin\cmake.exe" -E copy_directory Resources/Data/ "$(SolutionDir)bin/$(Platform)/$(Configuration)/TriTone/Data/"
+attrib +s "$(SolutionDir)/bin/$(Platform)/$(Configuration)/TriTone/desktop.ini"
+attrib +s "$(SolutionDir)/bin/$(Platform)/$(Configuration)/TriTone/TriTone.ico"
+attrib +s "$(SolutionDir)/bin/$(Platform)/$(Configuration)/TriTone"
+
+"C:\Program Files\CMake\bin\cmake.exe" -E copy_directory "$(SolutionDir)bin/$(Platform)/$(Configuration)/TriTone/" "C:/Program Files/Common Files/VST3/TriTone/"
+endlocal</Command>
+    </PostBuildEvent>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level4</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\dependencies\steinberg\vst3sdk-3.7.2\vst3sdk;$(SolutionDir)..\dependencies\steinberg\vst3sdk-3.7.2\vst3sdk\vstgui4;$(SolutionDir)..\dependencies\cycfi\q\q_lib\include;$(SolutionDir)..\dependencies\cycfi\q\q_io\include;$(SolutionDir)..\dependencies\cycfi\q\infra\include;$(SolutionDir)..\dependencies\cycfi\elements\lib\include</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <DebugInformationFormat>None</DebugInformationFormat>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <AdditionalDependencies>base.lib;sdk.lib;vstgui_support.lib;pluginterfaces.lib;vstgui_uidescription.lib;vstgui.lib;Urho3D.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)/../vst3sdk-Build/lib/Release/win64;$(SolutionDir)/../dependencies\cycfi\elements\build\lib\Release</AdditionalLibraryDirectories>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+    </Link>
+    <PostBuildEvent>
+      <Command>setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -E copy Resources/$(ProjectName).ico "$(SolutionDir)bin/$(Platform)/$(Configuration)/$(ProjectName)/$(ProjectName).ico"
+"C:\Program Files\CMake\bin\cmake.exe" -E copy Resources/desktop.ini "$(SolutionDir)bin/$(Platform)/$(Configuration)/$(ProjectName)/desktop.ini"
+"C:\Program Files\CMake\bin\cmake.exe" -E copy_directory Resources/CoreData/ "$(SolutionDir)bin/$(Platform)/$(Configuration)/$(ProjectName)/CoreData/"
+"C:\Program Files\CMake\bin\cmake.exe" -E copy_directory Resources/Data/ "$(SolutionDir)bin/$(Platform)/$(Configuration)/$(ProjectName)/Data/"
+attrib +s "$(SolutionDir)/bin/$(Platform)/$(Configuration)/$(ProjectName)/desktop.ini"
+attrib +s "$(SolutionDir)/bin/$(Platform)/$(Configuration)/$(ProjectName)/$(ProjectName).ico"
+attrib +s "$(SolutionDir)/bin/$(Platform)/$(Configuration)/$(ProjectName)"
+
+"C:\Program Files\CMake\bin\cmake.exe" -E copy_directory "$(SolutionDir)bin/$(Platform)/$(Configuration)/$(ProjectName)/" "C:/Program Files/Common Files/VST3/$(ProjectName)/"
+endlocal</Command>
+    </PostBuildEvent>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <Image Include="Sources\Resources\TriTone.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Sources\Application.h" />
+    <ClInclude Include="Sources\Constants.h" />
+    <ClInclude Include="Sources\FrequencyParameter.h" />
+    <ClInclude Include="Sources\IParameterListener.h" />
+    <ClInclude Include="Sources\TriToneController.h" />
+    <ClInclude Include="Sources\TriToneProcessor.h" />
+    <ClInclude Include="Sources\TriToneView.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Sources\Application.cpp" />
+    <ClCompile Include="Sources\FrequencyParameter.cpp" />
+    <ClCompile Include="Sources\PluginFactory.cpp" />
+    <ClCompile Include="Sources\TriToneController.cpp" />
+    <ClCompile Include="Sources\TriToneProcessor.cpp" />
+    <ClCompile Include="Sources\TriToneView.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+    <None Include="readme.md" />
+    <None Include="Sources\Resources\desktop.ini" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+    <Import Project="packages\cairo_static.1.15.4.9\build\native\cairo_static.targets" Condition="Exists('packages\cairo_static.1.15.4.9\build\native\cairo_static.targets')" />
+    <Import Project="packages\pixman_static.0.32.4.10\build\native\pixman_static.targets" Condition="Exists('packages\pixman_static.0.32.4.10\build\native\pixman_static.targets')" />
+    <Import Project="packages\zlib_static.1.2.11.10\build\native\zlib_static.targets" Condition="Exists('packages\zlib_static.1.2.11.10\build\native\zlib_static.targets')" />
+    <Import Project="packages\libpng_static.1.4.1.12\build\native\libpng_static.targets" Condition="Exists('packages\libpng_static.1.4.1.12\build\native\libpng_static.targets')" />
+  </ImportGroup>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>Ce projet fait référence à des packages NuGet qui sont manquants sur cet ordinateur. Utilisez l'option de restauration des packages NuGet pour les télécharger. Pour plus d'informations, consultez http://go.microsoft.com/fwlink/?LinkID=322105. Le fichier manquant est : {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('packages\cairo_static.1.15.4.9\build\native\cairo_static.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\cairo_static.1.15.4.9\build\native\cairo_static.targets'))" />
+    <Error Condition="!Exists('packages\pixman_static.0.32.4.10\build\native\pixman_static.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\pixman_static.0.32.4.10\build\native\pixman_static.targets'))" />
+    <Error Condition="!Exists('packages\zlib_static.1.2.11.10\build\native\zlib_static.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\zlib_static.1.2.11.10\build\native\zlib_static.targets'))" />
+    <Error Condition="!Exists('packages\libpng_static.1.4.1.12\build\native\libpng_static.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\libpng_static.1.4.1.12\build\native\libpng_static.targets'))" />
+  </Target>
+</Project>
