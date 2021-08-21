@@ -36,7 +36,7 @@ namespace tech::tritonit::tritone {
 		template<> Steinberg::Vst::Sample32** getBuffer(Steinberg::Vst::AudioBusBuffers& buffer);
 		template<> Steinberg::Vst::Sample64** getBuffer(Steinberg::Vst::AudioBusBuffers& buffer);
 
-		void processParameterChanges(Steinberg::Vst::IParameterChanges* inputParameterChanges);
+		void handleParameterChanges(Steinberg::Vst::IParameterChanges* inputParameterChanges);
 		void processEvents(Steinberg::Vst::IEventList* events);
 
 		float frequencyMultiplicator_;

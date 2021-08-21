@@ -62,6 +62,13 @@ namespace tech::tritonit::tritone {
 			(index + 1) * 0.25
 		));
 		vmargin_rect margin_offset{ 20, 20 };
+
+		vsliders[index]->on_change =
+			[index, this](double val)
+		{
+			frequencyParameter_->setNormalized(val);
+		};
+
 		return align_center(vmargin(margin_offset, hold(vsliders[index])));
 	}
 

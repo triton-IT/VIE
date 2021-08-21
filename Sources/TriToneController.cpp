@@ -132,18 +132,21 @@ namespace tech::tritonit::tritone {
 
 	tresult PLUGIN_API TriToneController::setComponentHandler(IComponentHandler* handler)
 	{
+		//If already set, do nothing
 		if (componentHandler_ == handler)
 		{
 			return kResultOk;
 		}
 
-		//If already have one, release it before adding new one.
+		//If already have one, (but another) release it before adding new one.
 		if (componentHandler_ != nullptr)
 		{
 			componentHandler_->release();
 		}
 
 		componentHandler_ = handler;
+
+		//If new one is not null, add a ref.
 		if (componentHandler_ != nullptr)
 		{
 			componentHandler_->addRef();

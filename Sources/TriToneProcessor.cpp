@@ -90,7 +90,7 @@ namespace tech::tritonit::tritone {
 	{
 		tresult result = kResultOk;
 
-		processParameterChanges(data.inputParameterChanges);
+		handleParameterChanges(data.inputParameterChanges);
 		processEvents(data.inputEvents);
 
 		if (data.numOutputs > 0 && data.numSamples > 0) {
@@ -148,33 +148,35 @@ namespace tech::tritonit::tritone {
 		return buffer.channelBuffers64;
 	}
 
-	void TriToneProcessor::processParameterChanges(IParameterChanges* inputParameterChanges) {
-		if (inputParameterChanges)
+	void TriToneProcessor::handleParameterChanges(IParameterChanges* inputParameterChanges) {
+		if (!inputParameterChanges)
 		{
-			int32 parametersCount = inputParameterChanges->getParameterCount();
-			for (int32 index = 0; index < parametersCount; index++)
-			{
-				IParamValueQueue* paramValueQueue = inputParameterChanges->getParameterData(index);
-				if (paramValueQueue)
-				{
-					ParamValue paramValue;
-					int32 sampleOffset;
-					int32 pointsCount = paramValueQueue->getPointCount();
-					switch (paramValueQueue->getParameterId())
-					{
-					case kFrequencyId:
-						if (paramValueQueue->getPoint(pointsCount - 1, sampleOffset, paramValue) == kResultTrue) {
-							frequencyMultiplicator_ = paramValue;
-						}
-						break;
+			return;
+		}
 
-					case kBypassId:
-						if (paramValueQueue->getPoint(pointsCount - 1, sampleOffset, paramValue) == kResultTrue)
-						{
-							bypass_ = (paramValue > 0.5f);
-						}
-						break;
+		int32 parametersCount = inputParameterChanges->getParameterCount();
+		for (auto index = 0; index < parametersCount; index++)
+		{
+			IParamValueQueue* paramValueQueue = inputParameterChanges->getParameterData(index);
+			if (paramValueQueue)
+			{
+				ParamValue paramValue;
+				int32 sampleOffset;
+				int32 pointsCount = paramValueQueue->getPointCount();
+				switch (paramValueQueue->getParameterId())
+				{
+				case kFrequencyId:
+					if (paramValueQueue->getPoint(pointsCount - 1, sampleOffset, paramValue) == kResultTrue) {
+						frequencyMultiplicator_ = paramValue;
 					}
+					break;
+
+				case kBypassId:
+					if (paramValueQueue->getPoint(pointsCount - 1, sampleOffset, paramValue) == kResultTrue)
+					{
+						bypass_ = (paramValue > 0.5f);
+					}
+					break;
 				}
 			}
 		}
