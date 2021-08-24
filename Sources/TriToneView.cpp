@@ -32,28 +32,6 @@ namespace tech::tritonit::tritone {
 			);
 	}
 
-	auto TriToneView::make_hslider(int index)
-	{
-		hsliders[index] = share(slider(
-			basic_thumb<25>(),
-			make_markers<false>(),
-			(index + 1) * 0.25
-		));
-		hmargin_rect margin_offset{ 20, 20 };
-		return align_middle(hmargin(margin_offset, hold(hsliders[index])));
-	}
-
-	auto TriToneView::make_hsliders()
-	{
-		return hmin_size(300,
-			vtile(
-				make_hslider(0),
-				make_hslider(1),
-				make_hslider(2)
-			)
-		);
-	}
-
 	auto TriToneView::make_vslider(int index)
 	{
 		vsliders[index] = share(slider(
@@ -72,60 +50,51 @@ namespace tech::tritonit::tritone {
 		return align_center(vmargin(margin_offset, hold(vsliders[index])));
 	}
 
-	auto TriToneView::make_vsliders()
-	{
-		return hmin_size(300,
-			htile(
-				make_vslider(0),
-				make_vslider(1),
-				make_vslider(2)
-			)
-		);
+	auto TriToneView::deserialisePane(nlohmann::json& paneJson) {
+		return pane("Vertical Sliders", make_vslider(0), 0.8f);
 	}
 
-	auto TriToneView::make_dial(int index)
-	{
-		dials[index] = share(
-			dial(
-				radial_marks<20>(basic_knob<50>()),
-				(index + 1) * 0.25
-			)
-		);
+	auto TriToneView::deserialiseMargin(nlohmann::json& marginJson) {
+		float left = marginJson.find("left").value().get<float>();
+		float top = marginJson.find("top").value().get<float>();
+		float right = marginJson.find("right").value().get<float>();
+		float bottom = marginJson.find("bottom").value().get<float>();
 
-		auto markers = radial_labels<15>(
-			hold(dials[index]),
-			0.7,                                   // Label font size (relative size)
-			"0", "1", "2", "3", "4",               // Labels
-			"5", "6", "7", "8", "9", "1"
-			);
+		//auto child = marginJson.find("child").value();
+		//auto pane = deserialisePane(child.find("pane").value());
 
-		return align_center_middle(markers);
-	}
-
-	auto TriToneView::make_dials()
-	{
-		return hmargin(20,
-			vtile(
-				make_dial(0),
-				make_dial(1),
-				make_dial(2)
-			)
+		//return margin({ left, top, right, bottom }, pane);
+		auto p = pane("Frequency", make_vslider(0), 0.8f);
+		return margin({ left, top, right, bottom },
+			p
 		);
 	}
 
 	auto TriToneView::make_controls()
 	{
-		rect sliders_margin = { 20, 20, 20, 20 };
+		auto viewDescription = R"(
+		{
+			"margin": {
+				"top": 20,
+				"left": 20,
+				"bottom": 20,
+				"right": 20,
+				"child": {
+					"pane": {
+						"title": "Frequency",
+						"child": {
+							"vslider": {
+							}
+						}
+					}
+				}
+			}
+		}
+		)"_json;
 
-		return margin({ 20, 10, 20, 10 },
-			vmin_size(400,
-				htile(
-					margin(sliders_margin, pane("Vertical Sliders", make_vsliders(), 0.8f)),
-					margin(sliders_margin, pane("Horizontal Sliders", make_hsliders(), 0.8f)),
-					hstretch(0.5, margin({ 20, 20, 20, 20 }, pane("Knobs", make_dials(), 0.8f)))
-				)
-			)
-		);
+		for (auto& [key, value] : viewDescription.items()) {
+			return deserialiseMargin(value);
+		}
 	}
 
 	tresult PLUGIN_API TriToneView::queryInterface(const TUID iid, void** obj)

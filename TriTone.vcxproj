@@ -285,6 +285,7 @@ endlocal</Command>
     <ClInclude Include="Sources\Constants.h" />
     <ClInclude Include="Sources\FrequencyParameter.h" />
     <ClInclude Include="Sources\IParameterListener.h" />
+    <ClInclude Include="Sources\Third-parties\json.hpp" />
     <ClInclude Include="Sources\TriToneController.h" />
     <ClInclude Include="Sources\TriToneProcessor.h" />
     <ClInclude Include="Sources\TriToneView.h" />

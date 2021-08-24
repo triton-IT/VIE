@@ -3,6 +3,8 @@
 #include <pluginterfaces\gui\iplugview.h>
 #include <elements.hpp>
 
+#include "Third-parties/json.hpp"
+
 #include "FrequencyParameter.h"
 
 namespace tech::tritonit::tritone {
@@ -47,14 +49,14 @@ namespace tech::tritonit::tritone {
 		slider_ptr hsliders[3];
 		slider_ptr vsliders[3];
 
+		std::shared_ptr<cycfi::elements::element> rootElement;
+
 		template <bool is_vertical>
 		auto make_markers();
-		auto make_hslider(int index);
-		auto make_hsliders();
 		auto make_vslider(int index);
-		auto make_vsliders();
-		auto make_dial(int index);
-		auto make_dials();
 		auto make_controls();
+
+		auto deserialisePane(nlohmann::json &paneJson);
+		auto deserialiseMargin(nlohmann::json &marginJson);
 	};
 }
