@@ -6,7 +6,7 @@
 using namespace Steinberg;
 using namespace Steinberg::Vst;
 
-namespace tech::tritonit::tritone {
+namespace live::tritone::vie {
 	FrequencyParameter::FrequencyParameter() : listener_(nullptr)
 	{
 		info.id = kFrequencyId;

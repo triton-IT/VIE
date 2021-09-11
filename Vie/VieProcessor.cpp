@@ -11,7 +11,7 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 
-#include "TriToneProcessor.h"
+#include "VieProcessor.h"
 #include "Application.h"
 #include "Constants.h"
 
@@ -21,23 +21,23 @@ using namespace cycfi;
 using namespace cycfi::q;
 using namespace cycfi::q::literals;
 
-namespace tech::tritonit::tritone {
-	FUnknown* TriToneProcessor::createInstance(void* /*context*/)
+namespace live::tritone::vie {
+	FUnknown* VieProcessor::createInstance(void* /*context*/)
 	{
-		return (IAudioProcessor*) new TriToneProcessor;
+		return (IAudioProcessor*) new VieProcessor;
 	}
 
-	TriToneProcessor::TriToneProcessor() :
+	VieProcessor::VieProcessor() :
 		frequencyMultiplicator_(0.f),
 		phases_(),
 		bypass_(false),
 		notes_(),
 		envelope_(nullptr)
 	{
-		setControllerClass(tech::tritonit::tritone::ControllerUID);
+		setControllerClass(live::tritone::vie::ControllerUID);
 	}
 
-	tresult PLUGIN_API TriToneProcessor::initialize(FUnknown* context)
+	tresult PLUGIN_API VieProcessor::initialize(FUnknown* context)
 	{
 		tresult result = AudioEffect::initialize(context);
 		if (result == kResultTrue)
@@ -46,10 +46,50 @@ namespace tech::tritonit::tritone {
 			addAudioOutput(STR16("Stereo output"), SpeakerArr::kStereo);
 		}
 
+		/*auto processorsDefinition = R"(
+		{
+			"processor": {
+				"name": "oscillator",
+				"id": "F9168C5E-CEB2-4faa-B6BF-329BF39FA1E4",
+				"type": "live.tritone.oscillator",
+				"parameters": [
+					"waveform": "saw"
+				]
+			},
+			"processor": {
+				"signal_inputs": [
+					"input": {
+						"name": "signal",
+						"type": "signal"
+					}
+				]
+			}
+		)"_json;
+
+		auto patchBayDefinition = R"(
+		{
+			"processor": {
+				"id": "F9168C5E-CEB2-4faa-B6BF-329BF39FA1E4",
+				"type": "live.tritone.oscillator",
+				"parameters": [
+					"waveform": "saw"
+				]
+			},
+			"processor": {
+				"name": "oscillator",
+				"signal_inputs": [
+					"input": {
+						"name": "signal",
+						"type": "signal"
+					}
+				]
+			}
+		)"_json;*/
+
 		return result;
 	}
 
-	tresult PLUGIN_API TriToneProcessor::setupProcessing(ProcessSetup& setup) {
+	tresult PLUGIN_API VieProcessor::setupProcessing(ProcessSetup& setup) {
 		AudioEffect::setupProcessing(setup);
 
 		envelope_ = new envelope(processSetup.sampleRate);
@@ -57,7 +97,7 @@ namespace tech::tritonit::tritone {
 		return kResultOk;
 	}
 
-	tresult PLUGIN_API TriToneProcessor::setBusArrangements(SpeakerArrangement* inputs, int32 numIns, SpeakerArrangement* outputs, int32 numOuts)
+	tresult PLUGIN_API VieProcessor::setBusArrangements(SpeakerArrangement* inputs, int32 numIns, SpeakerArrangement* outputs, int32 numOuts)
 	{
 		// We only support one stereo output stereo bus.
 		if (numIns == 0 && numOuts == 1 && outputs[0] == SpeakerArr::kStereo)
@@ -67,7 +107,7 @@ namespace tech::tritonit::tritone {
 		return kResultFalse;
 	}
 
-	tresult PLUGIN_API TriToneProcessor::canProcessSampleSize(int32 symbolicSampleSize)
+	tresult PLUGIN_API VieProcessor::canProcessSampleSize(int32 symbolicSampleSize)
 	{
 		if (symbolicSampleSize == kSample32 || symbolicSampleSize == kSample64)
 		{
@@ -76,17 +116,17 @@ namespace tech::tritonit::tritone {
 		return kResultFalse;
 	}
 
-	tresult PLUGIN_API TriToneProcessor::setState(IBStream* /*state*/)
+	tresult PLUGIN_API VieProcessor::setState(IBStream* /*state*/)
 	{
 		return kResultOk;
 	}
 
-	tresult PLUGIN_API TriToneProcessor::getState(IBStream* /*state*/)
+	tresult PLUGIN_API VieProcessor::getState(IBStream* /*state*/)
 	{
 		return kResultOk;
 	}
 
-	tresult PLUGIN_API TriToneProcessor::process(ProcessData& data)
+	tresult PLUGIN_API VieProcessor::process(ProcessData& data)
 	{
 		tresult result = kResultOk;
 
@@ -105,7 +145,7 @@ namespace tech::tritonit::tritone {
 		return result;
 	}
 
-	template<typename SampleType> tresult TriToneProcessor::processSamples(AudioBusBuffers& output, int32 numSamples)
+	template<typename SampleType> tresult VieProcessor::processSamples(AudioBusBuffers& output, int32 numSamples)
 	{
 		if (!bypass_) {
 			SampleType** outputSamples = getBuffer<SampleType>(output);
@@ -138,17 +178,17 @@ namespace tech::tritonit::tritone {
 		return kResultOk;
 	}
 
-	template<> Sample32** TriToneProcessor::getBuffer(AudioBusBuffers& buffer)
+	template<> Sample32** VieProcessor::getBuffer(AudioBusBuffers& buffer)
 	{
 		return buffer.channelBuffers32;
 	}
 
-	template<> Sample64** TriToneProcessor::getBuffer(AudioBusBuffers& buffer)
+	template<> Sample64** VieProcessor::getBuffer(AudioBusBuffers& buffer)
 	{
 		return buffer.channelBuffers64;
 	}
 
-	void TriToneProcessor::handleParameterChanges(IParameterChanges* inputParameterChanges) {
+	void VieProcessor::handleParameterChanges(IParameterChanges* inputParameterChanges) {
 		if (!inputParameterChanges)
 		{
 			return;
@@ -182,7 +222,7 @@ namespace tech::tritonit::tritone {
 		}
 	}
 
-	void TriToneProcessor::processEvents(IEventList* events)
+	void VieProcessor::processEvents(IEventList* events)
 	{
 		if (events)
 		{

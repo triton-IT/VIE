@@ -2,15 +2,15 @@
 #include <pluginterfaces/base/ibstream.h>
 #include <base/source/fstreamer.h>
 
-#include "TriToneController.h"
+#include "VieController.h"
 #include "Application.h"
 #include "Constants.h"
 
 using namespace Steinberg;
 using namespace Steinberg::Vst;
 
-namespace tech::tritonit::tritone {
-	TriToneController::TriToneController() :
+namespace live::tritone::vie {
+	VieController::VieController() :
 		nbRef_(0),
 		view_(nullptr),
 		componentHandler_(nullptr),
@@ -20,7 +20,7 @@ namespace tech::tritonit::tritone {
 		frequencyParameter_->setListener(this);
 	}
 
-	TriToneController::~TriToneController() {
+	VieController::~VieController() {
 		if (view_ != nullptr) {
 			delete view_;
 		}
@@ -28,7 +28,7 @@ namespace tech::tritonit::tritone {
 		delete frequencyParameter_;
 	}
 
-	tresult PLUGIN_API TriToneController::queryInterface(const TUID iid, void** obj) {
+	tresult PLUGIN_API VieController::queryInterface(const TUID iid, void** obj) {
 		if (FUnknownPrivate::iidEqual(iid, IEditController::iid)) {
 			addRef();
 			*obj = static_cast<IEditController*>(this);
@@ -37,19 +37,19 @@ namespace tech::tritonit::tritone {
 		return ComponentBase::queryInterface(iid, obj);
 	}
 
-	uint32 PLUGIN_API TriToneController::addRef() {
+	uint32 PLUGIN_API VieController::addRef() {
 		return ++nbRef_;
 	}
 
-	uint32 PLUGIN_API TriToneController::release() {
+	uint32 PLUGIN_API VieController::release() {
 		return --nbRef_;
 	}
 
-	FClassID TriToneController::isA() const {
+	FClassID VieController::isA() const {
 		return "Controller";
 	}
 
-	tresult PLUGIN_API TriToneController::initialize(FUnknown* context)
+	tresult PLUGIN_API VieController::initialize(FUnknown* context)
 	{
 		ComponentBase::initialize(context);
 
@@ -61,76 +61,76 @@ namespace tech::tritonit::tritone {
 		return kResultOk;
 	}
 
-	tresult PLUGIN_API TriToneController::terminate()
+	tresult PLUGIN_API VieController::terminate()
 	{
 		return kResultOk;
 	}
 
-	tresult PLUGIN_API TriToneController::setComponentState(IBStream* /*state*/)
+	tresult PLUGIN_API VieController::setComponentState(IBStream* /*state*/)
 	{
 		return kNotImplemented;
 	}
 
-	tresult PLUGIN_API TriToneController::setState(IBStream* /*state*/)
+	tresult PLUGIN_API VieController::setState(IBStream* /*state*/)
 	{
 		return kNotImplemented;
 	}
 
-	tresult PLUGIN_API TriToneController::getState(IBStream* /*state*/)
+	tresult PLUGIN_API VieController::getState(IBStream* /*state*/)
 	{
 		return kNotImplemented;
 	}
 
-	int32 PLUGIN_API TriToneController::getParameterCount()
+	int32 PLUGIN_API VieController::getParameterCount()
 	{
 		return parameters_.getParameterCount();
 	}
 
-	tresult PLUGIN_API TriToneController::getParameterInfo(int32 paramIndex, ParameterInfo& info /*out*/)
+	tresult PLUGIN_API VieController::getParameterInfo(int32 paramIndex, ParameterInfo& info /*out*/)
 	{
 		info = parameters_.getParameterByIndex(paramIndex)->getInfo();
 		return kResultOk;
 	}
 
-	tresult PLUGIN_API TriToneController::getParamStringByValue(ParamID id, ParamValue valueNormalized /*in*/, Steinberg::Vst::String128 string /*out*/)
+	tresult PLUGIN_API VieController::getParamStringByValue(ParamID id, ParamValue valueNormalized /*in*/, Steinberg::Vst::String128 string /*out*/)
 	{
 		Parameter* parameter = parameters_.getParameter(id);
 		parameter->toString(valueNormalized, string);
 		return kResultOk;
 	}
 
-	tresult PLUGIN_API TriToneController::getParamValueByString(ParamID id, TChar* string /*in*/, Steinberg::Vst::ParamValue& valueNormalized /*out*/)
+	tresult PLUGIN_API VieController::getParamValueByString(ParamID id, TChar* string /*in*/, Steinberg::Vst::ParamValue& valueNormalized /*out*/)
 	{
 		Parameter* parameter = parameters_.getParameter(id);
 		parameter->fromString(string, valueNormalized);
 		return kResultOk;
 	}
 
-	ParamValue PLUGIN_API TriToneController::normalizedParamToPlain(ParamID id, ParamValue valueNormalized)
+	ParamValue PLUGIN_API VieController::normalizedParamToPlain(ParamID id, ParamValue valueNormalized)
 	{
 		Parameter* parameter = parameters_.getParameter(id);
 		return parameter->toPlain(valueNormalized);
 	}
 
-	ParamValue PLUGIN_API TriToneController::plainParamToNormalized(ParamID id, ParamValue plainValue)
+	ParamValue PLUGIN_API VieController::plainParamToNormalized(ParamID id, ParamValue plainValue)
 	{
 		Parameter* parameter = parameters_.getParameter(id);
 		return parameter->toNormalized(plainValue);
 	}
 
-	ParamValue PLUGIN_API TriToneController::getParamNormalized(ParamID id)
+	ParamValue PLUGIN_API VieController::getParamNormalized(ParamID id)
 	{
 		Parameter* parameter = parameters_.getParameter(id);
 		return parameter->getNormalized();
 	}
 
-	tresult PLUGIN_API TriToneController::setParamNormalized(ParamID id, ParamValue value)
+	tresult PLUGIN_API VieController::setParamNormalized(ParamID id, ParamValue value)
 	{
 		Parameter* parameter = parameters_.getParameter(id);
 		return parameter->setNormalized(value);
 	}
 
-	tresult PLUGIN_API TriToneController::setComponentHandler(IComponentHandler* handler)
+	tresult PLUGIN_API VieController::setComponentHandler(IComponentHandler* handler)
 	{
 		//If already set, do nothing
 		if (componentHandler_ == handler)
@@ -155,14 +155,14 @@ namespace tech::tritonit::tritone {
 		return kResultTrue;
 	}
 
-	IPlugView* PLUGIN_API TriToneController::createView(FIDString /*name*/)
+	IPlugView* PLUGIN_API VieController::createView(FIDString /*name*/)
 	{
-		view_ = new TriToneView(frequencyParameter_);
+		view_ = new VieView(frequencyParameter_);
 
 		return view_;
 	}
 
-	void TriToneController::parameterValueChanged(Steinberg::int32 parameterId, Steinberg::Vst::ParamValue /*normalizedValue*/) {
+	void VieController::parameterValueChanged(Steinberg::int32 parameterId, Steinberg::Vst::ParamValue /*normalizedValue*/) {
 		if (parameterId == kFrequencyId && componentHandler_ != nullptr) {
 			componentHandler_->beginEdit(kFrequencyId);
 			componentHandler_->performEdit(kFrequencyId, frequencyParameter_->getNormalized());

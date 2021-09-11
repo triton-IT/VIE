@@ -1,0 +1,116 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="Application.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FrequencyParameter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PluginFactory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="VieController.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="VieProcessor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="VieView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Application.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Constants.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FrequencyParameter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="StretchModel.hpp">
+      <Filter>Header Files\UI model</Filter>
+    </ClInclude>
+    <ClInclude Include="TileModel.hpp">
+      <Filter>Header Files\UI model</Filter>
+    </ClInclude>
+    <ClInclude Include="IParameterListener.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Third-parties\json.hpp">
+      <Filter>Header Files\Third parties</Filter>
+    </ClInclude>
+    <ClInclude Include="MarginModel.hpp">
+      <Filter>Header Files\UI model</Filter>
+    </ClInclude>
+    <ClInclude Include="PaneModel.hpp">
+      <Filter>Header Files\UI model</Filter>
+    </ClInclude>
+    <ClInclude Include="SliderModel.hpp">
+      <Filter>Header Files\UI model</Filter>
+    </ClInclude>
+    <ClInclude Include="SliderLabelsModel.hpp">
+      <Filter>Header Files\UI model</Filter>
+    </ClInclude>
+    <ClInclude Include="VieController.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="VieProcessor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="VieView.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MinSizeModel.hpp">
+      <Filter>Header Files\UI model</Filter>
+    </ClInclude>
+    <ClInclude Include="BasicThumbModel.hpp">
+      <Filter>Header Files\UI model</Filter>
+    </ClInclude>
+    <ClInclude Include="BasicTrackModel.hpp">
+      <Filter>Header Files\UI model</Filter>
+    </ClInclude>
+    <ClInclude Include="SliderMarksModel.hpp">
+      <Filter>Header Files\UI model</Filter>
+    </ClInclude>
+    <ClInclude Include="AlignModel.hpp">
+      <Filter>Header Files\UI model</Filter>
+    </ClInclude>
+    <ClInclude Include="DialModel.hpp">
+      <Filter>Header Files\UI model</Filter>
+    </ClInclude>
+    <ClInclude Include="ColorModel.hpp" />
+    <ClInclude Include="Model.hpp">
+      <Filter>Header Files\UI model</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{74a39905-e9c3-43f6-8c25-534e6109bdd0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{61987581-e653-4d2c-9feb-868fd1a458a3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resources">
+      <UniqueIdentifier>{003fb892-d512-4029-86c1-845851b946e1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\UI model">
+      <UniqueIdentifier>{15497646-0d1e-4ab0-a1ab-b48a1cdfc122}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Third parties">
+      <UniqueIdentifier>{48144b3b-a33f-4cff-b3bf-10064a3777f7}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="desktop.ini">
+      <Filter>Resources</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Vie.ico">
+      <Filter>Resources</Filter>
+    </Image>
+  </ItemGroup>
+</Project>

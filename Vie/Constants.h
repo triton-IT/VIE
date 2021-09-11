@@ -3,10 +3,10 @@
 #include <pluginterfaces/base/ftypes.h>
 
 #define VERSION "0.0.0.1"
-#define PLUGIN_NAME "TriTone"
-#define COMPANY_NAME "tritonit.tech"
-#define COMPANY_URL "https://tritonit.tech"
-#define COMPANY_EMAIL "contact@tritonit.tech"
+#define PLUGIN_NAME "Vie"
+#define COMPANY_NAME "tritone.live"
+#define COMPANY_URL "https://tritone.live"
+#define COMPANY_EMAIL "contact@tritone.live"
 
 //#define NOTE_FREQUENCY_OFFSET 1.059463094359295264561825f
 
@@ -26,7 +26,7 @@ const float MIDI_NOTES_FREQUENCIES[] = {
 
 
 
-namespace tech::tritonit::tritone {
+namespace live::tritone::vie {
 	static const Steinberg::FUID ProcessorUID(0xbc00f531, 0x19a89841, 0x612dcc8c, 0x45bbceed);
 	static const Steinberg::FUID ControllerUID(0x2afcd1cb, 0x6defd15e, 0x239a1b9e, 0x86959eaf);
 } // namespace

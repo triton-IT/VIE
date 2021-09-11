@@ -2,7 +2,7 @@
 
 #include <public.sdk/source/vst/vstparameters.h>
 
-namespace tech::tritonit::tritone {
+namespace live::tritone::vie {
 	class IParameterListener
 	{
 	public:

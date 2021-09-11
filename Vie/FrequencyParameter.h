@@ -4,7 +4,7 @@
 
 #include "IParameterListener.h"
 
-namespace tech::tritonit::tritone {
+namespace live::tritone::vie {
 	class FrequencyParameter : public Steinberg::Vst::Parameter
 	{
 	public:

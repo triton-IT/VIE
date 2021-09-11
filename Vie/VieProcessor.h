@@ -8,15 +8,17 @@
 #include <q/fx/lowpass.hpp>
 #include <q/fx/waveshaper.hpp>
 
+#include "Third-parties/json.hpp"
+
 #include <map>
 
-namespace tech::tritonit::tritone {
-	class TriToneProcessor : public Steinberg::Vst::AudioEffect
+namespace live::tritone::vie {
+	class VieProcessor : public Steinberg::Vst::AudioEffect
 	{
 	public:
 		static Steinberg::FUnknown* createInstance(void* context);
 
-		TriToneProcessor();
+		VieProcessor();
 
 		Steinberg::tresult PLUGIN_API initialize(Steinberg::FUnknown* context) SMTG_OVERRIDE;
 		Steinberg::tresult PLUGIN_API setupProcessing(Steinberg::Vst::ProcessSetup& setup) SMTG_OVERRIDE;

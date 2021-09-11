@@ -5,21 +5,21 @@
 #include <pluginterfaces/vst/vsttypes.h>
 #include <base/source/fobject.h>
 
-#include "TritoneView.h"
+#include "VieView.h"
 #include "IParameterListener.h"
 #include "FrequencyParameter.h"
 
-namespace tech::tritonit::tritone {
-	class TriToneController : public Steinberg::Vst::ComponentBase, public Steinberg::Vst::IEditController, public IParameterListener
+namespace live::tritone::vie {
+	class VieController : public Steinberg::Vst::ComponentBase, public Steinberg::Vst::IEditController, public IParameterListener
 	{
 	public:
 		static FUnknown* createInstance(void*)
 		{
-			return (IEditController*) new TriToneController;
+			return (IEditController*) new VieController;
 		}
 
-		TriToneController();
-		~TriToneController();
+		VieController();
+		~VieController();
 
 		Steinberg::tresult PLUGIN_API queryInterface(const Steinberg::TUID iid, void** obj) SMTG_OVERRIDE;
 		Steinberg::uint32 PLUGIN_API addRef() SMTG_OVERRIDE;
@@ -45,7 +45,7 @@ namespace tech::tritonit::tritone {
 
 	private:
 		Steinberg::uint32 nbRef_;
-		TriToneView* view_;
+		VieView* view_;
 		FrequencyParameter* frequencyParameter_;
 		Steinberg::Vst::IComponentHandler* componentHandler_;
 

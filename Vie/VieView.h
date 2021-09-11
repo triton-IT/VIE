@@ -7,13 +7,13 @@
 
 #include "FrequencyParameter.h"
 
-namespace tech::tritonit::tritone {
-	class TriToneView : public Steinberg::IPlugView
+namespace live::tritone::vie {
+	class VieView : public Steinberg::IPlugView
 	{
 
 	public:
-		TriToneView(FrequencyParameter* frequencyParameter);
-		~TriToneView();
+		VieView(FrequencyParameter* frequencyParameter);
+		~VieView();
 
 		Steinberg::tresult PLUGIN_API queryInterface(const Steinberg::TUID iid, void** obj) SMTG_OVERRIDE;
 		virtual Steinberg::uint32 PLUGIN_API addRef() SMTG_OVERRIDE;
@@ -42,21 +42,11 @@ namespace tech::tritonit::tritone {
 		int width_;
 		int height_;
 
-		using dial_ptr = std::shared_ptr<cycfi::elements::dial_base>;
-		dial_ptr dials[3];
-
-		using slider_ptr = std::shared_ptr<cycfi::elements::basic_slider_base>;
-		slider_ptr hsliders[3];
-		slider_ptr vsliders[3];
-
 		std::shared_ptr<cycfi::elements::element> rootElement;
 
-		template <bool is_vertical>
-		auto make_markers();
-		auto make_vslider(int index);
-		auto make_controls();
+		auto buildUI(std::map<std::string, std::string> uiMap);
 
-		auto deserialisePane(nlohmann::json &paneJson);
-		auto deserialiseMargin(nlohmann::json &marginJson);
+		auto deserialise();
+		void deserialiseUI(nlohmann::json& elementJson);
 	};
 }

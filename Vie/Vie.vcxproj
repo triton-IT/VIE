@@ -104,7 +104,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>DEBUG_LOG;WIN32;_WINDOWS;WIN32_LEAN_AND_MEAN;NOMINMAX;DEVELOPMENT=1;SMTG_RENAME_ASSERT=1;ELEMENTS_HOST_UI_LIBRARY_WIN32;_UNICODE;CMAKE_INTDIR="Debug";TriTone_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>DEBUG_LOG;WIN32;_WINDOWS;WIN32_LEAN_AND_MEAN;NOMINMAX;DEVELOPMENT=1;SMTG_RENAME_ASSERT=1;ELEMENTS_HOST_UI_LIBRARY_WIN32;_UNICODE;CMAKE_INTDIR="Debug";Vie_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <AdditionalIncludeDirectories>$(SolutionDir)..\dependencies\cycfi\elements\lib\include;$(SolutionDir)..\dependencies\cycfi\elements\lib\external\cairo\include;$(SolutionDir)..\dependencies\cycfi\elements\lib\external\fontconfig\include;$(SolutionDir)..\dependencies\cycfi\elements\lib\external\freetype\include;$(SolutionDir)..\dependencies\cycfi\elements\lib\external\asio\asio\include;$(SolutionDir)..\dependencies\cycfi\elements\lib\infra\include;$(SolutionDir)..\dependencies\cycfi\elements\lib\infra\external\filesystem\include;$(SolutionDir)..\dependencies\cycfi\elements\lib\infra\external\optional-lite\include;$(SolutionDir)..\dependencies\cycfi\elements\lib\infra\external\string-view-lite\include;$(SolutionDir)..\dependencies\steinberg\vst3sdk-3.7.2\vst3sdk;$(SolutionDir)..\dependencies\steinberg\vst3sdk-3.7.2\vst3sdk\vstgui4;$(SolutionDir)..\dependencies\cycfi\q\q_lib\include;$(SolutionDir)..\dependencies\cycfi\q\q_io\include</AdditionalIncludeDirectories>
@@ -132,15 +132,15 @@
     </PreLinkEvent>
     <PostBuildEvent>
       <Command>setlocal
-"C:/Program Files/CMake/bin/cmake.exe" -E copy $(SolutionDir)Sources/Resources/TriTone.ico "$(SolutionDir)bin/$(Platform)/$(Configuration)/$(ProjectName)/build/TriTone.ico"
-"C:/Program Files/CMake/bin/cmake.exe" -E copy $(SolutionDir)Sources/Resources/desktop.ini "$(SolutionDir)bin/$(Platform)/$(Configuration)/$(ProjectName)/build/desktop.ini"
-attrib +s "$(SolutionDir)bin/$(Platform)/$(Configuration)/$(ProjectName)/build/desktop.ini"
-attrib +s "$(SolutionDir)bin/$(Platform)/$(Configuration)/$(ProjectName)/build/TriTone.ico"
-attrib +s "$(SolutionDir)bin/$(Platform)/$(Configuration)/$(ProjectName)/build"
+"C:/Program Files/CMake/bin/cmake.exe" -E copy $(ProjectDir)Vie.ico "$(OutputPath)Vie.ico"
+"C:/Program Files/CMake/bin/cmake.exe" -E copy $(ProjectDir)desktop.ini "$(OutputPath)desktop.ini"
+attrib +s "$(OutputPath)desktop.ini"
+attrib +s "$(OutputPath)Vie.ico"
+attrib +s "$(OutputPath)$(TargetFileName)"
 
 "C:/Program Files/CMake/bin/cmake.exe" -E copy "$(OutputPath)$(TargetFileName)" "$(ProgramW6432)/Common Files/VST3/$(ProjectName)/$(TargetFileName)"
-"C:/Program Files/CMake/bin/cmake.exe" -E copy $(SolutionDir)Sources/Resources/TriTone.ico "$(ProgramW6432)/Common Files/VST3/$(ProjectName)/TriTone.ico"
-"C:/Program Files/CMake/bin/cmake.exe" -E copy $(SolutionDir)Sources/Resources/desktop.ini "$(ProgramW6432)/Common Files/VST3/$(ProjectName)/desktop.ini"
+"C:/Program Files/CMake/bin/cmake.exe" -E copy "$(OutputPath)Vie.ico" "$(ProgramW6432)/Common Files/VST3/$(ProjectName)/Vie.ico"
+"C:/Program Files/CMake/bin/cmake.exe" -E copy "$(OutputPath)desktop.ini" "$(ProgramW6432)/Common Files/VST3/$(ProjectName)/desktop.ini"
 endlocal</Command>
       <Message>
       </Message>
@@ -221,15 +221,15 @@ endlocal</Command>
     </Link>
     <PostBuildEvent>
       <Command>setlocal
-"C:\Program Files\CMake\bin\cmake.exe" -E copy Resources/TriTone.ico "$(SolutionDir)bin/$(Platform)/$(Configuration)/TriTone/TriTone.ico"
-"C:\Program Files\CMake\bin\cmake.exe" -E copy Resources/desktop.ini "$(SolutionDir)bin/$(Platform)/$(Configuration)/TriTone/desktop.ini"
-"C:\Program Files\CMake\bin\cmake.exe" -E copy_directory Resources/CoreData/ "$(SolutionDir)bin/$(Platform)/$(Configuration)/TriTone/CoreData/"
-"C:\Program Files\CMake\bin\cmake.exe" -E copy_directory Resources/Data/ "$(SolutionDir)bin/$(Platform)/$(Configuration)/TriTone/Data/"
-attrib +s "$(SolutionDir)/bin/$(Platform)/$(Configuration)/TriTone/desktop.ini"
-attrib +s "$(SolutionDir)/bin/$(Platform)/$(Configuration)/TriTone/TriTone.ico"
-attrib +s "$(SolutionDir)/bin/$(Platform)/$(Configuration)/TriTone"
+"C:\Program Files\CMake\bin\cmake.exe" -E copy Resources/Vie.ico "$(SolutionDir)bin/$(Platform)/$(Configuration)/Vie/Vie.ico"
+"C:\Program Files\CMake\bin\cmake.exe" -E copy Resources/desktop.ini "$(SolutionDir)bin/$(Platform)/$(Configuration)/Vie/desktop.ini"
+"C:\Program Files\CMake\bin\cmake.exe" -E copy_directory Resources/CoreData/ "$(SolutionDir)bin/$(Platform)/$(Configuration)/Vie/CoreData/"
+"C:\Program Files\CMake\bin\cmake.exe" -E copy_directory Resources/Data/ "$(SolutionDir)bin/$(Platform)/$(Configuration)/Vie/Data/"
+attrib +s "$(SolutionDir)/bin/$(Platform)/$(Configuration)/Vie/desktop.ini"
+attrib +s "$(SolutionDir)/bin/$(Platform)/$(Configuration)/Vie/Vie.ico"
+attrib +s "$(SolutionDir)/bin/$(Platform)/$(Configuration)/Vie"
 
-"C:\Program Files\CMake\bin\cmake.exe" -E copy_directory "$(SolutionDir)bin/$(Platform)/$(Configuration)/TriTone/" "C:/Program Files/Common Files/VST3/TriTone/"
+"C:\Program Files\CMake\bin\cmake.exe" -E copy_directory "$(SolutionDir)bin/$(Platform)/$(Configuration)/Vie/" "C:/Program Files/Common Files/VST3/Vie/"
 endlocal</Command>
     </PostBuildEvent>
     <ProjectReference>
@@ -278,30 +278,42 @@ endlocal</Command>
     </ProjectReference>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <Image Include="Sources\Resources\TriTone.ico" />
+    <Image Include="Vie.ico" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Sources\Application.h" />
-    <ClInclude Include="Sources\Constants.h" />
-    <ClInclude Include="Sources\FrequencyParameter.h" />
-    <ClInclude Include="Sources\IParameterListener.h" />
-    <ClInclude Include="Sources\Third-parties\json.hpp" />
-    <ClInclude Include="Sources\TriToneController.h" />
-    <ClInclude Include="Sources\TriToneProcessor.h" />
-    <ClInclude Include="Sources\TriToneView.h" />
+    <ClInclude Include="BasicThumbModel.hpp" />
+    <ClInclude Include="BasicTrackModel.hpp" />
+    <ClInclude Include="ColorModel.hpp" />
+    <ClInclude Include="DialModel.hpp" />
+    <ClInclude Include="AlignModel.hpp" />
+    <ClInclude Include="StretchModel.hpp" />
+    <ClInclude Include="TileModel.hpp" />
+    <ClInclude Include="MarginModel.hpp" />
+    <ClInclude Include="Model.hpp" />
+    <ClInclude Include="PaneModel.hpp" />
+    <ClInclude Include="SliderModel.hpp" />
+    <ClInclude Include="SliderMarksModel.hpp" />
+    <ClInclude Include="SliderLabelsModel.hpp" />
+    <ClInclude Include="Application.h" />
+    <ClInclude Include="Constants.h" />
+    <ClInclude Include="FrequencyParameter.h" />
+    <ClInclude Include="IParameterListener.h" />
+    <ClInclude Include="Third-parties\json.hpp" />
+    <ClInclude Include="VieController.h" />
+    <ClInclude Include="VieProcessor.h" />
+    <ClInclude Include="VieView.h" />
+    <ClInclude Include="MinSizeModel.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Sources\Application.cpp" />
-    <ClCompile Include="Sources\FrequencyParameter.cpp" />
-    <ClCompile Include="Sources\PluginFactory.cpp" />
-    <ClCompile Include="Sources\TriToneController.cpp" />
-    <ClCompile Include="Sources\TriToneProcessor.cpp" />
-    <ClCompile Include="Sources\TriToneView.cpp" />
+    <ClCompile Include="Application.cpp" />
+    <ClCompile Include="FrequencyParameter.cpp" />
+    <ClCompile Include="PluginFactory.cpp" />
+    <ClCompile Include="VieController.cpp" />
+    <ClCompile Include="VieProcessor.cpp" />
+    <ClCompile Include="VieView.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
-    <None Include="readme.md" />
-    <None Include="Sources\Resources\desktop.ini" />
+    <None Include="desktop.ini" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
