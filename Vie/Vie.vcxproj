@@ -104,7 +104,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>DEBUG_LOG;WIN32;_WINDOWS;WIN32_LEAN_AND_MEAN;NOMINMAX;DEVELOPMENT=1;SMTG_RENAME_ASSERT=1;ELEMENTS_HOST_UI_LIBRARY_WIN32;_UNICODE;CMAKE_INTDIR="Debug";Vie_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>DEBUG;DEBUG_LOG;WIN32;_WINDOWS;WIN32_LEAN_AND_MEAN;NOMINMAX;DEVELOPMENT=1;SMTG_RENAME_ASSERT=1;ELEMENTS_HOST_UI_LIBRARY_WIN32;_UNICODE;CMAKE_INTDIR="Debug";Vie_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <AdditionalIncludeDirectories>$(SolutionDir)..\dependencies\cycfi\elements\lib\include;$(SolutionDir)..\dependencies\cycfi\elements\lib\external\cairo\include;$(SolutionDir)..\dependencies\cycfi\elements\lib\external\fontconfig\include;$(SolutionDir)..\dependencies\cycfi\elements\lib\external\freetype\include;$(SolutionDir)..\dependencies\cycfi\elements\lib\external\asio\asio\include;$(SolutionDir)..\dependencies\cycfi\elements\lib\infra\include;$(SolutionDir)..\dependencies\cycfi\elements\lib\infra\external\filesystem\include;$(SolutionDir)..\dependencies\cycfi\elements\lib\infra\external\optional-lite\include;$(SolutionDir)..\dependencies\cycfi\elements\lib\infra\external\string-view-lite\include;$(SolutionDir)..\dependencies\steinberg\vst3sdk-3.7.2\vst3sdk;$(SolutionDir)..\dependencies\steinberg\vst3sdk-3.7.2\vst3sdk\vstgui4;$(SolutionDir)..\dependencies\cycfi\q\q_lib\include;$(SolutionDir)..\dependencies\cycfi\q\q_io\include</AdditionalIncludeDirectories>
@@ -134,13 +134,18 @@
       <Command>setlocal
 "C:/Program Files/CMake/bin/cmake.exe" -E copy $(ProjectDir)Vie.ico "$(OutputPath)Vie.ico"
 "C:/Program Files/CMake/bin/cmake.exe" -E copy $(ProjectDir)desktop.ini "$(OutputPath)desktop.ini"
-attrib +s "$(OutputPath)desktop.ini"
+"C:/Program Files/CMake/bin/cmake.exe" -E copy $(ProjectDir)ui.json "$(OutputPath)ui.json"
+"C:/Program Files/CMake/bin/cmake.exe" -E copy $(ProjectDir)debug.log "$(OutputPath)debug.log"
+
 attrib +s "$(OutputPath)Vie.ico"
+attrib +s "$(OutputPath)desktop.ini"
 attrib +s "$(OutputPath)$(TargetFileName)"
 
 "C:/Program Files/CMake/bin/cmake.exe" -E copy "$(OutputPath)$(TargetFileName)" "$(ProgramW6432)/Common Files/VST3/$(ProjectName)/$(TargetFileName)"
 "C:/Program Files/CMake/bin/cmake.exe" -E copy "$(OutputPath)Vie.ico" "$(ProgramW6432)/Common Files/VST3/$(ProjectName)/Vie.ico"
 "C:/Program Files/CMake/bin/cmake.exe" -E copy "$(OutputPath)desktop.ini" "$(ProgramW6432)/Common Files/VST3/$(ProjectName)/desktop.ini"
+"C:/Program Files/CMake/bin/cmake.exe" -E copy "$(OutputPath)debug.log" "$(ProgramW6432)/Common Files/VST3/$(ProjectName)/debug.log"
+"C:/Program Files/CMake/bin/cmake.exe" -E copy "$(OutputPath)ui.json" "$(ProgramW6432)/Common Files/VST3/$(ProjectName)/ui.json"
 endlocal</Command>
       <Message>
       </Message>
@@ -286,6 +291,7 @@ endlocal</Command>
     <ClInclude Include="ColorModel.hpp" />
     <ClInclude Include="DialModel.hpp" />
     <ClInclude Include="AlignModel.hpp" />
+    <ClInclude Include="Logger.h" />
     <ClInclude Include="StretchModel.hpp" />
     <ClInclude Include="TileModel.hpp" />
     <ClInclude Include="MarginModel.hpp" />
@@ -307,6 +313,7 @@ endlocal</Command>
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="FrequencyParameter.cpp" />
+    <ClCompile Include="Logger.cpp" />
     <ClCompile Include="PluginFactory.cpp" />
     <ClCompile Include="VieController.cpp" />
     <ClCompile Include="VieProcessor.cpp" />
@@ -314,6 +321,10 @@ endlocal</Command>
   </ItemGroup>
   <ItemGroup>
     <None Include="desktop.ini" />
+    <None Include="ui.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="debug.log" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

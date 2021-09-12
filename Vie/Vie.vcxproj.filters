@@ -19,6 +19,9 @@
     <ClCompile Include="VieView.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Logger.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
@@ -85,6 +88,9 @@
     <ClInclude Include="Model.hpp">
       <Filter>Header Files\UI model</Filter>
     </ClInclude>
+    <ClInclude Include="Logger.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Header Files">
@@ -107,10 +113,18 @@
     <None Include="desktop.ini">
       <Filter>Resources</Filter>
     </None>
+    <None Include="ui.json">
+      <Filter>Resources</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Vie.ico">
       <Filter>Resources</Filter>
     </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="debug.log">
+      <Filter>Resources</Filter>
+    </Text>
   </ItemGroup>
 </Project>

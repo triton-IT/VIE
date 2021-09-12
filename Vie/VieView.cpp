@@ -13,6 +13,10 @@
 #include "SliderMarksModel.hpp"
 #include "MinSizeModel.hpp"
 
+#include "Application.h"
+
+#include <fstream>
+
 using namespace Steinberg;
 using namespace Steinberg::Vst;
 using namespace cycfi::elements;
@@ -35,42 +39,12 @@ namespace live::tritone::vie {
 	}
 
 	auto VieView::deserialise() {
-		auto viewDescription = R"(
-		{
-			"root": {
-				"type": "margin",
-				"id": 0,
-				"top": 20,
-				"left": 20,
-				"bottom": 20,
-				"right": 20,
-				"child": {
-					"type": "tile",
-					"children": [
-						{
-							"type": "slider"
-						},
-						{
-							"type": "knob"
-						},
-						{
-							"type": "pane",
-							"children": [
-								{
-									"type": "knob"
-								},
-								{
-									"type": "slider"
-								}
-							]
-						}
-					]
-				}
-			}
-		}
-		)"_json;
+		DLOG("Starting deserialise.");
+		std::ifstream uiJsonFile(contentPath + "ui.json");
+		nlohmann::json uiJson;
+		uiJsonFile >> uiJson;
 
-		deserialiseUI(viewDescription);
+		deserialiseUI(uiJson);
 	}
 
 	auto VieView::buildUI(std::map<std::string, std::string> uiMap) {

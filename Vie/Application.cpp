@@ -1,6 +1,7 @@
 #include <Windows.h>
 
 #include "Application.h"
+#include "Logger.h"
 
 extern "C" {
 	bool InitDll()
@@ -15,6 +16,10 @@ extern "C" {
 
 	void* moduleHandle;
 	std::string contentPath;
+
+#ifdef DEBUG
+	live::tritone::vie::utils::Logger debugLogger;
+#endif
 } // extern "C"
 
 void GetContentPath(CHAR (&_contentPath)[1024])
@@ -39,7 +44,11 @@ BOOL WINAPI DllMain(HINSTANCE hInst, DWORD /*dwReason*/, LPVOID /*lpvReserved*/)
 	CHAR localContentPath[1024];
 	GetContentPath(localContentPath);
 	localContentPath[1023] = '\0';
-	contentPath = std::string(localContentPath);
+	contentPath = std::string(localContentPath) + "\\";
+
+#ifdef DEBUG
+	debugLogger.open("debug.log", true);
+#endif // DEBUG
 	
 	return TRUE;
 }

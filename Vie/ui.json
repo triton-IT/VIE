@@ -1,0 +1,32 @@
+{
+  "root": {
+    "type": "margin",
+    "id": 0,
+    "top": 20,
+    "left": 20,
+    "bottom": 20,
+    "right": 20,
+    "child": {
+      "type": "tile",
+      "children": [
+        {
+          "type": "slider"
+        },
+        {
+          "type": "knob"
+        },
+        {
+          "type": "pane",
+          "children": [
+            {
+              "type": "knob"
+            },
+            {
+              "type": "slider"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
