@@ -4,26 +4,60 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 16.0.29324.140
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Vie", "Vie\Vie.vcxproj", "{FF99786C-FD10-460B-8FC1-B7194E762C50}"
+	ProjectSection(ProjectDependencies) = postProject
+		{AAEBFFCC-6F1C-341E-B9E4-808EB85391EF} = {AAEBFFCC-6F1C-341E-B9E4-808EB85391EF}
+		{05356ED2-F36A-37EE-A73C-A68D066DB23A} = {05356ED2-F36A-37EE-A73C-A68D066DB23A}
+		{FF03FBD3-D104-30A4-94B4-6992DA2599AD} = {FF03FBD3-D104-30A4-94B4-6992DA2599AD}
+		{BFCD26EC-16B2-39CD-8F9A-803DE2293AE3} = {BFCD26EC-16B2-39CD-8F9A-803DE2293AE3}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "elements", "..\dependencies\cycfi\elements\build\lib\elements.vcxproj", "{FF03FBD3-D104-30A4-94B4-6992DA2599AD}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "base", "..\dependencies\steinberg\vst3sdk-3.7.2\build\base\base.vcxproj", "{05356ED2-F36A-37EE-A73C-A68D066DB23A}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pluginterfaces", "..\dependencies\steinberg\vst3sdk-3.7.2\build\pluginterfaces\pluginterfaces.vcxproj", "{BFCD26EC-16B2-39CD-8F9A-803DE2293AE3}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sdk", "..\dependencies\steinberg\vst3sdk-3.7.2\build\public.sdk\sdk.vcxproj", "{AAEBFFCC-6F1C-341E-B9E4-808EB85391EF}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "VST sdk", "VST sdk", "{F3A414FA-E41F-412B-AD46-77B9620E8659}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "cycfi", "cycfi", "{C189DFD7-76F1-447D-94BA-320AF6A40FEB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
-		Debug|x86 = Debug|x86
 		Release|x64 = Release|x64
-		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{FF99786C-FD10-460B-8FC1-B7194E762C50}.Debug|x64.ActiveCfg = Debug|x64
 		{FF99786C-FD10-460B-8FC1-B7194E762C50}.Debug|x64.Build.0 = Debug|x64
-		{FF99786C-FD10-460B-8FC1-B7194E762C50}.Debug|x86.ActiveCfg = Debug|Win32
-		{FF99786C-FD10-460B-8FC1-B7194E762C50}.Debug|x86.Build.0 = Debug|Win32
 		{FF99786C-FD10-460B-8FC1-B7194E762C50}.Release|x64.ActiveCfg = Release|x64
 		{FF99786C-FD10-460B-8FC1-B7194E762C50}.Release|x64.Build.0 = Release|x64
-		{FF99786C-FD10-460B-8FC1-B7194E762C50}.Release|x86.ActiveCfg = Release|Win32
-		{FF99786C-FD10-460B-8FC1-B7194E762C50}.Release|x86.Build.0 = Release|Win32
+		{FF03FBD3-D104-30A4-94B4-6992DA2599AD}.Debug|x64.ActiveCfg = Debug|x64
+		{FF03FBD3-D104-30A4-94B4-6992DA2599AD}.Debug|x64.Build.0 = Debug|x64
+		{FF03FBD3-D104-30A4-94B4-6992DA2599AD}.Release|x64.ActiveCfg = Release|x64
+		{FF03FBD3-D104-30A4-94B4-6992DA2599AD}.Release|x64.Build.0 = Release|x64
+		{05356ED2-F36A-37EE-A73C-A68D066DB23A}.Debug|x64.ActiveCfg = Debug|x64
+		{05356ED2-F36A-37EE-A73C-A68D066DB23A}.Debug|x64.Build.0 = Debug|x64
+		{05356ED2-F36A-37EE-A73C-A68D066DB23A}.Release|x64.ActiveCfg = Release|x64
+		{05356ED2-F36A-37EE-A73C-A68D066DB23A}.Release|x64.Build.0 = Release|x64
+		{BFCD26EC-16B2-39CD-8F9A-803DE2293AE3}.Debug|x64.ActiveCfg = Debug|x64
+		{BFCD26EC-16B2-39CD-8F9A-803DE2293AE3}.Debug|x64.Build.0 = Debug|x64
+		{BFCD26EC-16B2-39CD-8F9A-803DE2293AE3}.Release|x64.ActiveCfg = Release|x64
+		{BFCD26EC-16B2-39CD-8F9A-803DE2293AE3}.Release|x64.Build.0 = Release|x64
+		{AAEBFFCC-6F1C-341E-B9E4-808EB85391EF}.Debug|x64.ActiveCfg = Debug|x64
+		{AAEBFFCC-6F1C-341E-B9E4-808EB85391EF}.Debug|x64.Build.0 = Debug|x64
+		{AAEBFFCC-6F1C-341E-B9E4-808EB85391EF}.Release|x64.ActiveCfg = Release|x64
+		{AAEBFFCC-6F1C-341E-B9E4-808EB85391EF}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{FF03FBD3-D104-30A4-94B4-6992DA2599AD} = {C189DFD7-76F1-447D-94BA-320AF6A40FEB}
+		{05356ED2-F36A-37EE-A73C-A68D066DB23A} = {F3A414FA-E41F-412B-AD46-77B9620E8659}
+		{BFCD26EC-16B2-39CD-8F9A-803DE2293AE3} = {F3A414FA-E41F-412B-AD46-77B9620E8659}
+		{AAEBFFCC-6F1C-341E-B9E4-808EB85391EF} = {F3A414FA-E41F-412B-AD46-77B9620E8659}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AADB989B-8ACC-4B58-8AE9-BECC4C76C4E8}

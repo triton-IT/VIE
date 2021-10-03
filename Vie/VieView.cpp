@@ -6,7 +6,7 @@
 #include "MinSizeModel.hpp"
 #include "StretchModel.hpp"
 #include "TileModel.hpp"
-#include "MarginModel.hpp"
+#include "MarginModel.h"
 #include "PaneModel.hpp"
 #include "SliderModel.hpp"
 #include "SliderLabelsModel.hpp"
@@ -40,15 +40,12 @@ namespace live::tritone::vie {
 
 	auto VieView::deserialise() {
 		DLOG("Starting deserialise.");
+
 		std::ifstream uiJsonFile(contentPath + "ui.json");
 		nlohmann::json uiJson;
 		uiJsonFile >> uiJson;
 
 		deserialiseUI(uiJson);
-	}
-
-	auto VieView::buildUI(std::map<std::string, std::string> uiMap) {
-
 	}
 
 	void VieView::deserialiseUI(nlohmann::json& json)

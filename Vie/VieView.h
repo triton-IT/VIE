@@ -42,10 +42,6 @@ namespace live::tritone::vie {
 		int width_;
 		int height_;
 
-		std::shared_ptr<cycfi::elements::element> rootElement;
-
-		auto buildUI(std::map<std::string, std::string> uiMap);
-
 		auto deserialise();
 		void deserialiseUI(nlohmann::json& elementJson);
 	};

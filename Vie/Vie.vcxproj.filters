@@ -22,6 +22,9 @@
     <ClCompile Include="Logger.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="MarginModel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
@@ -45,7 +48,7 @@
     <ClInclude Include="Third-parties\json.hpp">
       <Filter>Header Files\Third parties</Filter>
     </ClInclude>
-    <ClInclude Include="MarginModel.hpp">
+    <ClInclude Include="MarginModel.h">
       <Filter>Header Files\UI model</Filter>
     </ClInclude>
     <ClInclude Include="PaneModel.hpp">
@@ -84,12 +87,14 @@
     <ClInclude Include="DialModel.hpp">
       <Filter>Header Files\UI model</Filter>
     </ClInclude>
-    <ClInclude Include="ColorModel.hpp" />
     <ClInclude Include="Model.hpp">
       <Filter>Header Files\UI model</Filter>
     </ClInclude>
     <ClInclude Include="Logger.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ColorModel.hpp">
+      <Filter>Header Files\UI model</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

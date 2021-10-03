@@ -6,10 +6,10 @@
 #include "DialModel.hpp"
 
 namespace live::tritone::vie::ui::model {
+	using htile_composite = cycfi::elements::composite<std::vector<cycfi::elements::element_ptr>, cycfi::elements::htile_element>;
+
 	struct TileModel : Model {
 		std::list<std::string> childrenIds;
-
-		using htile_composite = cycfi::elements::composite<std::vector<cycfi::elements::element_ptr>, cycfi::elements::htile_element>;
 
 		static auto deserialize(nlohmann::json& json) {
 			auto children = json["children"];
