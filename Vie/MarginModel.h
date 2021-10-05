@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Third-parties/json.hpp"
+#include <json.hpp>
 
 #include "TileModel.hpp"
 #include "infra/support.hpp"

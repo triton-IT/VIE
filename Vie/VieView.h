@@ -3,7 +3,7 @@
 #include <pluginterfaces\gui\iplugview.h>
 #include <elements.hpp>
 
-#include "Third-parties/json.hpp"
+#include <json.hpp>
 
 #include "FrequencyParameter.h"
 

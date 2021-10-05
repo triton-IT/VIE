@@ -8,7 +8,7 @@
 #include <q/fx/lowpass.hpp>
 #include <q/fx/waveshaper.hpp>
 
-#include "Third-parties/json.hpp"
+#include <json.hpp>
 
 #include <map>
 
