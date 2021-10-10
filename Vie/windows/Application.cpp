@@ -1,7 +1,7 @@
 #include <Windows.h>
 
-#include "Application.h"
-#include "Logger.h"
+#include "../Application.h"
+#include "../Logger.h"
 
 extern "C" {
 	bool InitDll()

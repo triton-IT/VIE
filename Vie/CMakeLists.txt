@@ -56,7 +56,7 @@ set(ALL_FILES
 )
 
 if( WIN32 )
-	list(APPEND ALL_FILES "Application.cpp")
+	list(APPEND ALL_FILES "windows/Application.cpp")
 endif()
 
 # Target
@@ -82,7 +82,6 @@ target_include_directories(${PROJECT_NAME} PUBLIC
     "${CYCFI_Q_DIR}/q_io/include;"
 	"${NLOHMANN_JSON_DIR}"
     "${STEINBERG_VST3SDK_DIR}/vst3sdk;"
-    "${STEINBERG_VST3SDK_DIR}/vst3sdk/vstgui4;"
 )
 
 # Compile definitions
@@ -130,26 +129,30 @@ if(MSVC)
     )
 endif()
 
-# Post build events
-#add_custom_command(
-#    TARGET ${PROJECT_NAME}
-#    POST_BUILD
-#    COMMAND   $<CONFIG:Debug> setlocal
-#    COMMAND   $<CONFIG:Debug> ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_LIST_DIR}/Vie.ico ${CMAKE_CURRENT_BINARY_DIR}/Vie.ico
-#    COMMAND   $<CONFIG:Debug> ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_LIST_DIR}/desktop.ini ${CMAKE_CURRENT_BINARY_DIR}/desktop.ini
-#    COMMAND   $<CONFIG:Debug> ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_LIST_DIR}/ui.json ${CMAKE_CURRENT_BINARY_DIR}/ui.json
-#    COMMAND   $<CONFIG:Debug> ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/Vie/$<CONFIG>/${PROJECT_NAME}.dll ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.vst3
-#    COMMAND   $<CONFIG:Debug> attrib +s ${CMAKE_CURRENT_BINARY_DIR}/Vie.ico
-#    COMMAND   $<CONFIG:Debug> attrib +s ${CMAKE_CURRENT_BINARY_DIR}/desktop.ini
-#    COMMAND   $<CONFIG:Debug> attrib +s ${CMAKE_CURRENT_BINARY_DIR}/ui.json
-#    COMMAND   $<CONFIG:Debug> attrib +s ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.vst3
-#    COMMAND   $<CONFIG:Debug> ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.vst3 "$ENV{ProgramW6432}/Common Files/VST3/${PROJECT_NAME}/${PROJECT_NAME}.vst3"
-#    COMMAND   $<CONFIG:Debug> ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_BINARY_DIR}/Vie.ico "$ENV{ProgramW6432}/Common Files/VST3/${PROJECT_NAME}/Vie.ico"
-#    COMMAND   $<CONFIG:Debug> ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_BINARY_DIR}/desktop.ini "$ENV{ProgramW6432}/Common Files/VST3/${PROJECT_NAME}/desktop.ini"
-#    COMMAND   $<CONFIG:Debug> ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_BINARY_DIR}/ui.json "$ENV{ProgramW6432}/Common Files/VST3/${PROJECT_NAME}/ui.json"
-#    COMMAND   $<CONFIG:Debug> attrib +s "$ENV{ProgramW6432}/Common Files/VST3/${PROJECT_NAME}"
-#    COMMAND   $<CONFIG:Debug> endlocal
-#)
+# Copy built VST to VST3 system folder
+if( COPY_TO_VST_FOLDER )
+	if( WIN32 )
+		add_custom_command(
+			TARGET ${PROJECT_NAME}
+			POST_BUILD
+			COMMAND   setlocal
+			COMMAND   ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_LIST_DIR}/Vie.ico ${CMAKE_CURRENT_BINARY_DIR}/Vie.ico
+			COMMAND   ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_LIST_DIR}/desktop.ini ${CMAKE_CURRENT_BINARY_DIR}/desktop.ini
+			COMMAND   ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_LIST_DIR}/ui.json ${CMAKE_CURRENT_BINARY_DIR}/ui.json
+			COMMAND   ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/Vie/$<CONFIG>/${PROJECT_NAME}.dll ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.vst3
+			COMMAND   attrib +s ${CMAKE_CURRENT_BINARY_DIR}/Vie.ico
+			COMMAND   attrib +s ${CMAKE_CURRENT_BINARY_DIR}/desktop.ini
+			COMMAND   attrib +s ${CMAKE_CURRENT_BINARY_DIR}/ui.json
+			COMMAND   attrib +s ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.vst3
+			COMMAND   ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.vst3 "$ENV{ProgramW6432}/Common Files/VST3/${PROJECT_NAME}/${PROJECT_NAME}.vst3"
+			COMMAND   ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_BINARY_DIR}/Vie.ico "$ENV{ProgramW6432}/Common Files/VST3/${PROJECT_NAME}/Vie.ico"
+			COMMAND   ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_BINARY_DIR}/desktop.ini "$ENV{ProgramW6432}/Common Files/VST3/${PROJECT_NAME}/desktop.ini"
+			COMMAND   ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_BINARY_DIR}/ui.json "$ENV{ProgramW6432}/Common Files/VST3/${PROJECT_NAME}/ui.json"
+			COMMAND   attrib +s "$ENV{ProgramW6432}/Common Files/VST3/${PROJECT_NAME}"
+			COMMAND   endlocal
+		)
+	endif()
+endif()
 
 # Dependencies
 add_dependencies(${PROJECT_NAME}
