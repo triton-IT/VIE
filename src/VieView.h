@@ -1,16 +1,19 @@
 #pragma once
 
+#include "VulkanEngine.h"
 #include <pluginterfaces\gui\iplugview.h>
-#include <elements.hpp>
 
-#include <json.hpp>
+#ifdef WIN32
+#include <Windows.h>
+#endif // WIN32
+
+//#include <json.hpp>
 
 #include "FrequencyParameter.h"
 
 namespace live::tritone::vie {
 	class VieView : public Steinberg::IPlugView
 	{
-
 	public:
 		VieView(FrequencyParameter* frequencyParameter);
 		~VieView();
@@ -34,7 +37,6 @@ namespace live::tritone::vie {
 	private:
 		Steinberg::uint32 nbRef_;
 		Steinberg::IPlugFrame* frame_;
-		cycfi::elements::view* view_;
 		void* parent_;
 
 		FrequencyParameter* frequencyParameter_;
@@ -43,6 +45,8 @@ namespace live::tritone::vie {
 		int height_;
 
 		auto deserialise();
-		void deserialiseUI(nlohmann::json& elementJson);
+
+		VulkanEngine vulkanEngine_;
+		//void deserialiseUI(nlohmann::json& elementJson);
 	};
 }

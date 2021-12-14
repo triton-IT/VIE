@@ -18,4 +18,3 @@ namespace live::tritone::vie::utils {
 		bool autoFlush_;
 	};
 }
-

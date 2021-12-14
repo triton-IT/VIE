@@ -46,17 +46,11 @@ add_library(${PROJECT_NAME} SHARED ${ALL_FILES})
 message(STATUS "VIE> C++> Setting-up dependencies")
 add_dependencies(${PROJECT_NAME}
     tinyobjloader
-	#vk-bootstrap
 	base
 	pluginterfaces
 	sdk
 	diligent_core
 )
-
-#add_compile_definitions(VK_USE_PLATFORM_WIN32_KHR)
-
-#target_include_directories(${PROJECT_NAME} PUBLIC ${Vulkan_INCLUDE_DIRS})
-#target_link_libraries(${PROJECT_NAME} Vulkan::Vulkan)
 
 message(STATUS "VIE> C++> Linking-up Steinberg VST SDK")
 target_link_libraries(${PROJECT_NAME} base pluginterfaces sdk)
@@ -64,33 +58,15 @@ target_link_libraries(${PROJECT_NAME} base pluginterfaces sdk)
 message(STATUS "VIE> C++> Linking-up tinyObjLoader")
 target_link_libraries(${PROJECT_NAME} tinyobjloader)
 
-#message(STATUS "VIE> C++> Linking-up Vulkan Memory Allocator")
-#target_link_libraries(${PROJECT_NAME} vk_mem_alloc)
-
-#message(STATUS "VIE> C++> Linking-up OpenGL Mathematics")
-#target_link_libraries(${PROJECT_NAME} glm)
-
 message(STATUS "VIE> C++> Linking-up STB")
 target_link_libraries(${PROJECT_NAME} stb)
-
-#message(STATUS "VIE> C++> Linking-up vk-bootstrap")
-#target_link_libraries(${PROJECT_NAME} vk-bootstrap)
 
 message(STATUS "VIE> C++> Linking-up cycfi Q")
 target_link_libraries(${PROJECT_NAME} cycfi_q)
 
 message(STATUS "VIE> C++> Linking-up Diligent engine")
-#target_compile_options(${PROJECT_NAME} PRIVATE -DUNICODE -DENGINE_DLL)
-#target_include_directories(${PROJECT_NAME} PRIVATE "DiligentCore")
 
-target_link_libraries(${PROJECT_NAME}
-#PRIVATE
-    #Diligent-GraphicsEngineD3D11-shared
-    #Diligent-GraphicsEngineOpenGL-shared
-    #Diligent-GraphicsEngineD3D12-shared
-    Diligent-GraphicsEngineVk-shared
-)
-#copy_required_dlls(${PROJECT_NAME})
+target_link_libraries(${PROJECT_NAME} Diligent-GraphicsEngineVk-shared)
 
 # Copy built VST to VST3 system folder
 if( DEPLOY_TO_VST_FOLDER )

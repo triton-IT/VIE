@@ -8,8 +8,6 @@
 #include <q/fx/lowpass.hpp>
 #include <q/fx/waveshaper.hpp>
 
-#include <json.hpp>
-
 #include <map>
 
 namespace live::tritone::vie {

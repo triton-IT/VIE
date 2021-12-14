@@ -1,17 +1,4 @@
 #include "VieView.h"
-#include "BasicThumbModel.hpp"
-#include "BasicTrackModel.hpp"
-#include "ColorModel.hpp"
-#include "AlignModel.hpp"
-#include "MinSizeModel.hpp"
-#include "StretchModel.hpp"
-#include "TileModel.hpp"
-#include "MarginModel.h"
-#include "PaneModel.hpp"
-#include "SliderModel.hpp"
-#include "SliderLabelsModel.hpp"
-#include "SliderMarksModel.hpp"
-#include "MinSizeModel.hpp"
 
 #include "Application.h"
 
@@ -19,8 +6,6 @@
 
 using namespace Steinberg;
 using namespace Steinberg::Vst;
-using namespace cycfi::elements;
-using namespace live::tritone::vie::ui::model;
 
 namespace live::tritone::vie {
 	VieView::VieView(FrequencyParameter* frequencyParameter) :
@@ -29,7 +14,7 @@ namespace live::tritone::vie {
 		width_(1024),
 		height_(600),
 		frequencyParameter_(frequencyParameter),
-		view_(nullptr),
+		//view_(nullptr),
 		parent_(nullptr)
 	{
 	}
@@ -41,14 +26,14 @@ namespace live::tritone::vie {
 	auto VieView::deserialise() {
 		DLOG("Starting deserialise.");
 
-		std::ifstream uiJsonFile(contentPath + "ui.json");
+		/*std::ifstream uiJsonFile(contentPath + "ui.json");
 		nlohmann::json uiJson;
 		uiJsonFile >> uiJson;
 
-		deserialiseUI(uiJson);
+		deserialiseUI(uiJson);*/
 	}
 
-	void VieView::deserialiseUI(nlohmann::json& json)
+	/*void VieView::deserialiseUI(nlohmann::json& json)
 	{
 		auto root = json["root"];
 		auto type = root["type"].get<std::string>();
@@ -65,7 +50,7 @@ namespace live::tritone::vie {
 				background
 			);
 		}
-	}
+	}*/
 
 	tresult PLUGIN_API VieView::queryInterface(const TUID iid, void** obj)
 	{
@@ -101,23 +86,50 @@ namespace live::tritone::vie {
 	{
 		parent_ = parent;
 
-#ifdef WIN32
-		view_ = new view((HWND) parent);
-#elif
-		view_ = new view(parent);
-#endif // WIN32
+		vulkanEngine_.init(parent_);
 
-		deserialise();
+		vulkanEngine_.run();
+
+
+//#ifdef WIN32
+//		//view_ = new view((HWND) parent);
+//		GetClientRect(h, &bounds);
+//		_view = make_window(this, h, bounds);
+//
+//		HWND _view = CreateWindowW(
+//			L"ElementsView",
+//			nullptr,
+//			WS_CHILD | WS_VISIBLE,
+//			0, 0, 0, 0,
+//			parent, nullptr, nullptr,
+//			nullptr
+//		);
+//
+//		MoveWindow(
+//			_view, bounds.left, bounds.top,
+//			bounds.right - bounds.left, bounds.bottom - bounds.top,
+//			true // repaint
+//		);
+//
+//		view_ = _view;
+//#elif
+//		view_ = new view(parent);
+//#endif // WIN32
+
+		//deserialise();
+
 
 		return kResultTrue;
 	}
 
 	tresult PLUGIN_API VieView::removed()
 	{
-		if (view_ != nullptr) {
+		/*if (view_ != nullptr) {
 			delete view_;
 			view_ = nullptr;
-		}
+		}*/
+
+		vulkanEngine_.cleanup();
 
 		return kResultTrue;
 	}
@@ -144,7 +156,7 @@ namespace live::tritone::vie {
 		size->right = width_;
 		size->bottom = height_;
 
-		RECT bounds;
+		/*RECT bounds;
 		GetClientRect((HWND)parent_, &bounds);
 
 		MoveWindow(
@@ -152,7 +164,7 @@ namespace live::tritone::vie {
 			0, 0,
 			bounds.right,
 			bounds.bottom,
-			TRUE);
+			TRUE);*/
 
 		return kResultOk;
 	}
