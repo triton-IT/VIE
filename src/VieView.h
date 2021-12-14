@@ -1,6 +1,5 @@
 #pragma once
 
-#include "VulkanEngine.h"
 #include <pluginterfaces\gui\iplugview.h>
 
 #ifdef WIN32
@@ -46,7 +45,6 @@ namespace live::tritone::vie {
 
 		auto deserialise();
 
-		VulkanEngine vulkanEngine_;
 		//void deserialiseUI(nlohmann::json& elementJson);
 	};
 }

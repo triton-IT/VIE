@@ -86,10 +86,6 @@ namespace live::tritone::vie {
 	{
 		parent_ = parent;
 
-		vulkanEngine_.init(parent_);
-
-		vulkanEngine_.run();
-
 
 //#ifdef WIN32
 //		//view_ = new view((HWND) parent);
@@ -128,8 +124,6 @@ namespace live::tritone::vie {
 			delete view_;
 			view_ = nullptr;
 		}*/
-
-		vulkanEngine_.cleanup();
 
 		return kResultTrue;
 	}
