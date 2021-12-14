@@ -14,18 +14,22 @@ if(NOT CMAKE_VS_PLATFORM_NAME)
     set(CMAKE_VS_PLATFORM_NAME "x64")
 endif()
 
-# Configure elements
-if( WIN32)
-	set(ELEMENTS_HOST_UI_LIBRARY "win32")
-elseif( APPLE )
-	set(ELEMENTS_HOST_UI_LIBRARY "cocoa")
-elseif( UNIX )
-	set(ELEMENTS_HOST_UI_LIBRARY "gtk")
-endif()
+#message(STATUS "VIE> Adding Vulkan SDK")
+#find_package(Vulkan REQUIRED FATAL_ERROR)
 
 set(ELEMENTS_BUILD_EXAMPLES OFF)
 
-add_subdirectory(${CYCFI_ELEMENTS_DIR}/ ${CMAKE_BINARY_DIR}/elements)
+message(STATUS "VIE> Adding VK-Bootstrap")
+add_subdirectory(third_party/vk-bootstrap)
+
+message(STATUS "VIE> Adding Vulkan Memory Allocator")
+add_subdirectory(third_party/VulkanMemoryAllocator)
+
+message(STATUS "VIE> Adding Tinyobjloader")
+add_subdirectory(third_party/tinyobjloader)
+
+message(STATUS "VIE> Adding OpenGL Mathematics")
+add_subdirectory(third_party/glm)
 
 # Configure Steingberg VST3 SDK
 set(SMTG_ADD_VST3_PLUGINS_SAMPLES OFF CACHE BOOL "")
@@ -37,5 +41,5 @@ set(SMTG_CXX_STANDARD 17 CACHE STRING "")
 
 add_subdirectory(${STEINBERG_VST3SDK_DIR} ${CMAKE_BINARY_DIR}/vst_sdk)
 
-# Configure VIE
-add_subdirectory(Vie)
+message(STATUS "VIE> Adding main application")
+add_subdirectory(src)

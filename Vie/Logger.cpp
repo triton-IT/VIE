@@ -10,8 +10,10 @@
 
 namespace live::tritone::vie::utils {
 	void Logger::open(std::string fileName, bool autoFlush) {
-		logFile_.open(contentPath + fileName, std::ios::app);
+		//TODO: Don't have right to write to VST folder. So choose the right log solution
+		logFile_.open(std::string("D:\\") + fileName, std::ios::out);
 		autoFlush_ = autoFlush;
+		write("File opened");
 	}
 
 	void Logger::close() {

@@ -5,7 +5,7 @@
 
 extern "C" {
 	bool InitDll()
-	{
+	{		
 		return true;
 	}
 

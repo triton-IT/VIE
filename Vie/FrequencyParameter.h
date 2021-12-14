@@ -10,7 +10,7 @@ namespace live::tritone::vie {
 	public:
 		FrequencyParameter();
 
-		bool setNormalized(Steinberg::Vst::ParamValue v);
+		bool setNormalized(Steinberg::Vst::ParamValue v) override;
 
 		void toString(Steinberg::Vst::ParamValue normValue, Steinberg::Vst::String128 string) const SMTG_OVERRIDE;
 		bool fromString(const Steinberg::Vst::TChar* string, Steinberg::Vst::ParamValue& normValue) const SMTG_OVERRIDE;
