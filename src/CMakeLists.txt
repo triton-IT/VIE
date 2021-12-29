@@ -50,6 +50,7 @@ add_dependencies(${PROJECT_NAME}
 	pluginterfaces
 	sdk
 	diligent_core
+	Diligent-GraphicsEngineVk-static
 )
 
 message(STATUS "VIE> C++> Linking-up Steinberg VST SDK")
@@ -65,8 +66,11 @@ message(STATUS "VIE> C++> Linking-up cycfi Q")
 target_link_libraries(${PROJECT_NAME} cycfi_q)
 
 message(STATUS "VIE> C++> Linking-up Diligent engine")
-
-target_link_libraries(${PROJECT_NAME} Diligent-GraphicsEngineVk-shared)
+target_link_libraries(${PROJECT_NAME}
+    Diligent-Common
+    Diligent-GraphicsTools
+    Diligent-GraphicsEngineVk-static
+	)
 
 # Copy built VST to VST3 system folder
 if( DEPLOY_TO_VST_FOLDER )
@@ -75,7 +79,6 @@ if( DEPLOY_TO_VST_FOLDER )
 		add_custom_command(
 			TARGET ${PROJECT_NAME}
 			POST_BUILD
-			COMMAND   setlocal
 			COMMAND   ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_LIST_DIR}/Vie.ico ${CMAKE_CURRENT_BINARY_DIR}/Vie.ico
 			COMMAND   ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_LIST_DIR}/desktop.ini ${CMAKE_CURRENT_BINARY_DIR}/desktop.ini
 			COMMAND   ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_LIST_DIR}/ui.json ${CMAKE_CURRENT_BINARY_DIR}/ui.json
