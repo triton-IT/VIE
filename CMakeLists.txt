@@ -19,11 +19,14 @@ add_subdirectory(third_party/tinyobjloader)
 message(STATUS "VIE> Adding STB")
 add_subdirectory(third_party/stb)
 
-message(STATUS "VIE> Adding cycfi Q")
-add_subdirectory(third_party/cycfi_q)
+message(STATUS "VIE> Adding nuklear")
+add_subdirectory(third_party/nuklear)
 
 message(STATUS "VIE> Adding Diligent engine core")
 add_subdirectory(third_party/diligent_core)
+
+message(STATUS "VIE> Adding cycfi Q")
+add_subdirectory(third_party/cycfi_q)
 
 message(STATUS "VIE> Adding main application")
 add_subdirectory(src)

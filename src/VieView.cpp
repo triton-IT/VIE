@@ -1,6 +1,7 @@
 #include "VieView.h"
 
 #include "Application.h"
+#include <nuklear.h>
 
 #include <fstream>
 
@@ -10,11 +11,7 @@
 
 #include "EngineFactoryVk.h"
 
-#include "RenderDevice.h"
-#include "DeviceContext.h"
 #include "SwapChain.h"
-
-#include "RefCntAutoPtr.hpp"
 
 
 using namespace Steinberg;
@@ -66,17 +63,323 @@ void main(in  PSInput  PSIn,
 }
 )";
 
-
-class Tutorial00App
+LRESULT CALLBACK MessageProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
-public:
-	~Tutorial00App()
-	{
-		if (m_pImmediateContext)
-			m_pImmediateContext->Flush();
+
+	live::tritone::vie::VieView* vieView = (live::tritone::vie::VieView*)(LONG_PTR)GetWindowLongPtr(hwnd, GWLP_USERDATA);
+
+	if (vieView) {
+		vieView->HandleWin32Message(hwnd, msg, wparam, lparam);
 	}
 
-	bool InitializeDiligentEngine(HWND hWnd)
+	return DefWindowProc(hwnd, msg, wparam, lparam);
+}
+
+namespace live::tritone::vie {
+	VieView::VieView(FrequencyParameter* frequencyParameter) :
+		nbRef_(0),
+		frame_(nullptr),
+		width_(1024),
+		height_(600),
+		frequencyParameter_(frequencyParameter),
+		//view_(nullptr),
+		parent_(nullptr)
+	{
+	}
+
+	VieView::~VieView()
+	{
+	}
+
+	void VieView::HandleWin32Message(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
+		switch (msg)
+		{
+		case WM_KEYDOWN:
+		case WM_KEYUP:
+		case WM_SYSKEYDOWN:
+		case WM_SYSKEYUP:
+		{
+			int down = !((lparam >> 31) & 1);
+			int ctrl = GetKeyState(VK_CONTROL) & (1 << 15);
+
+			switch (wparam)
+			{
+			case VK_SHIFT:
+			case VK_LSHIFT:
+			case VK_RSHIFT:
+				nk_input_key(m_pNkCtx, NK_KEY_SHIFT, down);
+
+			case VK_DELETE:
+				nk_input_key(m_pNkCtx, NK_KEY_DEL, down);
+
+			case VK_RETURN:
+				nk_input_key(m_pNkCtx, NK_KEY_ENTER, down);
+
+			case VK_TAB:
+				nk_input_key(m_pNkCtx, NK_KEY_TAB, down);
+
+			case VK_LEFT:
+				if (ctrl)
+					nk_input_key(m_pNkCtx, NK_KEY_TEXT_WORD_LEFT, down);
+				else
+					nk_input_key(m_pNkCtx, NK_KEY_LEFT, down);
+
+			case VK_RIGHT:
+				if (ctrl)
+					nk_input_key(m_pNkCtx, NK_KEY_TEXT_WORD_RIGHT, down);
+				else
+					nk_input_key(m_pNkCtx, NK_KEY_RIGHT, down);
+
+			case VK_BACK:
+				nk_input_key(m_pNkCtx, NK_KEY_BACKSPACE, down);
+
+			case VK_HOME:
+				nk_input_key(m_pNkCtx, NK_KEY_TEXT_START, down);
+				nk_input_key(m_pNkCtx, NK_KEY_SCROLL_START, down);
+
+			case VK_END:
+				nk_input_key(m_pNkCtx, NK_KEY_TEXT_END, down);
+				nk_input_key(m_pNkCtx, NK_KEY_SCROLL_END, down);
+
+			case VK_NEXT:
+				nk_input_key(m_pNkCtx, NK_KEY_SCROLL_DOWN, down);
+
+			case VK_PRIOR:
+				nk_input_key(m_pNkCtx, NK_KEY_SCROLL_UP, down);
+
+			case 'C':
+				if (ctrl)
+				{
+					nk_input_key(m_pNkCtx, NK_KEY_COPY, down);
+				}
+				break;
+
+			case 'V':
+				if (ctrl)
+				{
+					nk_input_key(m_pNkCtx, NK_KEY_PASTE, down);
+				}
+				break;
+
+			case 'X':
+				if (ctrl)
+				{
+					nk_input_key(m_pNkCtx, NK_KEY_CUT, down);
+				}
+				break;
+
+			case 'Z':
+				if (ctrl)
+				{
+					nk_input_key(m_pNkCtx, NK_KEY_TEXT_UNDO, down);
+				}
+				break;
+
+			case 'R':
+				if (ctrl)
+				{
+					nk_input_key(m_pNkCtx, NK_KEY_TEXT_REDO, down);
+				}
+				break;
+			}
+		}
+
+		case WM_CHAR:
+			if (wparam >= 32)
+			{
+				nk_input_unicode(m_pNkCtx, (nk_rune)wparam);
+			}
+			break;
+
+		case WM_LBUTTONDOWN:
+			nk_input_button(m_pNkCtx, NK_BUTTON_LEFT, (short)LOWORD(lparam), (short)HIWORD(lparam), 1);
+			SetCapture(hwnd);
+
+		case WM_LBUTTONUP:
+			nk_input_button(m_pNkCtx, NK_BUTTON_DOUBLE, (short)LOWORD(lparam), (short)HIWORD(lparam), 0);
+			nk_input_button(m_pNkCtx, NK_BUTTON_LEFT, (short)LOWORD(lparam), (short)HIWORD(lparam), 0);
+			ReleaseCapture();
+
+		case WM_RBUTTONDOWN:
+			nk_input_button(m_pNkCtx, NK_BUTTON_RIGHT, (short)LOWORD(lparam), (short)HIWORD(lparam), 1);
+			SetCapture(hwnd);
+
+		case WM_RBUTTONUP:
+			nk_input_button(m_pNkCtx, NK_BUTTON_RIGHT, (short)LOWORD(lparam), (short)HIWORD(lparam), 0);
+			ReleaseCapture();
+
+		case WM_MBUTTONDOWN:
+			nk_input_button(m_pNkCtx, NK_BUTTON_MIDDLE, (short)LOWORD(lparam), (short)HIWORD(lparam), 1);
+			SetCapture(hwnd);
+
+		case WM_MBUTTONUP:
+			nk_input_button(m_pNkCtx, NK_BUTTON_MIDDLE, (short)LOWORD(lparam), (short)HIWORD(lparam), 0);
+			ReleaseCapture();
+
+		case WM_MOUSEWHEEL:
+			nk_input_scroll(m_pNkCtx, nk_vec2(0, (float)(short)HIWORD(wparam) / WHEEL_DELTA));
+
+		case WM_MOUSEMOVE:
+			nk_input_motion(m_pNkCtx, (short)LOWORD(lparam), (short)HIWORD(lparam));
+
+		case WM_LBUTTONDBLCLK:
+			nk_input_button(m_pNkCtx, NK_BUTTON_DOUBLE, (short)LOWORD(lparam), (short)HIWORD(lparam), 1);
+		}
+
+		//TODO: Find the proper event in VST SDK or move to a thread.
+		render();
+	}
+
+	tresult PLUGIN_API VieView::queryInterface(const TUID iid, void** obj)
+	{
+		if (::Steinberg::FUnknownPrivate::iidEqual(iid, ::FUnknown::iid)) {
+			addRef();
+			*obj = static_cast<VieView*>(this);
+			return ::Steinberg::kResultOk;
+		}
+
+		return kResultFalse;
+	}
+
+	uint32 PLUGIN_API VieView::addRef()
+	{
+		return ++nbRef_;
+	}
+
+	uint32 PLUGIN_API VieView::release()
+	{
+		return --nbRef_;
+	}
+
+	tresult PLUGIN_API VieView::isPlatformTypeSupported(FIDString type)
+	{
+		if (strcmp(type, "HWND") == 0) {
+			return kResultTrue;
+		}
+
+		return kResultFalse;
+	}
+
+	tresult PLUGIN_API VieView::attached(void* parent, FIDString /*type*/)
+	{
+		parent_ = parent;
+
+		// Register our window class
+		WNDCLASSEX wcex = { sizeof(WNDCLASSEX), CS_HREDRAW | CS_VREDRAW, MessageProc,
+						   0L, 0L, GetModuleHandle(NULL), NULL, NULL, NULL, NULL, L"SampleApp", NULL };
+		RegisterClassEx(&wcex);
+
+		HWND hWnd;
+		RECT WndRect = { 0, 0, 1024, 768 };
+
+		std::wstringstream TitleSS;
+		TitleSS << L"Tutorial15: Multiple Windows";
+		auto Title = TitleSS.str();
+
+		AdjustWindowRect(&WndRect, WS_OVERLAPPEDWINDOW, FALSE);
+		hWnd = CreateWindow(L"SampleApp", Title.c_str(),
+			WS_CHILD | WS_VISIBLE, 
+			0, 0,
+			WndRect.right - WndRect.left, WndRect.bottom - WndRect.top,
+			(HWND) parent, NULL, GetModuleHandle(NULL), NULL);
+		
+		if (!hWnd)
+		{
+			MessageBox(NULL, L"Cannot create window", L"Error", MB_OK | MB_ICONERROR);
+			return -1;
+		}
+
+		EnableWindow(hWnd, false);
+		SetWindowLongPtr(hWnd, GWLP_USERDATA, (__int3264)(LONG_PTR)this);
+
+		ShowWindow(hWnd, 1);
+		UpdateWindow(hWnd);
+
+		if (!InitializeDiligentEngine(hWnd))
+			return -1;
+
+		CreateResources();
+
+		InitializeNuklear();
+
+		return kResultTrue;
+	}
+
+	tresult PLUGIN_API VieView::removed()
+	{
+		return kResultTrue;
+	}
+
+	tresult PLUGIN_API VieView::onWheel(float /*distance*/)
+	{
+		return kResultOk;
+	}
+
+	tresult PLUGIN_API VieView::onKeyDown(char16 /*key*/, int16 /*keyCode*/, int16 /*modifiers*/)
+	{
+		return kResultOk;
+	}
+
+	tresult PLUGIN_API VieView::onKeyUp(char16 /*key*/, int16 /*keyCode*/, int16 /*modifiers*/)
+	{
+		return kResultOk;
+	}
+
+	tresult PLUGIN_API VieView::getSize(ViewRect* size)
+	{
+		size->left = 0;
+		size->top = 0;
+		size->right = width_;
+		size->bottom = height_;
+
+		return kResultOk;
+	}
+
+	tresult PLUGIN_API VieView::onSize(ViewRect* newSize)
+	{
+		if (m_Window.pSwapChain)
+			m_Window.pSwapChain->Resize(newSize->getWidth(), newSize->getHeight());
+
+		return kResultOk;
+	}
+
+	tresult PLUGIN_API VieView::onFocus(TBool /*state*/)
+	{
+		return kResultOk;
+	}
+
+	tresult PLUGIN_API VieView::setFrame(IPlugFrame* frame)
+	{
+		frame_ = frame;
+
+		return kResultOk;
+	}
+
+	tresult PLUGIN_API VieView::canResize()
+	{
+		return kResultTrue;
+	}
+	
+	tresult PLUGIN_API VieView::checkSizeConstraint(ViewRect* /*rect*/)
+	{
+		return kResultOk;
+	}
+
+	Steinberg::tresult PLUGIN_API VieView::setState(IBStream* state) {
+		return kResultTrue;
+	}
+
+	Steinberg::tresult PLUGIN_API VieView::getState(IBStream* state) {
+		return kResultTrue;
+
+	}
+
+	void VieView::render() {
+		Render();
+		Present();
+	}
+
+	bool VieView::InitializeDiligentEngine(HWND hWnd)
 	{
 		m_Window.hWnd = hWnd;
 
@@ -97,7 +400,7 @@ public:
 		return true;
 	}
 
-	void CreateResources()
+	void VieView::CreateResources()
 	{
 		// Pipeline state object encompasses configuration of all GPU stages
 
@@ -158,7 +461,26 @@ public:
 		m_pDevice->CreateGraphicsPipelineState(PSOCreateInfo, &m_pPSO);
 	}
 
-	void Render()
+	void VieView::InitializeNuklear() {
+		constexpr Uint32 NuklearMaxVBSize = 512 * 1024;
+		constexpr Uint32 NuklearMaxIBSize = 128 * 1024;
+
+		const auto& SCDesc = m_Window.pSwapChain->GetDesc();
+
+		m_pNkDlgCtx = nk_diligent_init(m_pDevice, SCDesc.Width, SCDesc.Height, SCDesc.ColorBufferFormat, SCDesc.DepthBufferFormat, NuklearMaxVBSize, NuklearMaxIBSize);
+		m_pNkCtx = nk_diligent_get_nk_ctx(m_pNkDlgCtx);
+
+		nk_font_atlas* atlas = nullptr;
+		nk_diligent_font_stash_begin(m_pNkDlgCtx, &atlas);
+		nk_diligent_font_stash_end(m_pNkDlgCtx, m_pImmediateContext);
+
+		//set_style(m_pNkCtx, THEME_WHITE);
+		//set_style(m_pNkCtx, THEME_RED);
+		//set_style(m_pNkCtx, THEME_BLUE);
+		//set_style(m_pNkCtx, THEME_DARK);
+	}
+
+	void VieView::Render()
 	{
 		auto& WndInfo = m_Window;
 
@@ -180,237 +502,9 @@ public:
 		m_pImmediateContext->Draw(drawAttrs);
 	}
 
-	void Present()
+	void VieView::Present()
 	{
 		if (m_Window.pSwapChain)
 			m_Window.pSwapChain->Present();
-	}
-
-	void WindowResize(HWND hWnd, Uint32 Width, Uint32 Height)
-	{
-		if (m_Window.hWnd == hWnd)
-		{
-			if (m_Window.pSwapChain)
-				m_Window.pSwapChain->Resize(Width, Height);
-		}
-	}
-
-private:
-	RefCntAutoPtr<IRenderDevice>  m_pDevice;
-	RefCntAutoPtr<IDeviceContext> m_pImmediateContext;
-	RefCntAutoPtr<IPipelineState> m_pPSO;
-	struct WindowInfo
-	{
-		RefCntAutoPtr<ISwapChain> pSwapChain;
-		HWND                      hWnd;
-	};
-	WindowInfo m_Window;
-};
-
-std::unique_ptr<Tutorial00App> g_pTheApp;
-
-// Called every time the NativeNativeAppBase receives a message
-LRESULT CALLBACK MessageProc(HWND wnd, UINT message, WPARAM wParam, LPARAM lParam)
-{
-	switch (message)
-	{
-	case WM_PAINT:
-	{
-		PAINTSTRUCT ps;
-		BeginPaint(wnd, &ps);
-		EndPaint(wnd, &ps);
-		return 0;
-	}
-	case WM_SIZE: // Window size has been changed
-		if (g_pTheApp)
-		{
-			g_pTheApp->WindowResize(wnd, LOWORD(lParam), HIWORD(lParam));
-		}
-		return 0;
-
-	case WM_CHAR:
-		if (wParam == VK_ESCAPE)
-			PostQuitMessage(0);
-		return 0;
-
-	case WM_DESTROY:
-		PostQuitMessage(0);
-		return 0;
-
-	case WM_GETMINMAXINFO:
-	{
-		LPMINMAXINFO lpMMI = (LPMINMAXINFO)lParam;
-		lpMMI->ptMinTrackSize.x = 320;
-		lpMMI->ptMinTrackSize.y = 240;
-		return 0;
-	}
-
-	default:
-		return DefWindowProc(wnd, message, wParam, lParam);
-	}
-}
-
-namespace live::tritone::vie {
-	VieView::VieView(FrequencyParameter* frequencyParameter) :
-		nbRef_(0),
-		frame_(nullptr),
-		width_(1024),
-		height_(600),
-		frequencyParameter_(frequencyParameter),
-		//view_(nullptr),
-		parent_(nullptr)
-	{
-	}
-
-	VieView::~VieView()
-	{
-	}
-
-	tresult PLUGIN_API VieView::queryInterface(const TUID iid, void** obj)
-	{
-		if (::Steinberg::FUnknownPrivate::iidEqual(iid, ::FUnknown::iid)) {
-			addRef();
-			*obj = static_cast<VieView*>(this);
-			return ::Steinberg::kResultOk;
-		}
-
-		return kResultFalse;
-	}
-
-	uint32 PLUGIN_API VieView::addRef()
-	{
-		return ++nbRef_;
-	}
-
-	uint32 PLUGIN_API VieView::release()
-	{
-		return --nbRef_;
-	}
-
-	tresult PLUGIN_API VieView::isPlatformTypeSupported(FIDString type)
-	{
-		if (strcmp(type, "HWND") == 0) {
-			return kResultTrue;
-		}
-
-		return kResultFalse;
-	}
-
-	tresult PLUGIN_API VieView::attached(void* parent, FIDString /*type*/)
-	{
-		parent_ = parent;
-		g_pTheApp.reset(new Tutorial00App);
-
-		// Register our window class
-		WNDCLASSEX wcex = { sizeof(WNDCLASSEX), CS_HREDRAW | CS_VREDRAW, MessageProc,
-						   0L, 0L, GetModuleHandle(NULL), NULL, NULL, NULL, NULL, L"SampleApp", NULL };
-		RegisterClassEx(&wcex);
-
-		HWND hWnd;
-		RECT WndRect = { 0, 0, 1024, 768 };
-
-		std::wstringstream TitleSS;
-		TitleSS << L"Tutorial15: Multiple Windows";
-		auto Title = TitleSS.str();
-
-		AdjustWindowRect(&WndRect, WS_OVERLAPPEDWINDOW, FALSE);
-		hWnd = CreateWindow(L"SampleApp", Title.c_str(),
-			WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT,
-			WndRect.right - WndRect.left, WndRect.bottom - WndRect.top, NULL, NULL, GetModuleHandle(NULL), NULL);
-		if (!hWnd)
-		{
-			MessageBox(NULL, L"Cannot create window", L"Error", MB_OK | MB_ICONERROR);
-			return -1;
-		}
-		ShowWindow(hWnd, 1);
-		UpdateWindow(hWnd);
-
-		if (!g_pTheApp->InitializeDiligentEngine(hWnd))
-			return -1;
-
-		g_pTheApp->CreateResources();
-
-		// Main message loop
-		MSG msg = { 0 };
-		while (WM_QUIT != msg.message)
-		{
-			if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
-			{
-				TranslateMessage(&msg);
-				DispatchMessage(&msg);
-			}
-			else
-			{
-				g_pTheApp->Render();
-				g_pTheApp->Present();
-			}
-		}
-
-		//g_pTheApp.reset();
-
-		return kResultTrue;
-	}
-
-	tresult PLUGIN_API VieView::removed()
-	{
-		return kResultTrue;
-	}
-
-	tresult PLUGIN_API VieView::onWheel(float /*distance*/)
-	{
-		return kResultOk;
-	}
-
-	tresult PLUGIN_API VieView::onKeyDown(char16 /*key*/, int16 /*keyCode*/, int16 /*modifiers*/)
-	{
-		return kResultOk;
-	}
-
-	tresult PLUGIN_API VieView::onKeyUp(char16 /*key*/, int16 /*keyCode*/, int16 /*modifiers*/)
-	{
-		return kResultOk;
-	}
-
-	tresult PLUGIN_API VieView::getSize(ViewRect* size)
-	{
-		size->left = 0;
-		size->top = 0;
-		size->right = width_;
-		size->bottom = height_;
-
-		return kResultOk;
-	}
-
-	tresult PLUGIN_API VieView::onSize(ViewRect* newSize)
-	{
-		//if (m_Window.hWnd == hWnd)
-		//{
-		//	if (m_Window.pSwapChain)
-		//		m_Window.pSwapChain->Resize(Width, Height);
-		//}
-
-		return kResultOk;
-	}
-
-	tresult PLUGIN_API VieView::onFocus(TBool /*state*/)
-	{
-		return kResultOk;
-	}
-
-	tresult PLUGIN_API VieView::setFrame(IPlugFrame* frame)
-	{
-		frame_ = frame;
-
-		return kResultOk;
-	}
-
-	tresult PLUGIN_API VieView::canResize()
-	{
-		return kResultFalse;
-	}
-	
-	tresult PLUGIN_API VieView::checkSizeConstraint(ViewRect* /*rect*/)
-	{
-		return kResultOk;
 	}
 } // namespace

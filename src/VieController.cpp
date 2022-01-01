@@ -71,14 +71,14 @@ namespace live::tritone::vie {
 		return kNotImplemented;
 	}
 
-	tresult PLUGIN_API VieController::setState(IBStream* /*state*/)
+	tresult PLUGIN_API VieController::setState(IBStream* state)
 	{
-		return kNotImplemented;
+		return view_->setState(state);
 	}
 
-	tresult PLUGIN_API VieController::getState(IBStream* /*state*/)
+	tresult PLUGIN_API VieController::getState(IBStream* state)
 	{
-		return kNotImplemented;
+		return view_->getState(state);
 	}
 
 	int32 PLUGIN_API VieController::getParameterCount()

@@ -1,12 +1,16 @@
 #pragma once
 
-#include <pluginterfaces\gui\iplugview.h>
+#include <pluginterfaces/gui/iplugview.h>
+#include <pluginterfaces/base/ibstream.h>
+
+#include "NkDiligent.h"
+#include "RenderDevice.h"
+#include "DeviceContext.h"
+#include "RefCntAutoPtr.hpp"
 
 #ifdef WIN32
 #include <Windows.h>
 #endif // WIN32
-
-//#include <json.hpp>
 
 #include "FrequencyParameter.h"
 
@@ -16,6 +20,7 @@ namespace live::tritone::vie {
 	public:
 		VieView(FrequencyParameter* frequencyParameter);
 		~VieView();
+		void HandleWin32Message(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam);
 
 		Steinberg::tresult PLUGIN_API queryInterface(const Steinberg::TUID iid, void** obj) SMTG_OVERRIDE;
 		virtual Steinberg::uint32 PLUGIN_API addRef() SMTG_OVERRIDE;
@@ -33,6 +38,13 @@ namespace live::tritone::vie {
 		virtual Steinberg::tresult PLUGIN_API canResize() SMTG_OVERRIDE;
 		virtual Steinberg::tresult PLUGIN_API checkSizeConstraint(Steinberg::ViewRect* rect) SMTG_OVERRIDE;
 
+		Steinberg::tresult PLUGIN_API setState(Steinberg::IBStream* state);
+		Steinberg::tresult PLUGIN_API getState(Steinberg::IBStream* state);
+
+		void InitializeNuklear();
+
+		void render();
+
 	private:
 		Steinberg::uint32 nbRef_;
 		Steinberg::IPlugFrame* frame_;
@@ -43,8 +55,22 @@ namespace live::tritone::vie {
 		int width_;
 		int height_;
 
-		auto deserialise();
+		Diligent::RefCntAutoPtr<Diligent::IRenderDevice>  m_pDevice;
+		Diligent::RefCntAutoPtr<Diligent::IDeviceContext> m_pImmediateContext;
+		Diligent::RefCntAutoPtr<Diligent::IPipelineState> m_pPSO;
+		struct WindowInfo
+		{
+			Diligent::RefCntAutoPtr<Diligent::ISwapChain> pSwapChain;
+			HWND                      hWnd;
+		};
+		WindowInfo m_Window;
 
-		//void deserialiseUI(nlohmann::json& elementJson);
+		nk_diligent_context* m_pNkDlgCtx = nullptr;
+		nk_context* m_pNkCtx = nullptr;
+
+		bool InitializeDiligentEngine(HWND hWnd);
+		void CreateResources();
+		void Render();
+		void Present();
 	};
 }

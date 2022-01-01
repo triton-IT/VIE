@@ -11,10 +11,10 @@ FetchContent_Declare(
 FetchContent_GetProperties(cycfi_q)
 if(NOT cycfi_q_POPULATED)
 	FetchContent_Populate(cycfi_q)
-	
-	message(STATUS "VIE> Cycfi Q> Add library")
-	add_library(cycfi_q INTERFACE)
 endif()
+	
+message(STATUS "VIE> Cycfi Q> Add library")
+add_library(cycfi_q INTERFACE)
 
 message(STATUS "VIE> Cycfi Q> Include directories: ${cycfi_q_SOURCE_DIR}/q_lib/include/ ${cycfi_q_SOURCE_DIR}/infra/include/")
 target_include_directories(cycfi_q INTERFACE ${cycfi_q_SOURCE_DIR}/q_lib/include/ ${cycfi_q_SOURCE_DIR}/infra/include/)

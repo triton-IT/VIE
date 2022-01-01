@@ -7,6 +7,7 @@ set(Header_Files
     "FrequencyParameter.h"
     "IParameterListener.h"
     "Logger.h"
+    "NkDiligent.h"
     "VieController.h"
     "VieProcessor.h"
     "VieView.h"
@@ -22,6 +23,7 @@ source_group("Resources" FILES ${Resources})
 set(Source_Files
     "FrequencyParameter.cpp"
     "Logger.cpp"
+    "NkDiligent.cpp"
     "PluginFactory.cpp"
     "VieController.cpp"
     "VieProcessor.cpp"
@@ -45,12 +47,15 @@ add_library(${PROJECT_NAME} SHARED ${ALL_FILES})
 # Dependencies
 message(STATUS "VIE> C++> Setting-up dependencies")
 add_dependencies(${PROJECT_NAME}
-    tinyobjloader
 	base
 	pluginterfaces
 	sdk
+    tinyobjloader
+	stb
+	nuklear
 	diligent_core
 	Diligent-GraphicsEngineVk-static
+	cycfi_q
 )
 
 message(STATUS "VIE> C++> Linking-up Steinberg VST SDK")
@@ -62,8 +67,8 @@ target_link_libraries(${PROJECT_NAME} tinyobjloader)
 message(STATUS "VIE> C++> Linking-up STB")
 target_link_libraries(${PROJECT_NAME} stb)
 
-message(STATUS "VIE> C++> Linking-up cycfi Q")
-target_link_libraries(${PROJECT_NAME} cycfi_q)
+message(STATUS "VIE> C++> Linking-up nuklear")
+target_link_libraries(${PROJECT_NAME} nuklear)
 
 message(STATUS "VIE> C++> Linking-up Diligent engine")
 target_link_libraries(${PROJECT_NAME}
@@ -71,6 +76,9 @@ target_link_libraries(${PROJECT_NAME}
     Diligent-GraphicsTools
     Diligent-GraphicsEngineVk-static
 	)
+
+message(STATUS "VIE> C++> Linking-up cycfi Q")
+target_link_libraries(${PROJECT_NAME} cycfi_q)
 
 # Copy built VST to VST3 system folder
 if( DEPLOY_TO_VST_FOLDER )
