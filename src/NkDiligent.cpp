@@ -27,29 +27,6 @@
 
 #include <cstdarg>
 
- // If defined it will include header `<stdint.h>` for fixed sized types otherwise nuklear tries to select the correct type. If that fails it will throw a compiler error and you have to select the correct types yourself.
-#define NK_INCLUDE_FIXED_TYPES
-
-// If defined it will include header `<stdio.h>` and provide additional functions depending on file loading.
-#define NK_INCLUDE_STANDARD_IO
-
-// If defined it will include header <stdio.h> and provide additional functions depending on file loading.
-#define NK_INCLUDE_STANDARD_VARARGS
-
-// If defined it will include header `<stdlib.h>` and provide additional functions to use this library without caring for memory allocation control and therefore ease memory management.
-#define NK_INCLUDE_DEFAULT_ALLOCATOR
-
-// Defining this adds a vertex draw command list backend to this library, which allows you to convert queue commands into vertex draw commands. This is mainly if you need a hardware accessible format for OpenGL, DirectX, Vulkan, Metal,...
-#define NK_INCLUDE_VERTEX_BUFFER_OUTPUT
-
-// Defining this adds `stb_truetype` and `stb_rect_pack` implementation to this library and provides font baking and rendering. If you already have font handling or do not want to use this font handler you don't have to define it.
-#define NK_INCLUDE_FONT_BAKING
-
-// Defining this adds the default font: ProggyClean.ttf into this library which can be loaded into a font atlas and allows using this library without having a truetype font
-#define NK_INCLUDE_DEFAULT_FONT
-
-#define NK_IMPLEMENTATION
-
 #include "NkDiligent.h"
 
 #include "RenderDevice.h"

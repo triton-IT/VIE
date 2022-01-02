@@ -1,6 +1,14 @@
 #include "VieView.h"
 
 #include "Application.h"
+
+#define NK_INCLUDE_FIXED_TYPES
+#define NK_INCLUDE_STANDARD_IO
+#define NK_INCLUDE_STANDARD_VARARGS
+#define NK_INCLUDE_DEFAULT_ALLOCATOR
+#define NK_INCLUDE_VERTEX_BUFFER_OUTPUT
+#define NK_INCLUDE_FONT_BAKING
+#define NK_INCLUDE_DEFAULT_FONT
 #include <nuklear.h>
 
 #include <fstream>
@@ -92,7 +100,7 @@ namespace live::tritone::vie {
 	}
 
 	void VieView::HandleWin32Message(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
-		switch (msg)
+		/*switch (msg)
 		{
 		case WM_KEYDOWN:
 		case WM_KEYUP:
@@ -224,9 +232,23 @@ namespace live::tritone::vie {
 
 		case WM_LBUTTONDBLCLK:
 			nk_input_button(m_pNkCtx, NK_BUTTON_DOUBLE, (short)LOWORD(lparam), (short)HIWORD(lparam), 1);
-		}
+		}*/
 
-		//TODO: Find the proper event in VST SDK or move to a thread.
+		//TODO: this messageProc can be called multiple times in a row. Sync between begin and end can be lost.
+		if (m_pNkCtx) {
+			if (!m_began) {
+				m_began = true;
+				nk_input_begin(m_pNkCtx);
+
+				if (m_pNkCtx) {
+					m_ui.render(m_pNkCtx);
+				}
+
+				nk_input_end(m_pNkCtx);
+
+				m_began = false;
+			}
+		}
 		render();
 	}
 
@@ -371,7 +393,6 @@ namespace live::tritone::vie {
 
 	Steinberg::tresult PLUGIN_API VieView::getState(IBStream* state) {
 		return kResultTrue;
-
 	}
 
 	void VieView::render() {
@@ -384,10 +405,6 @@ namespace live::tritone::vie {
 		m_Window.hWnd = hWnd;
 
 		SwapChainDesc SCDesc;
-#if EXPLICITLY_LOAD_ENGINE_VK_DLL
-		// Load the dll and import GetEngineFactoryVk() function
-		auto GetEngineFactoryVk = LoadGraphicsEngineVk();
-#endif
 		EngineVkCreateInfo EngineCI;
 
 		auto* pFactoryVk = GetEngineFactoryVk();
@@ -474,37 +491,33 @@ namespace live::tritone::vie {
 		nk_diligent_font_stash_begin(m_pNkDlgCtx, &atlas);
 		nk_diligent_font_stash_end(m_pNkDlgCtx, m_pImmediateContext);
 
-		//set_style(m_pNkCtx, THEME_WHITE);
-		//set_style(m_pNkCtx, THEME_RED);
-		//set_style(m_pNkCtx, THEME_BLUE);
-		//set_style(m_pNkCtx, THEME_DARK);
+		m_uiStyle.set_style(m_pNkCtx, UserInterfaceStyle::theme::THEME_DARK);
 	}
 
 	void VieView::Render()
 	{
-		auto& WndInfo = m_Window;
-
-		ITextureView* pRTV = WndInfo.pSwapChain->GetCurrentBackBufferRTV();
-		ITextureView* pDSV = WndInfo.pSwapChain->GetDepthBufferDSV();
+		ITextureView* pRTV = m_Window.pSwapChain->GetCurrentBackBufferRTV();
+		ITextureView* pDSV = m_Window.pSwapChain->GetDepthBufferDSV();
 		m_pImmediateContext->SetRenderTargets(1, &pRTV, pDSV, RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
 
-		// Clear the back buffer
 		const float ClearColor[] = { 0.350f, 0.350f, 0.350f, 1.0f };
-		// Let the engine perform required state transitions
 		m_pImmediateContext->ClearRenderTarget(pRTV, ClearColor, RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
 		m_pImmediateContext->ClearDepthStencil(pDSV, CLEAR_DEPTH_FLAG, 1.f, 0, RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
 
-		// Set the pipeline state in the immediate context
 		m_pImmediateContext->SetPipelineState(m_pPSO);
 
 		DrawAttribs drawAttrs;
 		drawAttrs.NumVertices = 3; // Render 3 vertices
 		m_pImmediateContext->Draw(drawAttrs);
+
+		nk_diligent_render(m_pNkDlgCtx, m_pImmediateContext, NK_ANTI_ALIASING_ON);
 	}
 
 	void VieView::Present()
 	{
-		if (m_Window.pSwapChain)
-			m_Window.pSwapChain->Present();
+		if (!m_Window.pSwapChain)
+			return;
+
+		m_Window.pSwapChain->Present();
 	}
 } // namespace

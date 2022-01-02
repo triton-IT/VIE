@@ -4,9 +4,12 @@
 #include <pluginterfaces/base/ibstream.h>
 
 #include "NkDiligent.h"
-#include "RenderDevice.h"
-#include "DeviceContext.h"
-#include "RefCntAutoPtr.hpp"
+#include <RenderDevice.h>
+#include <DeviceContext.h>
+#include <RefCntAutoPtr.hpp>
+
+#include "UserInterface.h"
+#include "UserInterfaceStyle.h"
 
 #ifdef WIN32
 #include <Windows.h>
@@ -67,6 +70,10 @@ namespace live::tritone::vie {
 
 		nk_diligent_context* m_pNkDlgCtx = nullptr;
 		nk_context* m_pNkCtx = nullptr;
+
+		UserInterface m_ui;
+		UserInterfaceStyle m_uiStyle;
+		bool m_began = false;
 
 		bool InitializeDiligentEngine(HWND hWnd);
 		void CreateResources();
