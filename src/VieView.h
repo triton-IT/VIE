@@ -9,6 +9,7 @@
 #include <RefCntAutoPtr.hpp>
 
 #include "UserInterface.h"
+#include "NodeEditor.h"
 #include "UserInterfaceStyle.h"
 
 #ifdef WIN32
@@ -72,6 +73,7 @@ namespace live::tritone::vie {
 		nk_context* m_pNkCtx = nullptr;
 
 		UserInterface m_ui;
+		NodeEditor m_nodeEditor;
 		UserInterfaceStyle m_uiStyle;
 		bool m_began = false;
 

@@ -242,6 +242,7 @@ namespace live::tritone::vie {
 
 				if (m_pNkCtx) {
 					m_ui.render(m_pNkCtx);
+					m_nodeEditor.render(m_pNkCtx);
 				}
 
 				nk_input_end(m_pNkCtx);
