@@ -71,18 +71,6 @@ void main(in  PSInput  PSIn,
 }
 )";
 
-LRESULT CALLBACK MessageProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
-{
-
-	live::tritone::vie::VieView* vieView = (live::tritone::vie::VieView*)(LONG_PTR)GetWindowLongPtr(hwnd, GWLP_USERDATA);
-
-	if (vieView) {
-		vieView->HandleWin32Message(hwnd, msg, wparam, lparam);
-	}
-
-	return DefWindowProc(hwnd, msg, wparam, lparam);
-}
-
 namespace live::tritone::vie {
 	VieView::VieView(FrequencyParameter* frequencyParameter) :
 		nbRef_(0),
@@ -90,167 +78,196 @@ namespace live::tritone::vie {
 		width_(1024),
 		height_(600),
 		frequencyParameter_(frequencyParameter),
-		//view_(nullptr),
-		parent_(nullptr)
+		parent_(nullptr),
+		rendererThread(nullptr)
 	{
 	}
 
 	VieView::~VieView()
 	{
+		if (rendererThread) {
+			delete rendererThread;
+		}
 	}
 
-	void VieView::HandleWin32Message(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
-		/*switch (msg)
-		{
-		case WM_KEYDOWN:
-		case WM_KEYUP:
-		case WM_SYSKEYDOWN:
-		case WM_SYSKEYUP:
-		{
-			int down = !((lparam >> 31) & 1);
-			int ctrl = GetKeyState(VK_CONTROL) & (1 << 15);
+	LRESULT CALLBACK VieView::MessageProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
+	{
+		live::tritone::vie::VieView* vieView = (live::tritone::vie::VieView*)(LONG_PTR)GetWindowLongPtr(hwnd, GWLP_USERDATA);
 
-			switch (wparam)
-			{
-			case VK_SHIFT:
-			case VK_LSHIFT:
-			case VK_RSHIFT:
-				nk_input_key(m_pNkCtx, NK_KEY_SHIFT, down);
-
-			case VK_DELETE:
-				nk_input_key(m_pNkCtx, NK_KEY_DEL, down);
-
-			case VK_RETURN:
-				nk_input_key(m_pNkCtx, NK_KEY_ENTER, down);
-
-			case VK_TAB:
-				nk_input_key(m_pNkCtx, NK_KEY_TAB, down);
-
-			case VK_LEFT:
-				if (ctrl)
-					nk_input_key(m_pNkCtx, NK_KEY_TEXT_WORD_LEFT, down);
-				else
-					nk_input_key(m_pNkCtx, NK_KEY_LEFT, down);
-
-			case VK_RIGHT:
-				if (ctrl)
-					nk_input_key(m_pNkCtx, NK_KEY_TEXT_WORD_RIGHT, down);
-				else
-					nk_input_key(m_pNkCtx, NK_KEY_RIGHT, down);
-
-			case VK_BACK:
-				nk_input_key(m_pNkCtx, NK_KEY_BACKSPACE, down);
-
-			case VK_HOME:
-				nk_input_key(m_pNkCtx, NK_KEY_TEXT_START, down);
-				nk_input_key(m_pNkCtx, NK_KEY_SCROLL_START, down);
-
-			case VK_END:
-				nk_input_key(m_pNkCtx, NK_KEY_TEXT_END, down);
-				nk_input_key(m_pNkCtx, NK_KEY_SCROLL_END, down);
-
-			case VK_NEXT:
-				nk_input_key(m_pNkCtx, NK_KEY_SCROLL_DOWN, down);
-
-			case VK_PRIOR:
-				nk_input_key(m_pNkCtx, NK_KEY_SCROLL_UP, down);
-
-			case 'C':
-				if (ctrl)
-				{
-					nk_input_key(m_pNkCtx, NK_KEY_COPY, down);
-				}
-				break;
-
-			case 'V':
-				if (ctrl)
-				{
-					nk_input_key(m_pNkCtx, NK_KEY_PASTE, down);
-				}
-				break;
-
-			case 'X':
-				if (ctrl)
-				{
-					nk_input_key(m_pNkCtx, NK_KEY_CUT, down);
-				}
-				break;
-
-			case 'Z':
-				if (ctrl)
-				{
-					nk_input_key(m_pNkCtx, NK_KEY_TEXT_UNDO, down);
-				}
-				break;
-
-			case 'R':
-				if (ctrl)
-				{
-					nk_input_key(m_pNkCtx, NK_KEY_TEXT_REDO, down);
-				}
-				break;
-			}
+		if (vieView) {
+			vieView->HandleWin32Message(hwnd, msg, wparam, lparam);
 		}
 
-		case WM_CHAR:
-			if (wparam >= 32)
+		return DefWindowProc(hwnd, msg, wparam, lparam);
+	}
+
+	LONG_PTR WINAPI VieView::HandleWin32Message(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
+		int result = 0;
+
+		if (m_pNkCtx) {
+			switch (msg)
 			{
-				nk_input_unicode(m_pNkCtx, (nk_rune)wparam);
+			case WM_KEYDOWN:
+			case WM_KEYUP:
+			case WM_SYSKEYDOWN:
+			case WM_SYSKEYUP:
+			{
+				int down = !((lparam >> 31) & 1);
+				int ctrl = GetKeyState(VK_CONTROL) & (1 << 15);
+
+				switch (wparam)
+				{
+				case VK_SHIFT:
+				case VK_LSHIFT:
+				case VK_RSHIFT:
+					nk_input_key(m_pNkCtx, NK_KEY_SHIFT, down);
+					result = 1;
+					break;
+				case VK_DELETE:
+					nk_input_key(m_pNkCtx, NK_KEY_DEL, down);
+					result = 1;
+					break;
+				case VK_RETURN:
+					nk_input_key(m_pNkCtx, NK_KEY_ENTER, down);
+					result = 1;
+					break;
+				case VK_TAB:
+					nk_input_key(m_pNkCtx, NK_KEY_TAB, down);
+					result = 1;
+					break;
+				case VK_LEFT:
+					if (ctrl)
+						nk_input_key(m_pNkCtx, NK_KEY_TEXT_WORD_LEFT, down);
+					else
+						nk_input_key(m_pNkCtx, NK_KEY_LEFT, down);
+					result = 1;
+					break;
+				case VK_RIGHT:
+					if (ctrl)
+						nk_input_key(m_pNkCtx, NK_KEY_TEXT_WORD_RIGHT, down);
+					else
+						nk_input_key(m_pNkCtx, NK_KEY_RIGHT, down);
+					result = 1;
+					break;
+				case VK_BACK:
+					nk_input_key(m_pNkCtx, NK_KEY_BACKSPACE, down);
+					result = 1;
+					break;
+				case VK_HOME:
+					nk_input_key(m_pNkCtx, NK_KEY_TEXT_START, down);
+					result = 1;
+					break;
+				case VK_END:
+					nk_input_key(m_pNkCtx, NK_KEY_TEXT_END, down);
+					result = 1;
+					break;
+				case VK_NEXT:
+					nk_input_key(m_pNkCtx, NK_KEY_SCROLL_DOWN, down);
+					result = 1;
+					break;
+				case VK_PRIOR:
+					nk_input_key(m_pNkCtx, NK_KEY_SCROLL_UP, down);
+					result = 1;
+					break;
+				case 'C':
+					if (ctrl)
+					{
+						nk_input_key(m_pNkCtx, NK_KEY_COPY, down);
+						result = 1;
+					}
+					break;
+				case 'V':
+					if (ctrl)
+					{
+						nk_input_key(m_pNkCtx, NK_KEY_PASTE, down);
+						result = 1;
+					}
+					break;
+				case 'X':
+					if (ctrl)
+					{
+						nk_input_key(m_pNkCtx, NK_KEY_CUT, down);
+						result = 1;
+					}
+					break;
+				case 'Z':
+					if (ctrl)
+					{
+						nk_input_key(m_pNkCtx, NK_KEY_TEXT_UNDO, down);
+						result = 1;
+					}
+					break;
+				case 'Y':
+					if (ctrl)
+					{
+						nk_input_key(m_pNkCtx, NK_KEY_TEXT_REDO, down);
+						result = 1;
+					}
+					break;
+				default:
+					break;
+				}
 			}
 			break;
-
-		case WM_LBUTTONDOWN:
-			nk_input_button(m_pNkCtx, NK_BUTTON_LEFT, (short)LOWORD(lparam), (short)HIWORD(lparam), 1);
-			SetCapture(hwnd);
-
-		case WM_LBUTTONUP:
-			nk_input_button(m_pNkCtx, NK_BUTTON_DOUBLE, (short)LOWORD(lparam), (short)HIWORD(lparam), 0);
-			nk_input_button(m_pNkCtx, NK_BUTTON_LEFT, (short)LOWORD(lparam), (short)HIWORD(lparam), 0);
-			ReleaseCapture();
-
-		case WM_RBUTTONDOWN:
-			nk_input_button(m_pNkCtx, NK_BUTTON_RIGHT, (short)LOWORD(lparam), (short)HIWORD(lparam), 1);
-			SetCapture(hwnd);
-
-		case WM_RBUTTONUP:
-			nk_input_button(m_pNkCtx, NK_BUTTON_RIGHT, (short)LOWORD(lparam), (short)HIWORD(lparam), 0);
-			ReleaseCapture();
-
-		case WM_MBUTTONDOWN:
-			nk_input_button(m_pNkCtx, NK_BUTTON_MIDDLE, (short)LOWORD(lparam), (short)HIWORD(lparam), 1);
-			SetCapture(hwnd);
-
-		case WM_MBUTTONUP:
-			nk_input_button(m_pNkCtx, NK_BUTTON_MIDDLE, (short)LOWORD(lparam), (short)HIWORD(lparam), 0);
-			ReleaseCapture();
-
-		case WM_MOUSEWHEEL:
-			nk_input_scroll(m_pNkCtx, nk_vec2(0, (float)(short)HIWORD(wparam) / WHEEL_DELTA));
-
-		case WM_MOUSEMOVE:
-			nk_input_motion(m_pNkCtx, (short)LOWORD(lparam), (short)HIWORD(lparam));
-
-		case WM_LBUTTONDBLCLK:
-			nk_input_button(m_pNkCtx, NK_BUTTON_DOUBLE, (short)LOWORD(lparam), (short)HIWORD(lparam), 1);
-		}*/
-
-		//TODO: this messageProc can be called multiple times in a row. Sync between begin and end can be lost.
-		if (m_pNkCtx) {
-			if (!m_began) {
-				m_began = true;
-				nk_input_begin(m_pNkCtx);
-
-				if (m_pNkCtx) {
-					m_ui.render(m_pNkCtx);
-					m_nodeEditor.render(m_pNkCtx);
+			case WM_ERASEBKGND:
+				result = 1;
+				break;
+			case WM_PAINT:
+				result = 1;
+				break;
+			case WM_MOUSEMOVE:
+				nk_input_motion(m_pNkCtx, (short)LOWORD(lparam), (short)HIWORD(lparam));
+				result = 1;
+				break;
+			case WM_LBUTTONDOWN:
+				nk_input_button(m_pNkCtx, NK_BUTTON_LEFT, (short)LOWORD(lparam), (short)HIWORD(lparam), 1);
+				SetCapture(hwnd);
+				result = 1;
+				break;
+			case WM_LBUTTONUP:
+				nk_input_button(m_pNkCtx, NK_BUTTON_LEFT, (short)LOWORD(lparam), (short)HIWORD(lparam), 0);
+				ReleaseCapture();
+				result = 1;
+				break;
+			case WM_MBUTTONDOWN:
+				nk_input_button(m_pNkCtx, NK_BUTTON_MIDDLE, (short)LOWORD(lparam), (short)HIWORD(lparam), 1);
+				SetCapture(hwnd);
+				result = 1;
+				break;
+			case WM_MBUTTONUP:
+				nk_input_button(m_pNkCtx, NK_BUTTON_MIDDLE, (short)LOWORD(lparam), (short)HIWORD(lparam), 0);
+				ReleaseCapture();
+				result = 1;
+				break;
+			case WM_RBUTTONDOWN:
+				nk_input_button(m_pNkCtx, NK_BUTTON_RIGHT, (short)LOWORD(lparam), (short)HIWORD(lparam), 1);
+				SetCapture(hwnd);
+				result = 1;
+				break;
+			case WM_RBUTTONUP:
+				nk_input_button(m_pNkCtx, NK_BUTTON_RIGHT, (short)LOWORD(lparam), (short)HIWORD(lparam), 0);
+				ReleaseCapture();
+				result = 1;
+				break;
+			case WM_MOUSEWHEEL:
+				nk_input_scroll(m_pNkCtx, nk_vec2(0, (float)(short)HIWORD(wparam) / WHEEL_DELTA));
+				result = 1;
+				break;
+			case WM_LBUTTONDBLCLK:
+				nk_input_button(m_pNkCtx, NK_BUTTON_DOUBLE, (short)LOWORD(lparam), (short)HIWORD(lparam), 1);
+				result = 1;
+				break;
+			case WM_CHAR:
+				if (wparam >= 32)
+				{
+					nk_input_unicode(m_pNkCtx, (nk_rune)wparam);
+					result = 1;
 				}
-
-				nk_input_end(m_pNkCtx);
-
-				m_began = false;
+				break;
 			}
 		}
-		render();
+
+		return result;
 	}
 
 	tresult PLUGIN_API VieView::queryInterface(const TUID iid, void** obj)
@@ -287,20 +304,19 @@ namespace live::tritone::vie {
 	{
 		parent_ = parent;
 
-		// Register our window class
-		WNDCLASSEX wcex = { sizeof(WNDCLASSEX), CS_HREDRAW | CS_VREDRAW, MessageProc,
-						   0L, 0L, GetModuleHandle(NULL), NULL, NULL, NULL, NULL, L"SampleApp", NULL };
+		WNDCLASSEX wcex = { sizeof(WNDCLASSEX), CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS, MessageProc,
+						   0L, 0L, GetModuleHandle(NULL), NULL, NULL, NULL, NULL, L"VIE", NULL };
 		RegisterClassEx(&wcex);
 
 		HWND hWnd;
 		RECT WndRect = { 0, 0, 1024, 768 };
 
 		std::wstringstream TitleSS;
-		TitleSS << L"Tutorial15: Multiple Windows";
+		TitleSS << L"Virtual Instrument Engine";
 		auto Title = TitleSS.str();
 
 		AdjustWindowRect(&WndRect, WS_OVERLAPPEDWINDOW, FALSE);
-		hWnd = CreateWindow(L"SampleApp", Title.c_str(),
+		hWnd = CreateWindow(L"VIE", Title.c_str(),
 			WS_CHILD | WS_VISIBLE, 
 			0, 0,
 			WndRect.right - WndRect.left, WndRect.bottom - WndRect.top,
@@ -312,7 +328,6 @@ namespace live::tritone::vie {
 			return -1;
 		}
 
-		EnableWindow(hWnd, false);
 		SetWindowLongPtr(hWnd, GWLP_USERDATA, (__int3264)(LONG_PTR)this);
 
 		ShowWindow(hWnd, 1);
@@ -338,7 +353,7 @@ namespace live::tritone::vie {
 		return kResultOk;
 	}
 
-	tresult PLUGIN_API VieView::onKeyDown(char16 /*key*/, int16 /*keyCode*/, int16 /*modifiers*/)
+	tresult PLUGIN_API VieView::onKeyDown(char16 key, int16 /*keyCode*/, int16 /*modifiers*/)
 	{
 		return kResultOk;
 	}
@@ -360,6 +375,7 @@ namespace live::tritone::vie {
 
 	tresult PLUGIN_API VieView::onSize(ViewRect* newSize)
 	{
+		nk_diligent_resize(m_pNkDlgCtx, m_pImmediateContext, newSize->getWidth(), newSize->getHeight());
 		if (m_Window.pSwapChain)
 			m_Window.pSwapChain->Resize(newSize->getWidth(), newSize->getHeight());
 
@@ -397,6 +413,13 @@ namespace live::tritone::vie {
 	}
 
 	void VieView::render() {
+		nk_input_end(m_pNkCtx);
+		if (m_pNkCtx) {
+			m_ui.render(m_pNkCtx);
+			m_nodeEditor.render(m_pNkCtx);
+		}
+		nk_input_begin(m_pNkCtx);
+
 		Render();
 		Present();
 	}
@@ -493,6 +516,15 @@ namespace live::tritone::vie {
 		nk_diligent_font_stash_end(m_pNkDlgCtx, m_pImmediateContext);
 
 		m_uiStyle.set_style(m_pNkCtx, UserInterfaceStyle::theme::THEME_DARK);
+
+		//FIXME: Make the thread stop while plugin close.
+		auto viewRendererThread = [](VieView* view) { 
+			while (true) {
+				view->render();
+				Sleep(100);
+			}
+		};
+		rendererThread = new std::thread(viewRendererThread, this);
 	}
 
 	void VieView::Render()

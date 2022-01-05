@@ -8,6 +8,8 @@
 #include <DeviceContext.h>
 #include <RefCntAutoPtr.hpp>
 
+#include <thread>
+
 #include "UserInterface.h"
 #include "NodeEditor.h"
 #include "UserInterfaceStyle.h"
@@ -24,7 +26,6 @@ namespace live::tritone::vie {
 	public:
 		VieView(FrequencyParameter* frequencyParameter);
 		~VieView();
-		void HandleWin32Message(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam);
 
 		Steinberg::tresult PLUGIN_API queryInterface(const Steinberg::TUID iid, void** obj) SMTG_OVERRIDE;
 		virtual Steinberg::uint32 PLUGIN_API addRef() SMTG_OVERRIDE;
@@ -75,11 +76,15 @@ namespace live::tritone::vie {
 		UserInterface m_ui;
 		NodeEditor m_nodeEditor;
 		UserInterfaceStyle m_uiStyle;
-		bool m_began = false;
+
+		std::thread* rendererThread;
 
 		bool InitializeDiligentEngine(HWND hWnd);
 		void CreateResources();
 		void Render();
 		void Present();
+
+		static LONG_PTR WINAPI MessageProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam);
+		LONG_PTR WINAPI HandleWin32Message(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam);
 	};
 }

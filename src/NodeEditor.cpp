@@ -25,7 +25,7 @@ namespace live::tritone::vie {
         show_grid = nk_true;
         add("Source", nk_rect(0, 0, 180, 220), nk_rgb(255, 0, 0), 0, 1);
         add("Source", nk_rect(40, 260, 180, 220), nk_rgb(0, 255, 0), 0, 1);
-        add("Combine", nk_rect(400, 100, 180, 220), nk_rgb(0, 0, 255), 2, 2);
+        add("Combine", nk_rect(200, 100, 180, 220), nk_rgb(0, 0, 255), 2, 2);
         link(0, 0, 2, 0);
         link(1, 0, 2, 1);
     }
