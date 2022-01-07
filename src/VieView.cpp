@@ -79,15 +79,13 @@ namespace live::tritone::vie {
 		height_(600),
 		frequencyParameter_(frequencyParameter),
 		parent_(nullptr),
-		rendererThread(nullptr)
+		rendererThread(nullptr),
+		isRendererRunning(true)
 	{
 	}
 
 	VieView::~VieView()
 	{
-		if (rendererThread) {
-			delete rendererThread;
-		}
 	}
 
 	LRESULT CALLBACK VieView::MessageProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
@@ -340,11 +338,26 @@ namespace live::tritone::vie {
 
 		InitializeNuklear();
 
+		auto viewRendererThread = [](VieView* view, bool const* isRunning) {
+			using ms = std::chrono::milliseconds;
+			while (*isRunning) {
+				view->render();
+				std::this_thread::sleep_for(ms(15));
+			}
+			std::this_thread::sleep_for(ms(15));
+		};
+		rendererThread = new std::thread(viewRendererThread, this, &isRendererRunning);
+
 		return kResultTrue;
 	}
 
 	tresult PLUGIN_API VieView::removed()
 	{
+		isRendererRunning = false;
+		if (rendererThread) {
+			rendererThread->join();
+			delete rendererThread;
+		}
 		return kResultTrue;
 	}
 
@@ -516,15 +529,6 @@ namespace live::tritone::vie {
 		nk_diligent_font_stash_end(m_pNkDlgCtx, m_pImmediateContext);
 
 		m_uiStyle.set_style(m_pNkCtx, UserInterfaceStyle::theme::THEME_DARK);
-
-		//FIXME: Make the thread stop while plugin close.
-		auto viewRendererThread = [](VieView* view) { 
-			while (true) {
-				view->render();
-				Sleep(100);
-			}
-		};
-		rendererThread = new std::thread(viewRendererThread, this);
 	}
 
 	void VieView::Render()

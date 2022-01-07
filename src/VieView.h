@@ -78,6 +78,7 @@ namespace live::tritone::vie {
 		UserInterfaceStyle m_uiStyle;
 
 		std::thread* rendererThread;
+		bool isRendererRunning;
 
 		bool InitializeDiligentEngine(HWND hWnd);
 		void CreateResources();
