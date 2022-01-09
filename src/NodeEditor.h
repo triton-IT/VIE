@@ -24,6 +24,7 @@ namespace live::tritone::vie {
         Node* selected;
         int show_grid;
         struct nk_vec2 scrolling;
+        int ids;
         NodeLinking linking;
 
 		void push(struct Node* node);

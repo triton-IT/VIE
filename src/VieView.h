@@ -20,6 +20,8 @@
 
 #include "FrequencyParameter.h"
 
+#include <EngineFactoryVk.h>
+
 namespace live::tritone::vie {
 	class VieView : public Steinberg::IPlugView
 	{
@@ -51,17 +53,18 @@ namespace live::tritone::vie {
 		void render();
 
 	private:
+		static Diligent::IEngineFactoryVk* pFactoryVk;
+		static Diligent::RefCntAutoPtr<Diligent::IRenderDevice>  m_pDevice;
+		static Diligent::RefCntAutoPtr<Diligent::IDeviceContext> m_pImmediateContext;
+
 		Steinberg::uint32 nbRef_;
 		Steinberg::IPlugFrame* frame_;
-		void* parent_;
 
 		FrequencyParameter* frequencyParameter_;
 
 		int width_;
 		int height_;
 
-		Diligent::RefCntAutoPtr<Diligent::IRenderDevice>  m_pDevice;
-		Diligent::RefCntAutoPtr<Diligent::IDeviceContext> m_pImmediateContext;
 		Diligent::RefCntAutoPtr<Diligent::IPipelineState> m_pPSO;
 		struct WindowInfo
 		{
@@ -70,17 +73,17 @@ namespace live::tritone::vie {
 		};
 		WindowInfo m_Window;
 
-		nk_diligent_context* m_pNkDlgCtx = nullptr;
-		nk_context* m_pNkCtx = nullptr;
+		nk_diligent_context* m_pNkDlgCtx;
+		nk_context* m_pNkCtx;
 
 		UserInterface m_ui;
 		NodeEditor m_nodeEditor;
 		UserInterfaceStyle m_uiStyle;
 
-		std::thread* rendererThread;
+		std::unique_ptr<std::thread> rendererThread;
 		bool isRendererRunning;
 
-		bool InitializeDiligentEngine(HWND hWnd);
+		bool InitializeDiligentEngine();
 		void CreateResources();
 		void Render();
 		void Present();

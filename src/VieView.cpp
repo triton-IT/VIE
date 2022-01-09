@@ -17,8 +17,6 @@
 #    define NOMINMAX
 #endif
 
-#include "EngineFactoryVk.h"
-
 #include "SwapChain.h"
 
 
@@ -72,20 +70,35 @@ void main(in  PSInput  PSIn,
 )";
 
 namespace live::tritone::vie {
+	Diligent::IEngineFactoryVk* VieView::pFactoryVk;
+	Diligent::RefCntAutoPtr<Diligent::IRenderDevice>  VieView::m_pDevice;
+	Diligent::RefCntAutoPtr<Diligent::IDeviceContext> VieView::m_pImmediateContext;
+
 	VieView::VieView(FrequencyParameter* frequencyParameter) :
 		nbRef_(0),
 		frame_(nullptr),
 		width_(1024),
 		height_(600),
 		frequencyParameter_(frequencyParameter),
-		parent_(nullptr),
-		rendererThread(nullptr),
-		isRendererRunning(true)
+		isRendererRunning(true),
+		m_pNkDlgCtx(nullptr),
+		m_pNkCtx(nullptr)
 	{
+		WNDCLASSEX wcex = { sizeof(WNDCLASSEX), CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS, MessageProc,
+						   0L, 0L, GetModuleHandle(NULL), NULL, NULL, NULL, NULL, L"VIE", NULL };
+		RegisterClassEx(&wcex);
+
+		//TODO: Move this static initialization to another class.
+		if (pFactoryVk == nullptr) {
+			pFactoryVk = GetEngineFactoryVk();
+			EngineVkCreateInfo EngineCI;
+			pFactoryVk->CreateDeviceAndContextsVk(EngineCI, &m_pDevice, &m_pImmediateContext);
+		}
 	}
 
 	VieView::~VieView()
 	{
+		UnregisterClass(L"VIE", GetModuleHandle(NULL));
 	}
 
 	LRESULT CALLBACK VieView::MessageProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
@@ -300,13 +313,6 @@ namespace live::tritone::vie {
 
 	tresult PLUGIN_API VieView::attached(void* parent, FIDString /*type*/)
 	{
-		parent_ = parent;
-
-		WNDCLASSEX wcex = { sizeof(WNDCLASSEX), CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS, MessageProc,
-						   0L, 0L, GetModuleHandle(NULL), NULL, NULL, NULL, NULL, L"VIE", NULL };
-		RegisterClassEx(&wcex);
-
-		HWND hWnd;
 		RECT WndRect = { 0, 0, 1024, 768 };
 
 		std::wstringstream TitleSS;
@@ -314,24 +320,23 @@ namespace live::tritone::vie {
 		auto Title = TitleSS.str();
 
 		AdjustWindowRect(&WndRect, WS_OVERLAPPEDWINDOW, FALSE);
-		hWnd = CreateWindow(L"VIE", Title.c_str(),
+		m_Window.hWnd = CreateWindow(L"VIE", Title.c_str(),
 			WS_CHILD | WS_VISIBLE, 
 			0, 0,
 			WndRect.right - WndRect.left, WndRect.bottom - WndRect.top,
 			(HWND) parent, NULL, GetModuleHandle(NULL), NULL);
 		
-		if (!hWnd)
+		if (!m_Window.hWnd)
 		{
 			MessageBox(NULL, L"Cannot create window", L"Error", MB_OK | MB_ICONERROR);
 			return -1;
 		}
 
-		SetWindowLongPtr(hWnd, GWLP_USERDATA, (__int3264)(LONG_PTR)this);
+		SetWindowLongPtr(m_Window.hWnd, GWLP_USERDATA, (__int3264)(LONG_PTR)this);
 
-		ShowWindow(hWnd, 1);
-		UpdateWindow(hWnd);
+		ShowWindow(m_Window.hWnd, 1);
 
-		if (!InitializeDiligentEngine(hWnd))
+		if (!InitializeDiligentEngine())
 			return -1;
 
 		CreateResources();
@@ -344,20 +349,26 @@ namespace live::tritone::vie {
 				view->render();
 				std::this_thread::sleep_for(ms(15));
 			}
-			std::this_thread::sleep_for(ms(15));
 		};
-		rendererThread = new std::thread(viewRendererThread, this, &isRendererRunning);
+		rendererThread.reset(new std::thread(viewRendererThread, this, &isRendererRunning));
 
 		return kResultTrue;
 	}
 
 	tresult PLUGIN_API VieView::removed()
 	{
+		//Stop renderer loop.
 		isRendererRunning = false;
+
 		if (rendererThread) {
 			rendererThread->join();
-			delete rendererThread;
+			rendererThread.reset();
+			rendererThread = nullptr;
 		}
+
+		DestroyWindow(m_Window.hWnd);
+		m_Window.hWnd = nullptr;
+
 		return kResultTrue;
 	}
 
@@ -437,19 +448,15 @@ namespace live::tritone::vie {
 		Present();
 	}
 
-	bool VieView::InitializeDiligentEngine(HWND hWnd)
-	{
-		m_Window.hWnd = hWnd;
-
-		SwapChainDesc SCDesc;
-		EngineVkCreateInfo EngineCI;
-
-		auto* pFactoryVk = GetEngineFactoryVk();
-		pFactoryVk->CreateDeviceAndContextsVk(EngineCI, &m_pDevice, &m_pImmediateContext);
-
-		Win32NativeWindow Window{ m_Window.hWnd };
-		pFactoryVk->CreateSwapChainVk(m_pDevice, m_pImmediateContext, SCDesc, Window, &m_Window.pSwapChain);
-		SCDesc.IsPrimary = false;
+	bool VieView::InitializeDiligentEngine()
+	{		
+		if (!m_Window.pSwapChain && m_Window.hWnd != nullptr)
+		{
+			SwapChainDesc SCDesc;
+			Win32NativeWindow Window{ m_Window.hWnd };
+			pFactoryVk->CreateSwapChainVk(m_pDevice, m_pImmediateContext, SCDesc, Window, &m_Window.pSwapChain);
+			SCDesc.IsPrimary = false;
+		}
 
 		return true;
 	}

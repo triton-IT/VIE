@@ -22,6 +22,7 @@ namespace live::tritone::vie {
         link_count = 0;
         scrolling.x = 0;
         scrolling.y = 0;
+        ids = 0;
         show_grid = nk_true;
         add("Source", nk_rect(0, 0, 180, 220), nk_rgb(255, 0, 0), 0, 1);
         add("Source", nk_rect(40, 260, 180, 220), nk_rgb(0, 255, 0), 0, 1);
@@ -33,10 +34,9 @@ namespace live::tritone::vie {
     void NodeEditor::add(const char* name, struct nk_rect bounds,
         struct nk_color col, int in_count, int out_count)
     {
-        static int IDs = 0;
         Node* node;
         node = &node_buf[node_count++];
-        node->ID = IDs++;
+        node->ID = ids++;
         node->value = 0;
         node->color = nk_rgb(255, 0, 0);
         node->input_count = in_count;
