@@ -14,13 +14,13 @@
 #include "NodeEditor.h"
 #include "UserInterfaceStyle.h"
 
-#ifdef WIN32
-#include <Windows.h>
-#endif // WIN32
-
 #include "FrequencyParameter.h"
 
 #include <EngineFactoryVk.h>
+
+#ifdef _WIN32
+	#include "windows/EditorView.h"
+#endif
 
 namespace live::tritone::vie {
 	class VieView : public Steinberg::IPlugView
@@ -57,6 +57,8 @@ namespace live::tritone::vie {
 		static Diligent::RefCntAutoPtr<Diligent::IRenderDevice>  m_pDevice;
 		static Diligent::RefCntAutoPtr<Diligent::IDeviceContext> m_pImmediateContext;
 
+		EditorView* m_pEditorView;
+
 		Steinberg::uint32 nbRef_;
 		Steinberg::IPlugFrame* frame_;
 
@@ -66,12 +68,8 @@ namespace live::tritone::vie {
 		int height_;
 
 		Diligent::RefCntAutoPtr<Diligent::IPipelineState> m_pPSO;
-		struct WindowInfo
-		{
-			Diligent::RefCntAutoPtr<Diligent::ISwapChain> pSwapChain;
-			HWND                      hWnd;
-		};
-		WindowInfo m_Window;
+		
+		Diligent::RefCntAutoPtr<Diligent::ISwapChain> m_pSwapChain;
 
 		nk_diligent_context* m_pNkDlgCtx;
 		nk_context* m_pNkCtx;
@@ -87,8 +85,5 @@ namespace live::tritone::vie {
 		void CreateResources();
 		void Render();
 		void Present();
-
-		static LONG_PTR WINAPI MessageProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam);
-		LONG_PTR WINAPI HandleWin32Message(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam);
 	};
 }

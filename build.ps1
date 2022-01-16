@@ -14,7 +14,6 @@ if (Test-Path -Path 'bin') {
 mkdir build
 cd build
 
-cmake ..
-#cmake .. -DDEPLOY_TO_VST_FOLDER=TRUE
+cmake .. -DDEPLOY_TO_VST_FOLDER=TRUE
 
 #cmake --build .

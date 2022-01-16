@@ -1,7 +1,7 @@
 set(PROJECT_NAME VIE)
 
 # Source groups
-set(Header_Files
+set(HEADER_FILES
     "Application.h"
     "Constants.h"
     "FrequencyParameter.h"
@@ -16,15 +16,19 @@ set(Header_Files
     "VieProcessor.h"
     "VieView.h"
 )
-source_group("Header Files" FILES ${Header_Files})
+source_group("Header Files" FILES ${HEADER_FILES})
 
-set(Resources
+if( WIN32 )
+	list(APPEND HEADER_FILES "windows/EditorView.h")
+endif()
+
+set(RESOURCES
     "desktop.ini"
     "ui.json"
 )
-source_group("Resources" FILES ${Resources})
+source_group("Resources" FILES ${RESOURCES})
 
-set(Source_Files
+set(SOURCE_FILES
     "FrequencyParameter.cpp"
     "Logger.cpp"
     "NkDiligent.cpp"
@@ -37,17 +41,18 @@ set(Source_Files
     "VieProcessor.cpp"
     "VieView.cpp"
 )
-source_group("Source Files" FILES ${Source_Files})
-
-set(ALL_FILES
-	${Header_Files}
-	${Resources}
-	${Source_Files}
-)
+source_group("Source Files" FILES ${SOURCE_FILES})
 
 if( WIN32 )
-	list(APPEND ALL_FILES "windows/Application.cpp")
+	list(APPEND SOURCE_FILES "windows/Application.cpp")
+	list(APPEND SOURCE_FILES "windows/EditorView.cpp")
 endif()
+
+set(ALL_FILES
+	${HEADER_FILES}
+	${RESOURCES}
+	${SOURCE_FILES}
+)
 
 # Target
 add_library(${PROJECT_NAME} SHARED ${ALL_FILES})
