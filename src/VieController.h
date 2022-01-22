@@ -1,16 +1,20 @@
 #pragma once
 
-#include <public.sdk/source/vst/vsteditcontroller.h>
 #include <pluginterfaces/vst/ivstnoteexpression.h>
+#include <pluginterfaces/vst/ivstmessage.h>
 #include <pluginterfaces/vst/vsttypes.h>
-#include <base/source/fobject.h>
+#include <pluginterfaces/base/iupdatehandler.h>
 
 #include "VieView.h"
 #include "IParameterListener.h"
 #include "FrequencyParameter.h"
 
 namespace live::tritone::vie {
-	class VieController : public Steinberg::Vst::ComponentBase, public Steinberg::Vst::IEditController, public IParameterListener
+	class VieController : 
+		public Steinberg::Vst::IEditController,
+		public Steinberg::Vst::IConnectionPoint,
+		public Steinberg::IDependent,
+		public IParameterListener
 	{
 	public:
 		static FUnknown* createInstance(void*)
@@ -21,10 +25,10 @@ namespace live::tritone::vie {
 		VieController();
 		~VieController();
 
+		//Inheritance from IEditController
 		Steinberg::tresult PLUGIN_API queryInterface(const Steinberg::TUID iid, void** obj) SMTG_OVERRIDE;
 		Steinberg::uint32 PLUGIN_API addRef() SMTG_OVERRIDE;
 		Steinberg::uint32 PLUGIN_API release() SMTG_OVERRIDE;
-		Steinberg::FClassID isA() const;
 		Steinberg::tresult PLUGIN_API initialize(Steinberg::FUnknown* context) SMTG_OVERRIDE;
 		Steinberg::tresult PLUGIN_API terminate() SMTG_OVERRIDE;
 		Steinberg::tresult PLUGIN_API setComponentState(Steinberg::IBStream* state) SMTG_OVERRIDE;
@@ -41,9 +45,18 @@ namespace live::tritone::vie {
 		Steinberg::tresult PLUGIN_API setComponentHandler(Steinberg::Vst::IComponentHandler* handler) SMTG_OVERRIDE;
 		Steinberg::IPlugView* PLUGIN_API createView(Steinberg::FIDString name) SMTG_OVERRIDE;
 
+		//Inheritance from IConnectionPoint
+		Steinberg::tresult PLUGIN_API connect(Steinberg::Vst::IConnectionPoint* other) SMTG_OVERRIDE;
+		Steinberg::tresult PLUGIN_API disconnect(Steinberg::Vst::IConnectionPoint* other) SMTG_OVERRIDE;
+		Steinberg::tresult PLUGIN_API notify(Steinberg::Vst::IMessage* message) SMTG_OVERRIDE;
+
+		//Inheritance from IDependent
+		void PLUGIN_API update(Steinberg::FUnknown* changedUnknown, Steinberg::int32 message) SMTG_OVERRIDE;
+
 		void parameterValueChanged(Steinberg::int32 parameterId, Steinberg::Vst::ParamValue normalizedValue) SMTG_OVERRIDE;
 
 	private:
+		Steinberg::IPtr<Steinberg::FUnknown> hostContext;
 		Steinberg::uint32 nbRef_;
 		VieView* view_;
 		FrequencyParameter* frequencyParameter_;

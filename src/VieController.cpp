@@ -34,7 +34,27 @@ namespace live::tritone::vie {
 			*obj = static_cast<IEditController*>(this);
 			return kResultOk;
 		}
-		return ComponentBase::queryInterface(iid, obj);
+
+		if (FUnknownPrivate::iidEqual(iid, IPluginBase::iid)) {
+			addRef();
+			* obj = static_cast<IPluginBase*>(this);
+			return Steinberg::kResultOk;
+		}
+
+		if (FUnknownPrivate::iidEqual(iid, IConnectionPoint::iid)) {
+			addRef();
+			*obj = static_cast<IConnectionPoint*>(this);
+			return Steinberg::kResultOk;
+		}
+
+		if (FUnknownPrivate::iidEqual(iid, IDependent::iid)) {
+			addRef();
+			*obj = static_cast<IDependent*>(this);
+			return Steinberg::kResultOk;
+		}
+
+		*obj = nullptr;
+		return Steinberg::kNoInterface;
 	}
 
 	uint32 PLUGIN_API VieController::addRef() {
@@ -45,13 +65,9 @@ namespace live::tritone::vie {
 		return --nbRef_;
 	}
 
-	FClassID VieController::isA() const {
-		return "Controller";
-	}
-
 	tresult PLUGIN_API VieController::initialize(FUnknown* context)
 	{
-		ComponentBase::initialize(context);
+		hostContext = context;
 
 		parameters_.addParameter(USTRING("Bypass"), nullptr, 1, 0,
 			ParameterInfo::kCanAutomate | ParameterInfo::kIsBypass, kBypassId);
@@ -160,6 +176,39 @@ namespace live::tritone::vie {
 		view_ = new VieView(frequencyParameter_);
 
 		return view_;
+	}
+
+	tresult PLUGIN_API VieController::connect(IConnectionPoint* other)
+	{
+		if (!other)
+			return kInvalidArgument;
+
+		DLOG("Connection to another connection point requested. should store and manage peer connection.");
+		return kResultOk;
+	}
+
+	tresult PLUGIN_API VieController::disconnect(IConnectionPoint* other)
+	{
+		if (!other)
+			return kInvalidArgument;
+
+		DLOG("Disconnection from another connection point requested.");
+		return kResultOk;
+	}
+
+	tresult PLUGIN_API VieController::notify(IMessage* message)
+	{
+		DLOG("Notification received from the other connection point");
+		if (!message)
+			return kInvalidArgument;
+
+		DLOG(message->getMessageID());
+
+		return kResultFalse;
+	}
+
+	void PLUGIN_API VieController::update(Steinberg::FUnknown* changedUnknown, int32 message) {
+		DLOG("Update request received.");
 	}
 
 	void VieController::parameterValueChanged(Steinberg::int32 parameterId, Steinberg::Vst::ParamValue /*normalizedValue*/) {

@@ -15,6 +15,7 @@ set(HEADER_FILES
     "VieController.h"
     "VieProcessor.h"
     "VieView.h"
+    "Bus.h"
 )
 source_group("Header Files" FILES ${HEADER_FILES})
 
@@ -40,6 +41,7 @@ set(SOURCE_FILES
     "VieController.cpp"
     "VieProcessor.cpp"
     "VieView.cpp"
+    "Bus.cpp"
 )
 source_group("Source Files" FILES ${SOURCE_FILES})
 

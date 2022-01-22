@@ -1,43 +1,52 @@
-{
-  "root": {
-    "type": "margin",
-    "id": 0,
-    "top": 20,
-    "left": 20,
-    "bottom": 20,
-    "right": 20,
-    "child": {
-      "type": "tile",
-      "children": [
-        {
-          "type": "slider"
-        },
-        {
-          "type": "knob"
-        },
-        {
-          "type": "pane",
-          "children": [
-            {
-              "type": "knob"
-            },
-            {
-              "type": "slider"
-            },
-            {
-              "type": "pane",
-              "children": [
-                {
-                  "type": "knob"
-                },
-                {
-                  "type": "slider"
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    }
+[
+  {
+    "name": "sin",
+    "inputs": [
+      {
+        "name": "frequency (Hz)",
+        "type": "float",
+        "min": "0.0",
+        "default": "3500.0"
+      },
+      {
+        "name": "amplitude (V)",
+        "type": "float",
+        "min": "0.0"
+      },
+      {
+        "name": "phase (ms)",
+        "type": "float"
+      }
+    ],
+    "outputs": [
+      {
+        "id": "out",
+        "type": "float",
+        "min": "0.0",
+        "max": "1.0"
+      }
+    ]
+  },
+  {
+    "name": "square",
+    "outputs": [
+      {
+        "id": "out",
+        "type": "float",
+        "min": "0.0",
+        "max": "1.0"
+      }
+    ]
+  },
+  {
+    "name": "triangle",
+    "outputs": [
+      {
+        "id": "out",
+        "type": "float",
+        "min": "0.0",
+        "max": "1.0"
+      }
+    ]
   }
-}
+]
