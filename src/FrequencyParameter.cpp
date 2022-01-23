@@ -1,4 +1,5 @@
-#include <pluginterfaces/base/ustring.h>
+#include <pluginterfaces/vst/ivsteditcontroller.h>
+#include <pluginterfaces/vst/ivstunits.h>
 
 #include "frequencyParameter.h"
 #include "Application.h"
@@ -7,45 +8,18 @@ using namespace Steinberg;
 using namespace Steinberg::Vst;
 
 namespace live::tritone::vie {
-	FrequencyParameter::FrequencyParameter() : listener_(nullptr)
+	FrequencyParameter::FrequencyParameter() : Parameter(kFrequencyId, L"Frequency", L"Freq", L"Hz", 0, .0f, kRootUnitId, ParameterInfo::kCanAutomate)
 	{
-		info.id = kFrequencyId;
-		UString(info.title, USTRINGSIZE(info.title)).assign(USTRING("Frequency"));
-		UString(info.shortTitle, USTRINGSIZE(info.shortTitle)).assign(USTRING("Freq"));
-		UString(info.units, USTRINGSIZE(info.units)).assign(USTRING("Hz"));
-		info.stepCount = 0;
-		info.defaultNormalizedValue = .0f;
-		info.unitId = kRootUnitId;
-		info.flags = ParameterInfo::kCanAutomate;
-	}
-	
-	bool FrequencyParameter::setNormalized(ParamValue v) {
-		bool changed = Parameter::setNormalized(v);
-
-		if (changed && listener_ != nullptr) {
-			listener_->parameterValueChanged(info.id, v);
-		}
-
-		return changed;
 	}
 
-	void FrequencyParameter::toString(ParamValue normValue, String128 string) const
-	{
-		char text[32];
-		sprintf(text, "%.4f", normValue);
-
-		UString(string, 128).fromAscii(text);
+	FrequencyParameter::FrequencyParameter(const FrequencyParameter& other) : Parameter(other) {
 	}
 
-	bool FrequencyParameter::fromString(const TChar* string, ParamValue& normValue) const
-	{
-		UString wrapper((TChar*)string, 128);
-		wrapper.scanFloat(normValue);
-
-		return true;
+	double FrequencyParameter::toPlainValue(double valueNormalized) {
+		return valueNormalized - .5f;
 	}
 
-	void FrequencyParameter::setListener(IParameterListener* listener) {
-		listener_ = listener;
+	double FrequencyParameter::toNormalizedValue(double plainValue) {
+		return plainValue + .5f;
 	}
 }

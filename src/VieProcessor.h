@@ -1,6 +1,5 @@
 #pragma once
 
-//#include <public.sdk/source/vst/vstaudioeffect.h>
 #include <pluginterfaces/vst/ivstcomponent.h>
 #include <pluginterfaces/vst/ivstaudioprocessor.h>
 #include <pluginterfaces/vst/ivstprocesscontext.h>

@@ -1,12 +1,12 @@
 #pragma once
 
-#include <public.sdk/source/vst/vstparameters.h>
+#include <pluginterfaces/vst/vsttypes.h>
 
 namespace live::tritone::vie {
 	class IParameterListener
 	{
 	public:
-		virtual void parameterValueChanged(Steinberg::int32 parameterId, Steinberg::Vst::ParamValue normalizedValue) = 0;
+		virtual void parameterValueChanged(Steinberg::Vst::ParamID parameterId, Steinberg::Vst::ParamValue normalizedValue) = 0;
 	};
 } // namespace
 

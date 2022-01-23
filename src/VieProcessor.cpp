@@ -1,7 +1,6 @@
 #include <pluginterfaces/base/ibstream.h>
 #include <pluginterfaces/vst/ivstparameterchanges.h>
 #include <pluginterfaces/vst/ivstevents.h>
-#include <base/source/fstreamer.h>
 
 #include <q/support/literals.hpp>
 

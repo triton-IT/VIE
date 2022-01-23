@@ -1,4 +1,4 @@
-#include <public.sdk/source/main/pluginfactory.h>
+#include <pluginterfaces/vst/ivstcomponent.h>
 
 #include "VieProcessor.h"
 #include "VieController.h"
@@ -20,27 +20,44 @@ using namespace Steinberg::Vst;
 
 using namespace live::tritone::vie;
 
-BEGIN_FACTORY_DEF(COMPANY_NAME,
-	COMPANY_URL,
-	COMPANY_EMAIL)
+using namespace Steinberg;
 
-	DEF_CLASS2(INLINE_UID_FROM_FUID(ProcessorUID),
-		PClassInfo::kManyInstances,
-		kVstAudioEffectClass,
-		PLUGIN_NAME,
-		Vst::kDistributable,
-		Vst::PlugType::kFxInstrument,
-		VERSION,
-		kVstVersionString,
-		VieProcessor::createInstance)
+#include <public.sdk/source/main/pluginfactory.h>
 
-	DEF_CLASS2(INLINE_UID_FROM_FUID(ControllerUID),
-		PClassInfo::kManyInstances,
-		kVstComponentControllerClass,
-		PLUGIN_NAME,
-		0,
-		"",
-		VERSION,
-		kVstVersionString,
-		VieController::createInstance)
-END_FACTORY
+SMTG_EXPORT_SYMBOL IPluginFactory* PLUGIN_API GetPluginFactory() {
+	if (!gPluginFactory) {
+		static PFactoryInfo factoryInfo(COMPANY_NAME, COMPANY_URL, COMPANY_EMAIL, Vst::kDefaultFactoryFlags);
+		gPluginFactory = new CPluginFactory(factoryInfo);
+
+		TUID processorTUID = INLINE_UID_FROM_FUID(ProcessorUID);
+		static PClassInfo2 processorClass(
+			processorTUID,
+			PClassInfo::kManyInstances, 
+			kVstAudioEffectClass, 
+			PLUGIN_NAME, 
+			Vst::kDistributable, 
+			Vst::PlugType::kFxInstrument, 
+			0, 
+			VERSION, 
+			kVstVersionString
+		);
+		gPluginFactory->registerClass(&processorClass, VieProcessor::createInstance);
+
+		TUID controllerTUID = INLINE_UID_FROM_FUID(ControllerUID);
+		static PClassInfo2 controllerClass(
+			controllerTUID,
+			PClassInfo::kManyInstances, 
+			kVstComponentControllerClass, 
+			PLUGIN_NAME, 
+			0, 
+			"", 
+			0, 
+			VERSION, 
+			kVstVersionString
+		);
+		gPluginFactory->registerClass(&controllerClass, VieController::createInstance);
+	} else
+		gPluginFactory->addRef();
+
+	return gPluginFactory;
+}

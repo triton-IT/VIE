@@ -3,20 +3,23 @@
 #include <pluginterfaces/gui/iplugview.h>
 #include <pluginterfaces/base/ibstream.h>
 
-#include "NkDiligent.h"
 #include <RenderDevice.h>
 #include <DeviceContext.h>
 #include <RefCntAutoPtr.hpp>
 
 #include <thread>
 
+#include <vector>
+
+#include "NkDiligent.h"
 #include "UserInterface.h"
 #include "NodeEditor.h"
 #include "UserInterfaceStyle.h"
 
-#include "FrequencyParameter.h"
+#include "Parameter.h"
 
 #include <EngineFactoryVk.h>
+#include "Parameter.h"
 
 #ifdef _WIN32
 	#include "windows/EditorView.h"
@@ -26,7 +29,7 @@ namespace live::tritone::vie {
 	class VieView : public Steinberg::IPlugView
 	{
 	public:
-		VieView(FrequencyParameter* frequencyParameter);
+		VieView(const std::vector<Parameter>& parameters);
 		~VieView();
 
 		Steinberg::tresult PLUGIN_API queryInterface(const Steinberg::TUID iid, void** obj) SMTG_OVERRIDE;
@@ -62,7 +65,7 @@ namespace live::tritone::vie {
 		Steinberg::uint32 nbRef_;
 		Steinberg::IPlugFrame* frame_;
 
-		FrequencyParameter* frequencyParameter_;
+		//FrequencyParameter* frequencyParameter_;
 
 		int width_;
 		int height_;

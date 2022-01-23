@@ -1,13 +1,17 @@
 #pragma once
 
+#include <pluginterfaces/vst/ivsteditcontroller.h>
 #include <pluginterfaces/vst/ivstnoteexpression.h>
 #include <pluginterfaces/vst/ivstmessage.h>
 #include <pluginterfaces/vst/vsttypes.h>
 #include <pluginterfaces/base/iupdatehandler.h>
 
+#include <map>
+#include <vector>
+
 #include "VieView.h"
 #include "IParameterListener.h"
-#include "FrequencyParameter.h"
+#include "Parameter.h"
 
 namespace live::tritone::vie {
 	class VieController : 
@@ -53,15 +57,17 @@ namespace live::tritone::vie {
 		//Inheritance from IDependent
 		void PLUGIN_API update(Steinberg::FUnknown* changedUnknown, Steinberg::int32 message) SMTG_OVERRIDE;
 
-		void parameterValueChanged(Steinberg::int32 parameterId, Steinberg::Vst::ParamValue normalizedValue) SMTG_OVERRIDE;
+		void parameterValueChanged(Steinberg::Vst::ParamID parameterId, Steinberg::Vst::ParamValue normalizedValue) SMTG_OVERRIDE;
 
 	private:
 		Steinberg::IPtr<Steinberg::FUnknown> hostContext;
 		Steinberg::uint32 nbRef_;
 		VieView* view_;
-		FrequencyParameter* frequencyParameter_;
+		//FrequencyParameter* frequencyParameter_;
 		Steinberg::Vst::IComponentHandler* componentHandler_;
 
-		Steinberg::Vst::ParameterContainer parameters_;
+		std::vector<Parameter> parametersList_;
+		//VST needs to access parameters by index but also by identifier. So map the parameter id with the index of the parameter in the vector.
+		std::map<unsigned long, int> parametersMap_;
 	};
 } // namespace

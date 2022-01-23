@@ -6,6 +6,7 @@ set(HEADER_FILES
     "Constants.h"
     "FrequencyParameter.h"
     "IParameterListener.h"
+    "Parameter.h"
     "Logger.h"
     "NkDiligent.h"
     "NodeEditor.h"
@@ -32,6 +33,7 @@ source_group("Resources" FILES ${RESOURCES})
 set(SOURCE_FILES
     "FrequencyParameter.cpp"
     "Logger.cpp"
+    "Parameter.cpp"
     "NkDiligent.cpp"
     "NodeEditor.cpp"
     "NodeLink.cpp"

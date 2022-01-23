@@ -67,18 +67,18 @@ namespace live::tritone::vie {
 	Diligent::RefCntAutoPtr<Diligent::IRenderDevice>  VieView::m_pDevice;
 	Diligent::RefCntAutoPtr<Diligent::IDeviceContext> VieView::m_pImmediateContext;
 
-	VieView::VieView(FrequencyParameter* frequencyParameter) :
+	VieView::VieView(const std::vector<Parameter>& parameters) :
 		nbRef_(0),
 		frame_(nullptr),
 		width_(1024),
 		height_(600),
-		frequencyParameter_(frequencyParameter),
+		//frequencyParameter_(frequencyParameter),
 		isRendererRunning(true),
 		m_pNkDlgCtx(nullptr),
 		m_pNkCtx(nullptr),
 		m_pEditorView(nullptr)
 	{
-		//TODO: Move this static initialization to another class.
+		//TODO: Move this static initialization elsewhere.
 		if (pFactoryVk == nullptr) {
 			pFactoryVk = GetEngineFactoryVk();
 			EngineVkCreateInfo EngineCI;

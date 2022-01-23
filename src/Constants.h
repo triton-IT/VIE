@@ -1,7 +1,5 @@
 #pragma once
 
-#include <pluginterfaces/base/ftypes.h>
-
 #define VERSION "0.0.0.1"
 #define PLUGIN_NAME "Vie"
 #define COMPANY_NAME "tritone.live"

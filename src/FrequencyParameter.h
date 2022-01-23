@@ -1,23 +1,15 @@
 #pragma once
 
-#include <pluginterfaces/base/ftypes.h>
-
-#include "IParameterListener.h"
+#include "Parameter.h"
 
 namespace live::tritone::vie {
-	class FrequencyParameter : public Steinberg::Vst::Parameter
+	class FrequencyParameter : public Parameter
 	{
 	public:
 		FrequencyParameter();
+		FrequencyParameter(const FrequencyParameter& other);
 
-		bool setNormalized(Steinberg::Vst::ParamValue v) override;
-
-		void toString(Steinberg::Vst::ParamValue normValue, Steinberg::Vst::String128 string) const SMTG_OVERRIDE;
-		bool fromString(const Steinberg::Vst::TChar* string, Steinberg::Vst::ParamValue& normValue) const SMTG_OVERRIDE;
-
-		void setListener(IParameterListener* listener);
-
-	private:
-		IParameterListener* listener_;
+		virtual double toPlainValue(double valueNormalized);
+		virtual double toNormalizedValue(double plainValue);
 	};
 }
