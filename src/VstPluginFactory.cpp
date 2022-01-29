@@ -10,28 +10,15 @@ using namespace Steinberg::Vst;
 //Define IID for steinberg sdk that are not defined in pluginterfaces.
 namespace Steinberg {
 	namespace Vst {
-		const FUID IAudioProcessor::iid(IAudioProcessor_iid);
 		const FUID IComponent::iid(IComponent_iid);
+		const FUID IAudioProcessor::iid(IAudioProcessor_iid);
+		const FUID IProcessContextRequirements::iid(IProcessContextRequirements_iid);
 		const FUID IConnectionPoint::iid(IConnectionPoint_iid);
 		const FUID IEditController::iid(IEditController_iid);
-		const FUID IProcessContextRequirements::iid(IProcessContextRequirements_iid);
 	}
 }
 
 namespace live::tritone::vie {
-	static VstPluginFactory* gPluginFactory = nullptr;
-
-	__declspec (dllexport) IPluginFactory* __stdcall GetPluginFactory() {
-		if (!gPluginFactory) {
-			gPluginFactory = new VstPluginFactory;
-		}
-		else {
-			gPluginFactory->addRef();
-		}
-
-		return gPluginFactory;
-	}
-
 	VstPluginFactory::VstPluginFactory() {
 		strcpy(factoryInfo_.vendor, COMPANY_NAME);
 		strcpy(factoryInfo_.url, COMPANY_URL);
@@ -54,7 +41,7 @@ namespace live::tritone::vie {
 		controllerClassInfoW_.fromAscii(controllerClassInfo_);
 
 		TUID processorTUID = INLINE_UID_FROM_FUID(ProcessorUID);
-		static PClassInfo2 processorClass(
+		processorClassInfo_ = PClassInfo2(
 			processorTUID,
 			PClassInfo::kManyInstances,
 			kVstAudioEffectClass,
@@ -66,7 +53,7 @@ namespace live::tritone::vie {
 			kVstVersionString
 		);
 
-		processorClassInfoW_.fromAscii(controllerClassInfo_);
+		processorClassInfoW_.fromAscii(processorClassInfo_);
 	}
 
 	tresult VstPluginFactory::getClassInfoUnicode(int32 index, PClassInfoW* info) {
@@ -176,4 +163,19 @@ namespace live::tritone::vie {
 		//FIXME: Try to delete this if 0.
 		return --nbRef_;
 	}
+}
+
+using namespace live::tritone::vie;
+
+static VstPluginFactory* gPluginFactory = nullptr;
+
+__declspec (dllexport) IPluginFactory* __stdcall GetPluginFactory() {
+	if (!gPluginFactory) {
+		gPluginFactory = new VstPluginFactory;
+	}
+	else {
+		gPluginFactory->addRef();
+	}
+
+	return gPluginFactory;
 }
