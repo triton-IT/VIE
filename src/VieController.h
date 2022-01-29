@@ -21,7 +21,7 @@ namespace live::tritone::vie {
 		public IParameterListener
 	{
 	public:
-		static FUnknown* createInstance(void*)
+		static FUnknown* createInstance(void* /*context*/)
 		{
 			return (IEditController*) new VieController;
 		}

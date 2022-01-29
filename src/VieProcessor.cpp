@@ -92,6 +92,7 @@ namespace live::tritone::vie {
 	}
 
 	uint32 PLUGIN_API VieProcessor::release() {
+		//FIXME: Try to delete this if 0.
 		return --nbRef_;
 	}
 

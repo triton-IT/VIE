@@ -27,6 +27,8 @@
 
 #include <cstdarg>
 
+//Nuklear implementation must be defined once and only once. It is contained in nuklear header. So use implementation here.
+#define NK_IMPLEMENTATION
 #include "NkDiligent.h"
 
 #include "RenderDevice.h"

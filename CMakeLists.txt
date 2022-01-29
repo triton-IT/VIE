@@ -10,8 +10,8 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 project(VIE)
 
-message(STATUS "VIE> Adding Steinberg VST SDK")
-add_subdirectory(third_party/steinberg_vst_sdk)
+message(STATUS "VIE> Adding VST interfaces")
+add_subdirectory(third_party/vst)
 
 message(STATUS "VIE> Adding Tinyobjloader")
 add_subdirectory(third_party/tinyobjloader)
@@ -19,8 +19,8 @@ add_subdirectory(third_party/tinyobjloader)
 message(STATUS "VIE> Adding STB")
 add_subdirectory(third_party/stb)
 
-message(STATUS "VIE> Adding nuklear")
-add_subdirectory(third_party/nuklear)
+#message(STATUS "VIE> Adding nuklear")
+#add_subdirectory(third_party/nuklear)
 
 message(STATUS "VIE> Adding Diligent engine core")
 add_subdirectory(third_party/diligent_core)

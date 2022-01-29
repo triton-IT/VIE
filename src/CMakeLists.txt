@@ -1,5 +1,10 @@
 set(PROJECT_NAME VIE)
 
+
+set(NUKLEAR_DIRECTORY
+    "../third_party/nuklear"
+)
+
 # Source groups
 set(HEADER_FILES
     "Application.h"
@@ -17,6 +22,8 @@ set(HEADER_FILES
     "VieProcessor.h"
     "VieView.h"
     "Bus.h"
+	"VstPluginFactory.h"
+	${NUKLEAR_DIRECTORY}"/nuklear.h"
 )
 source_group("Header Files" FILES ${HEADER_FILES})
 
@@ -37,13 +44,13 @@ set(SOURCE_FILES
     "NkDiligent.cpp"
     "NodeEditor.cpp"
     "NodeLink.cpp"
-    "PluginFactory.cpp"
     "UserInterface.cpp"
     "UserInterfaceStyle.cpp"
     "VieController.cpp"
     "VieProcessor.cpp"
     "VieView.cpp"
     "Bus.cpp"
+	"VstPluginFactory.cpp"
 )
 source_group("Source Files" FILES ${SOURCE_FILES})
 
@@ -56,45 +63,51 @@ set(ALL_FILES
 	${HEADER_FILES}
 	${RESOURCES}
 	${SOURCE_FILES}
+	${NUKLEAR_FILES}
 )
+
+if( WIN32 )
+	add_compile_definitions(NOMINMAX)
+endif()
 
 # Target
 add_library(${PROJECT_NAME} SHARED ${ALL_FILES})
 
 # Dependencies
-message(STATUS "VIE> C++> Setting-up dependencies")
+message(STATUS "VIE> Setting-up dependencies")
 add_dependencies(${PROJECT_NAME}
-	base
-	pluginterfaces
-	sdk
+	vst_interfaces
     tinyobjloader
 	stb
-	nuklear
+	#nuklear
 	diligent_core
 	Diligent-GraphicsEngineVk-static
 	cycfi_q
 )
 
-message(STATUS "VIE> C++> Linking-up Steinberg VST SDK")
-target_link_libraries(${PROJECT_NAME} base pluginterfaces sdk)
+message(STATUS "VIE> Adding nuklear header directory")
+target_include_directories(VIE PUBLIC ${NUKLEAR_DIRECTORY})	
 
-message(STATUS "VIE> C++> Linking-up tinyObjLoader")
+message(STATUS "VIE> Linking-up VST interfaces")
+target_link_libraries(${PROJECT_NAME} vst_interfaces)
+
+message(STATUS "VIE> Linking-up tinyObjLoader")
 target_link_libraries(${PROJECT_NAME} tinyobjloader)
 
-message(STATUS "VIE> C++> Linking-up STB")
+message(STATUS "VIE> Linking-up STB")
 target_link_libraries(${PROJECT_NAME} stb)
 
-message(STATUS "VIE> C++> Linking-up nuklear")
-target_link_libraries(${PROJECT_NAME} nuklear)
+#message(STATUS "VIE> Linking-up nuklear")
+#target_link_libraries(${PROJECT_NAME} nuklear)
 
-message(STATUS "VIE> C++> Linking-up Diligent engine")
+message(STATUS "VIE> Linking-up Diligent engine")
 target_link_libraries(${PROJECT_NAME}
     Diligent-Common
     Diligent-GraphicsTools
     Diligent-GraphicsEngineVk-static
 	)
 
-message(STATUS "VIE> C++> Linking-up cycfi Q")
+message(STATUS "VIE> Linking-up cycfi Q")
 target_link_libraries(${PROJECT_NAME} cycfi_q)
 
 # Copy built VST to VST3 system folder
@@ -141,7 +154,7 @@ add_custom_command(
 	POST_BUILD
 	COMMAND ${CMAKE_COMMAND} -E make_directory "${SPIRV_OUTPUT_FOLDER}"
 )
-  
+
 foreach(GLSL ${GLSL_SOURCE_FILES})
   message(STATUS "VIE> Shaders> Iterating on shader ${GLSL}")  
   get_filename_component(FILE_NAME ${GLSL} NAME)
