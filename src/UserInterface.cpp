@@ -3,11 +3,14 @@
 #include <climits>
 #include <time.h>
 #include <cmath>
+#include <stdlib.h>
 
 #include "UserInterface.h"
 
 namespace live::tritone::vie {
-    int UserInterface::render(nk_context* ctx)
+    int UserInterface::render(nk_context* ctx,
+        std::vector<Parameter*>& parameters_,
+        std::string log)
     {
         static nk_flags window_flags = 0;
 
@@ -15,10 +18,16 @@ namespace live::tritone::vie {
         {
             static int check = nk_true;
             nk_layout_row_dynamic(ctx, 20, 1);
-            nk_label(ctx, "Nuklear", NK_TEXT_LEFT);
-            nk_label(ctx, "By Micha Mettke", NK_TEXT_LEFT);
-            nk_label(ctx, "nuklear is licensed under the public domain License.",  NK_TEXT_LEFT);
-            nk_checkbox_label(ctx, "check", &check);
+            nk_label(ctx, "Logs", NK_TEXT_LEFT);
+            
+            nk_label(ctx, log.c_str(), NK_TEXT_LEFT);
+            
+            if (nk_checkbox_label(ctx, "check", &check)) {
+                nk_label(ctx, "Check event.", NK_TEXT_LEFT);
+                //FIXME: Pass right parameter.
+                Parameter* parameter = parameters_.at(2);
+                parameter->setNormalizedValue(check);
+            }
         }
         nk_end(ctx);
 

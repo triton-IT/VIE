@@ -7,6 +7,7 @@
 #include "Constants.h"
 
 #include "FrequencyParameter.h"
+#include "WaveFormParameter.h"
 
 using namespace Steinberg;
 using namespace Steinberg::Vst;
@@ -16,7 +17,6 @@ namespace live::tritone::vie {
 		nbRef_(0),
 		view_(nullptr),
 		componentHandler_(nullptr)
-		//frequencyParameter_(new FrequencyParameter())
 	{
 		//Notify this controller when parameter change. By design, we want the controller to communicate with VST host. Not the view or any parameter.
 		//frequencyParameter_->setListener(this);
@@ -26,8 +26,6 @@ namespace live::tritone::vie {
 		if (view_ != nullptr) {
 			delete view_;
 		}
-
-		//delete frequencyParameter_;
 	}
 
 	tresult PLUGIN_API VieController::queryInterface(const TUID iid, void** obj) {
@@ -72,13 +70,19 @@ namespace live::tritone::vie {
 	{
 		hostContext = context;
 
-		Parameter bypass(kBypassId, L"Bypass", L"bp", L"", 1, .0f, kRootUnitId, ParameterInfo::kCanAutomate | ParameterInfo::kIsBypass);
+		//FIXME: Do not call new here or delete variables on terminate.
+		Parameter* bypass = new Parameter(kBypassId, L"Bypass", L"bp", L"", 1, .0f, kRootUnitId, ParameterInfo::kCanAutomate | ParameterInfo::kIsBypass);
 		parametersList_.push_back(bypass);
 		parametersMap_[kBypassId] = parametersList_.size() - 1;
 
-		FrequencyParameter frequency;
+		FrequencyParameter* frequency = new FrequencyParameter();
 		parametersList_.push_back(frequency);
-		parametersMap_[kBypassId] = parametersList_.size() - 1;
+		parametersMap_[frequency->getId()] = parametersList_.size() - 1;
+
+		WaveFormParameter* waveForm = new WaveFormParameter();
+		waveForm->setListener(this);
+		parametersList_.push_back(waveForm);
+		parametersMap_[waveForm->getId()] = parametersList_.size() - 1;
 
 		return kResultOk;
 	}
@@ -110,17 +114,17 @@ namespace live::tritone::vie {
 
 	tresult PLUGIN_API VieController::getParameterInfo(int32 paramIndex, ParameterInfo& info /*out*/)
 	{
-		Parameter& parameter = parametersList_[paramIndex];
+		Parameter* parameter = parametersList_[paramIndex];
 
 		ParameterInfo paramInfo;
-		paramInfo.id = parameter.getId();
-		parameter.getTitle(paramInfo.title);
-		parameter.getShortTitle(paramInfo.shortTitle);
-		parameter.getUnits(paramInfo.units);
-		paramInfo.stepCount = parameter.getStepCount();
-		paramInfo.defaultNormalizedValue = parameter.getDefaultNormalizedValue();
-		paramInfo.unitId = parameter.getUnitId();
-		paramInfo.flags = parameter.getFlags();
+		paramInfo.id = parameter->getId();
+		parameter->getTitle(paramInfo.title);
+		parameter->getShortTitle(paramInfo.shortTitle);
+		parameter->getUnits(paramInfo.units);
+		paramInfo.stepCount = parameter->getStepCount();
+		paramInfo.defaultNormalizedValue = parameter->getDefaultNormalizedValue();
+		paramInfo.unitId = parameter->getUnitId();
+		paramInfo.flags = parameter->getFlags();
 
 		info = paramInfo;
 		return kResultOk;
@@ -128,9 +132,9 @@ namespace live::tritone::vie {
 
 	tresult PLUGIN_API VieController::getParamStringByValue(ParamID id, ParamValue valueNormalized /*in*/, Steinberg::Vst::String128 string /*out*/)
 	{
-		Parameter parameter = parametersList_[parametersMap_[id]];
+		Parameter *parameter = parametersList_[parametersMap_[id]];
 
-		if (parameter.getStepCount() == 1) {
+		if (parameter->getStepCount() == 1) {
 			if (valueNormalized > 0.5) {
 				UString(string, str16BufferSize(String128)).assign(USTRING("On"));
 			} else {
@@ -145,9 +149,9 @@ namespace live::tritone::vie {
 
 	tresult PLUGIN_API VieController::getParamValueByString(ParamID id, TChar* string /*in*/, Steinberg::Vst::ParamValue& valueNormalized /*out*/)
 	{
-		Parameter parameter = parametersList_[parametersMap_[id]];
+		Parameter* parameter = parametersList_[parametersMap_[id]];
 
-		if (parameter.getStepCount() == 1) {
+		if (parameter->getStepCount() == 1) {
 			if (wcscmp(string, L"On") == 0) {
 				valueNormalized = 0.0f;
 			} else {
@@ -163,26 +167,26 @@ namespace live::tritone::vie {
 
 	ParamValue PLUGIN_API VieController::normalizedParamToPlain(ParamID id, ParamValue valueNormalized)
 	{
-		Parameter parameter = parametersList_[parametersMap_[id]];
-		return parameter.toPlainValue(valueNormalized);
+		Parameter* parameter = parametersList_[parametersMap_[id]];
+		return parameter->toPlainValue(valueNormalized);
 	}
 
 	ParamValue PLUGIN_API VieController::plainParamToNormalized(ParamID id, ParamValue plainValue)
 	{
-		Parameter parameter = parametersList_[parametersMap_[id]];
-		return parameter.toNormalizedValue(plainValue);
+		Parameter* parameter = parametersList_[parametersMap_[id]];
+		return parameter->toNormalizedValue(plainValue);
 	}
 
 	ParamValue PLUGIN_API VieController::getParamNormalized(ParamID id)
 	{
-		Parameter parameter = parametersList_[parametersMap_[id]];
-		return parameter.getNormalizedValue();
+		Parameter* parameter = parametersList_[parametersMap_[id]];
+		return parameter->getNormalizedValue();
 	}
 
 	tresult PLUGIN_API VieController::setParamNormalized(ParamID id, ParamValue value)
 	{
-		Parameter parameter = parametersList_[parametersMap_[id]];
-		if (parameter.setNormalizedValue(value)) {
+		Parameter* parameter = parametersList_[parametersMap_[id]];
+		if (parameter->setNormalizedValue(value)) {
 			//TODO: Update GUI with new value.
 			return kResultOk;
 		}
@@ -256,11 +260,13 @@ namespace live::tritone::vie {
 	}
 
 	void VieController::parameterValueChanged(Steinberg::Vst::ParamID parameterId, Steinberg::Vst::ParamValue /*normalizedValue*/) {
-		Parameter parameter = parametersList_[parameterId];
+		Parameter* parameter = parametersList_[parameterId];
+
+		view_->debug(parameter);
 
 		if (componentHandler_ != nullptr) {
 			componentHandler_->beginEdit(parameterId);
-			componentHandler_->performEdit(parameterId, parameter.getNormalizedValue());
+			componentHandler_->performEdit(parameterId, parameter->getNormalizedValue());
 			componentHandler_->endEdit(parameterId);
 		}
 	}

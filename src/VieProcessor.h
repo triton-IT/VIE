@@ -8,6 +8,7 @@
 #include <pluginterfaces/vst/ivstevents.h>
 
 #include <q/synth/sin.hpp>
+#include <q/synth/saw.hpp>
 #include <q/synth/envelope.hpp>
 #include <q/fx/lowpass.hpp>
 #include <q/fx/waveshaper.hpp>
@@ -19,7 +20,6 @@
 
 namespace live::tritone::vie {
 	class VieProcessor : 
-		//public Steinberg::Vst::AudioEffect,
 		public Steinberg::Vst::IComponent, 
 		public Steinberg::Vst::IAudioProcessor, 
 		public Steinberg::Vst::IProcessContextRequirements,
@@ -74,6 +74,7 @@ namespace live::tritone::vie {
 
 	private:
 		bool active_;
+		bool processing_;
 
 		Steinberg::IPtr<Steinberg::FUnknown> hostContext;
 		Steinberg::uint32 nbRef_;
@@ -91,12 +92,10 @@ namespace live::tritone::vie {
 		Bus* getBus(Steinberg::Vst::MediaType type, Steinberg::Vst::BusDirection dir, int index);
 
 		float frequencyMultiplicator_;
+		float waveForm_;
 		bool bypass_;
 
 		Steinberg::Vst::ProcessSetup processSetup_;
-
-		//std::vector<Steinberg::Vst::SpeakerArrangement> inputSpeakerArrangements;
-		//std::vector<Steinberg::Vst::SpeakerArrangement> outputSpeakerArrangements;
 
 		std::vector<Bus*> audioInputBuses;
 		std::vector<Bus*> audioOutputBuses;

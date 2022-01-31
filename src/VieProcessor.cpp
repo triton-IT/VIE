@@ -28,7 +28,9 @@ namespace live::tritone::vie {
 
 	VieProcessor::VieProcessor() :
 		active_(false),
+		processing_(false),
 		frequencyMultiplicator_(0.f),
+		waveForm_(.0f),
 		phases_(),
 		bypass_(false),
 		notes_(),
@@ -261,6 +263,7 @@ namespace live::tritone::vie {
 	}
 
 	uint32 PLUGIN_API VieProcessor::getLatencySamples() {
+		//TODO: Compute needed latency based on components used.
 		return 0;
 	}
 
@@ -276,22 +279,25 @@ namespace live::tritone::vie {
 	}
 
 	tresult PLUGIN_API VieProcessor::setProcessing(TBool state) {
-		return kNotImplemented;
+		processing_ = state;
+
+		return kResultOk;
 	}
 
 	tresult PLUGIN_API VieProcessor::process(ProcessData& data)
 	{
 		tresult result = kResultOk;
+		if (active_ && processing_) {
+			handleParameterChanges(data.inputParameterChanges);
+			processEvents(data.inputEvents);
 
-		handleParameterChanges(data.inputParameterChanges);
-		processEvents(data.inputEvents);
-
-		if (data.numOutputs > 0 && data.numSamples > 0) {
-			if (data.symbolicSampleSize == kSample32) {
-				result = processSamples<Sample32>(data.outputs[0], data.numSamples);
-			}
-			else {
-				result = processSamples<Sample64>(data.outputs[0], data.numSamples);
+			if (data.numOutputs > 0 && data.numSamples > 0) {
+				if (data.symbolicSampleSize == kSample32) {
+					result = processSamples<Sample32>(data.outputs[0], data.numSamples);
+				}
+				else {
+					result = processSamples<Sample64>(data.outputs[0], data.numSamples);
+				}
 			}
 		}
 
@@ -299,11 +305,14 @@ namespace live::tritone::vie {
 	}
 
 	uint32 PLUGIN_API VieProcessor::getTailSamples() {
+		//TODO: Compute based on internal components.
 		return kNoTail;
 	}
 
 	uint32 PLUGIN_API VieProcessor::getProcessContextRequirements() {
 		uint32 flags = 0;
+
+		//TODO: Do not request all but compute based on internal components.
 
 		//Plugin is generic, so get as many context requirements as possible.
 		flags |= Flags::kNeedSystemTime;
@@ -373,7 +382,12 @@ namespace live::tritone::vie {
 				for (int frame = 0; frame < numSamples; ++frame) {
 					auto env_ = (*envelope_)();
 
-					float value = q::sin(phase_);
+					float value = .0f;
+					if (waveForm_ == .0f) {
+						value = q::sin(phase_);
+					} else {
+						value = q::saw(phase_);
+					}
 
 					value = clip_(value * env_);
 
@@ -414,16 +428,23 @@ namespace live::tritone::vie {
 				int32 pointsCount = paramValueQueue->getPointCount();
 				switch (paramValueQueue->getParameterId())
 				{
+				case kBypassId:
+					if (paramValueQueue->getPoint(pointsCount - 1, sampleOffset, paramValue) == kResultTrue)
+					{
+						bypass_ = (paramValue > 0.5f);
+					}
+					break;
+
 				case kFrequencyId:
 					if (paramValueQueue->getPoint(pointsCount - 1, sampleOffset, paramValue) == kResultTrue) {
 						frequencyMultiplicator_ = paramValue;
 					}
 					break;
 
-				case kBypassId:
+				case kWaveFormId:
 					if (paramValueQueue->getPoint(pointsCount - 1, sampleOffset, paramValue) == kResultTrue)
 					{
-						bypass_ = (paramValue > 0.5f);
+						waveForm_ = (paramValue > 0.5f);
 					}
 					break;
 				}

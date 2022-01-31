@@ -67,7 +67,8 @@ namespace live::tritone::vie {
 	Diligent::RefCntAutoPtr<Diligent::IRenderDevice>  VieView::m_pDevice;
 	Diligent::RefCntAutoPtr<Diligent::IDeviceContext> VieView::m_pImmediateContext;
 
-	VieView::VieView(const std::vector<Parameter>& parameters) :
+	VieView::VieView(std::vector<Parameter*>& parameters) :
+		parameters_(parameters),
 		nbRef_(0),
 		frame_(nullptr),
 		width_(1024),
@@ -228,7 +229,7 @@ namespace live::tritone::vie {
 	void VieView::render() {
 		nk_input_end(m_pNkCtx);
 		if (m_pNkCtx) {
-			m_ui.render(m_pNkCtx);
+			m_ui.render(m_pNkCtx, parameters_, debugLog_);
 			m_nodeEditor.render(m_pNkCtx);
 		}
 		nk_input_begin(m_pNkCtx);
@@ -354,5 +355,15 @@ namespace live::tritone::vie {
 			return;
 
 		m_pSwapChain->Present();
+	}
+
+	void VieView::debug(Parameter* parameter) {
+		wchar_t titleUnicode[128];
+		parameter->getTitle(titleUnicode);
+		char title[128] = { '\0' };
+		wcstombs(title, titleUnicode, 128);
+		debugLog_.append(title);
+		debugLog_.append(std::to_string(parameter->toPlainValue(parameter->getNormalizedValue())));
+		debugLog_.append("\n");
 	}
 } // namespace

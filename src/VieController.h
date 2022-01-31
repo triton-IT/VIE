@@ -63,10 +63,9 @@ namespace live::tritone::vie {
 		Steinberg::IPtr<Steinberg::FUnknown> hostContext;
 		Steinberg::uint32 nbRef_;
 		VieView* view_;
-		//FrequencyParameter* frequencyParameter_;
 		Steinberg::Vst::IComponentHandler* componentHandler_;
 
-		std::vector<Parameter> parametersList_;
+		std::vector<Parameter*> parametersList_;
 		//VST needs to access parameters by index but also by identifier. So map the parameter id with the index of the parameter in the vector.
 		std::map<unsigned long, int> parametersMap_;
 	};

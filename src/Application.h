@@ -16,5 +16,6 @@ extern live::tritone::vie::utils::Logger debugLogger;
 enum
 {
 	kBypassId,
-	kFrequencyId	
+	kFrequencyId,
+	kWaveFormId
 };

@@ -29,7 +29,7 @@ namespace live::tritone::vie {
 	class VieView : public Steinberg::IPlugView
 	{
 	public:
-		VieView(const std::vector<Parameter>& parameters);
+		VieView(std::vector<Parameter*>& parameters);
 		~VieView();
 
 		Steinberg::tresult PLUGIN_API queryInterface(const Steinberg::TUID iid, void** obj) SMTG_OVERRIDE;
@@ -55,17 +55,19 @@ namespace live::tritone::vie {
 
 		void render();
 
+		void debug(Parameter* parameter);
+
 	private:
 		static Diligent::IEngineFactoryVk* pFactoryVk;
 		static Diligent::RefCntAutoPtr<Diligent::IRenderDevice>  m_pDevice;
 		static Diligent::RefCntAutoPtr<Diligent::IDeviceContext> m_pImmediateContext;
 
+		std::vector<Parameter*>& parameters_;
+
 		EditorView* m_pEditorView;
 
 		Steinberg::uint32 nbRef_;
 		Steinberg::IPlugFrame* frame_;
-
-		//FrequencyParameter* frequencyParameter_;
 
 		int width_;
 		int height_;
@@ -76,6 +78,7 @@ namespace live::tritone::vie {
 
 		nk_diligent_context* m_pNkDlgCtx;
 		nk_context* m_pNkCtx;
+		std::string debugLog_;
 
 		UserInterface m_ui;
 		NodeEditor m_nodeEditor;
