@@ -2,40 +2,31 @@ cmake_minimum_required(VERSION 3.16.0 FATAL_ERROR)
 
 set(CMAKE_SYSTEM_VERSION 10.0.19041.0 CACHE STRING "" FORCE)
 
-project(Vie)
+set (CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin)
 
-set(CYCFI_Q_DIR "${CMAKE_CURRENT_SOURCE_DIR}/cycfi/q" CACHE PATH "Cycfi q directory.")
-set(CYCFI_ELEMENTS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/cycfi/elements/" CACHE PATH "Cycfi elements directory.")
-set(STEINBERG_VST3SDK_DIR "${CMAKE_CURRENT_SOURCE_DIR}/steinberg/vst3sdk-3.7.2/vst3sdk" CACHE PATH "Steinberg VST3 SDK directory.")
-set(NLOHMANN_JSON_DIR "${CMAKE_CURRENT_SOURCE_DIR}/nlohmann/json" CACHE PATH "Nlohmann json directory.")
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
-# Set target arch type if empty. Visual studio solution generator provides it.
-if(NOT CMAKE_VS_PLATFORM_NAME)
-    set(CMAKE_VS_PLATFORM_NAME "x64")
-endif()
+project(VIE)
 
-# Configure elements
-if( WIN32)
-	set(ELEMENTS_HOST_UI_LIBRARY "win32")
-elseif( APPLE )
-	set(ELEMENTS_HOST_UI_LIBRARY "cocoa")
-elseif( UNIX )
-	set(ELEMENTS_HOST_UI_LIBRARY "gtk")
-endif()
+message(STATUS "VIE> Adding VST interfaces")
+add_subdirectory(third_party/vst)
 
-set(ELEMENTS_BUILD_EXAMPLES OFF)
+message(STATUS "VIE> Adding Tinyobjloader")
+add_subdirectory(third_party/tinyobjloader)
 
-add_subdirectory(${CYCFI_ELEMENTS_DIR}/ ${CMAKE_BINARY_DIR}/elements)
+message(STATUS "VIE> Adding STB")
+add_subdirectory(third_party/stb)
 
-# Configure Steingberg VST3 SDK
-set(SMTG_ADD_VST3_PLUGINS_SAMPLES OFF CACHE BOOL "")
-set(SMTG_ADD_VSTGUI OFF CACHE BOOL "")
-set(SMTG_CREATE_BUNDLE_FOR_WINDOWS OFF CACHE BOOL "")
-set(SMTG_CREATE_PLUGIN_LINK OFF CACHE BOOL "")
-set(VSTGUI_ENABLE_DEPRECATED_METHODS OFF CACHE BOOL "")
-set(SMTG_CXX_STANDARD 17 CACHE STRING "")
+#message(STATUS "VIE> Adding nuklear")
+#add_subdirectory(third_party/nuklear)
 
-add_subdirectory(${STEINBERG_VST3SDK_DIR} ${CMAKE_BINARY_DIR}/vst_sdk)
+message(STATUS "VIE> Adding Diligent engine core")
+add_subdirectory(third_party/diligent_core)
 
-# Configure VIE
-add_subdirectory(Vie)
+message(STATUS "VIE> Adding cycfi Q")
+add_subdirectory(third_party/cycfi_q)
+
+message(STATUS "VIE> Adding main application")
+add_subdirectory(src)
