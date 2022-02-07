@@ -1,0 +1,94 @@
+{
+  "processors": [
+    {
+      "id": 0,
+      "name": "Midi",
+      "type": "midi"
+    },
+    {
+      "id": 1,
+      "name": "Sin generator",
+      "type": "oscillator",
+      "bindings": {
+        "type": "sin"
+      }
+    },
+    {
+      "id": 2,
+      "name": "Envelope 1",
+      "type": "envelope",
+      "bindings": {
+        "attack_rate": 30,
+        "decay_rate": 70,
+        "sustain_level": -6,
+        "sustain_rate": 50000.0,
+        "release_rate": 100
+      }
+    },
+    {
+      "id": 3,
+      "name": "Multiplier 1",
+      "type": "multiplier"
+    },
+    {
+      "id": 4,
+      "name": "Mixer 1",
+      "type": "mixer"
+    },
+    {
+      "id": 5,
+      "name": "output",
+      "type": "output"
+    }
+  ],
+  "relations": [
+    {
+      "sourceComponent": 0,
+      "sourceOutputSlot": 3,
+      "targetComponent": 1,
+      "targetInputSlot": 0
+    },
+    {
+      "sourceComponent": 0,
+      "sourceOutputSlot": 4,
+      "targetComponent": 2,
+      "targetInputSlot": 0
+    },
+    {
+      "sourceComponent": 0,
+      "sourceOutputSlot": 0,
+      "targetComponent": 2,
+      "targetInputSlot": 1
+    },
+    {
+      "sourceComponent": 0,
+      "sourceOutputSlot": 1,
+      "targetComponent": 2,
+      "targetInputSlot": 2
+    },
+    {
+      "sourceComponent": 1,
+      "sourceOutputSlot": 1,
+      "targetComponent": 3,
+      "targetInputSlot": 0
+    },
+    {
+      "sourceComponent": 2,
+      "sourceOutputSlot": 3,
+      "targetComponent": 3,
+      "targetInputSlot": 1
+    },
+    {
+      "sourceComponent": 3,
+      "sourceOutputSlot": 2,
+      "targetComponent": 4,
+      "targetInputSlot": 0
+    },
+    {
+      "sourceComponent": 4,
+      "sourceOutputSlot": 1,
+      "targetComponent": 5,
+      "targetInputSlot": 0
+    }
+  ]
+}
