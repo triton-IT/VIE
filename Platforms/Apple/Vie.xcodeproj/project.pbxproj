@@ -24,8 +24,8 @@
 		34C0FDD528144A8E00DA10B1 /* vieauv3Parameters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C0FDD428144A8E00DA10B1 /* vieauv3Parameters.swift */; };
 		34C0FDD928144A8E00DA10B1 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 34C0FDD728144A8E00DA10B1 /* MainInterface.storyboard */; };
 		34C0FDDD28144A8E00DA10B1 /* vieauv3.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 34C0FDBC28144A8E00DA10B1 /* vieauv3.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		34C0FDE428144AA100DA10B1 /* www in Resources */ = {isa = PBXBuildFile; fileRef = 34C0FDE328144AA100DA10B1 /* www */; };
-		34C0FDE528144AA100DA10B1 /* www in Resources */ = {isa = PBXBuildFile; fileRef = 34C0FDE328144AA100DA10B1 /* www */; };
+		34C354F92815A99200605131 /* view in Resources */ = {isa = PBXBuildFile; fileRef = 34C354F82815A99200605131 /* view */; };
+		34C354FA2815A99200605131 /* view in Resources */ = {isa = PBXBuildFile; fileRef = 34C354F82815A99200605131 /* view */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -78,7 +78,7 @@
 		34C0FDD828144A8E00DA10B1 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
 		34C0FDDA28144A8E00DA10B1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		34C0FDDE28144A8E00DA10B1 /* vieauv3.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = vieauv3.entitlements; sourceTree = "<group>"; };
-		34C0FDE328144AA100DA10B1 /* www */ = {isa = PBXFileReference; lastKnownFileType = folder; path = www; sourceTree = "<group>"; };
+		34C354F82815A99200605131 /* view */ = {isa = PBXFileReference; lastKnownFileType = folder; name = view; path = ../../src/view; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -102,7 +102,7 @@
 		34C0FD9728144A6D00DA10B1 = {
 			isa = PBXGroup;
 			children = (
-				34C0FDE328144AA100DA10B1 /* www */,
+				34C354F82815A99200605131 /* view */,
 				34C0FDA228144A6D00DA10B1 /* vie */,
 				34C0FDBD28144A8E00DA10B1 /* vieauv3 */,
 				34C0FDA128144A6D00DA10B1 /* Products */,
@@ -244,7 +244,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 34C0FD9B28144A6D00DA10B1 /* Build configuration list for PBXProject "vie" */;
+			buildConfigurationList = 34C0FD9B28144A6D00DA10B1 /* Build configuration list for PBXProject "Vie" */;
 			compatibilityVersion = "Xcode 13.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -268,7 +268,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				34C0FDE428144AA100DA10B1 /* www in Resources */,
+				34C354F92815A99200605131 /* view in Resources */,
 				34C0FDB028144A6F00DA10B1 /* LaunchScreen.storyboard in Resources */,
 				34C0FDAD28144A6F00DA10B1 /* Assets.xcassets in Resources */,
 				34C0FDAB28144A6D00DA10B1 /* Main.storyboard in Resources */,
@@ -280,9 +280,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				34C0FDC528144A8E00DA10B1 /* DSPKernel.hpp in Resources */,
+				34C354FA2815A99200605131 /* view in Resources */,
 				34C0FDD928144A8E00DA10B1 /* MainInterface.storyboard in Resources */,
 				34C0FDCC28144A8E00DA10B1 /* vieauv3DSPKernel.hpp in Resources */,
-				34C0FDE528144AA100DA10B1 /* www in Resources */,
 				34C0FDC928144A8E00DA10B1 /* BufferedAudioBus.hpp in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -586,7 +586,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		34C0FD9B28144A6D00DA10B1 /* Build configuration list for PBXProject "vie" */ = {
+		34C0FD9B28144A6D00DA10B1 /* Build configuration list for PBXProject "Vie" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				34C0FDB228144A6F00DA10B1 /* Debug */,

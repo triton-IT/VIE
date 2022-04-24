@@ -25,7 +25,7 @@ public class AudioUnitViewController: AUViewController, AUAudioUnitFactory {
         
         /// this one may work
         let myProjectBundle:Bundle = Bundle.main
-        let myUrl = myProjectBundle.url(forResource: "www/index", withExtension: "html")!
+        let myUrl = myProjectBundle.url(forResource: "view/index", withExtension: "html")!
         webview.loadFileURL(myUrl,allowingReadAccessTo: myUrl)
 
         
