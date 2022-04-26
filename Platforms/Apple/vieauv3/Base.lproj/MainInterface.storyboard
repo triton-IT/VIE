@@ -30,7 +30,7 @@
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                     </view>
                     <connections>
-                        <outlet property="webview" destination="VcQ-CP-Elk" id="MyU-NK-NRT"/>
+                        <outlet property="webview" destination="VcQ-CP-Elk" id="p6z-fA-mqa"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
