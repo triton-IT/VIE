@@ -20,10 +20,10 @@ public class AudioUnitViewController: AUViewController, AUAudioUnitFactory {
         /// this one work
 //        let myURL = URL(string:"https://www.apple.com/")
 //        let myRequest = URLRequest(url: myURL!)
-//        webView.load(myRequest)
+//        webview.load(myRequest)
         
         
-        /// this one may work
+        // this one may work
         let myProjectBundle:Bundle = Bundle.main
         let myUrl = myProjectBundle.url(forResource: "view/index", withExtension: "html")!
         webview.loadFileURL(myUrl,allowingReadAccessTo: myUrl)
