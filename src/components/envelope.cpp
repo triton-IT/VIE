@@ -136,9 +136,10 @@ namespace live::tritone::vie::processor::component
 
 	void envelope::set_zombie_notes_ids(const std::unordered_set<uint32_t>& zombie_notes_ids)
 	{
-		for (auto zombie_note_id : zombie_notes_ids) {
+		//Method only useful for inputs, for them to replay zombie note.
+		/*for (auto zombie_note_id : zombie_notes_ids) {
 			given_zombie_notes_ids_.emplace(zombie_note_id);
-		}
+		}*/
 	}
 
 	uint_fast16_t envelope::get_slot_id(const std::string& slot_name)

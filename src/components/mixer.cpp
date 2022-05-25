@@ -34,6 +34,8 @@ namespace live::tritone::vie::processor::component
 
 		average_.output_id = id_;
 
+		note_mode note_mode = note_mode::zombie;
+
 		//If nb of samples is greater than the ones currently allocated, reallocate.
 		if (output_process_data.num_samples > average_.nb_samples)
 		{
@@ -52,10 +54,15 @@ namespace live::tritone::vie::processor::component
 			float nb_amplitude_for_frame = 0;
 			for (uint_fast32_t amplitude_id = 0; amplitude_id < nb_generics_; amplitude_id++)
 			{
-				if (generics_[amplitude_id].nb_samples > frame)
+				float_array_component_output& generic = generics_[amplitude_id];
+				if (generic.nb_samples > frame)
 				{
 					nb_amplitude_for_frame++;
-					amplitude += generics_[amplitude_id].values[frame];
+					amplitude += generic.values[frame];
+				}
+
+				if (note_mode == note_mode::zombie && generic.note_mode != note_mode::zombie) {
+					note_mode = note_mode::normal;
 				}
 			}
 			if (nb_amplitude_for_frame > 0)
@@ -67,6 +74,8 @@ namespace live::tritone::vie::processor::component
 				average_.values[frame] = 0;
 			}
 		}
+
+		average_.note_mode = note_mode;
 	}
 
 	uint_fast32_t mixer::get_output_values(const uint_fast16_t slot_id, void* output_values[])

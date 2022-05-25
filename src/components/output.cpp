@@ -42,17 +42,30 @@ namespace live::tritone::vie::processor::component
 		const auto left = static_cast<float*>(bus_buffer->channels_buffer[0]);
 		const auto right = static_cast<float*>(bus_buffer->channels_buffer[1]);
 
-		const float* amplitudes = amplitudes_->values;
+		if (amplitudes_->note_mode == note_mode::normal) {
+			const float* amplitudes = amplitudes_->values;
 
-		if (amplitudes_->nb_samples == output_process_data.num_samples)
-		{
-			memcpy(left, amplitudes, output_process_data.num_samples * sizeof(amplitudes));
-			memcpy(right, amplitudes, output_process_data.num_samples * sizeof(amplitudes));
+			if (amplitudes_->nb_samples == output_process_data.num_samples)
+			{
+				memcpy(left, amplitudes, output_process_data.num_samples * sizeof(amplitudes));
+				memcpy(right, amplitudes, output_process_data.num_samples * sizeof(amplitudes));
+			}
+			else
+			{
+				memset(left, 0, output_process_data.num_samples * sizeof(amplitudes));
+				memset(right, 0, output_process_data.num_samples * sizeof(amplitudes));
+			}
 		}
-		else
-		{
-			memset(left, 0, output_process_data.num_samples * sizeof(amplitudes));
-			memset(right, 0, output_process_data.num_samples * sizeof(amplitudes));
+		else {
+			//Set output to 0 because we received a ghost note.
+			if (output_process_data.outputs->sample_size == sample_size::sample_size32) {
+				memset(left, 0, output_process_data.num_samples * sizeof(uint32_t));
+				memset(right, 0, output_process_data.num_samples * sizeof(uint32_t));
+			}
+			else {
+				memset(left, 0, output_process_data.num_samples * sizeof(uint64_t));
+				memset(right, 0, output_process_data.num_samples * sizeof(uint64_t));
+			}
 		}
 	}
 

@@ -10,6 +10,12 @@
 
 namespace live::tritone::vie
 {
+	enum class note_mode
+	{
+		normal,
+		zombie
+	};
+
 	struct audio_bus_buffers
 	{
 		long num_channels;
@@ -32,11 +38,12 @@ namespace live::tritone::vie
 	template <typename T>
 	struct simple_component_output
 	{
-		simple_component_output() : output_id(0), value()
+		simple_component_output() : output_id(0), note_mode(note_mode::normal), value()
 		{
 		}
 
 		uint32_t output_id;
+		note_mode note_mode;
 		T value;
 	};
 
@@ -45,11 +52,12 @@ namespace live::tritone::vie
 	template <typename T>
 	struct array_component_output
 	{
-		array_component_output() : output_id(0), nb_samples(0), values(nullptr)
+		array_component_output() : output_id(0), note_mode(note_mode::normal), nb_samples(0), values(nullptr)
 		{
 		}
 
 		uint32_t output_id;
+		note_mode note_mode;
 		uint_fast32_t nb_samples;
 		T* values;
 	};

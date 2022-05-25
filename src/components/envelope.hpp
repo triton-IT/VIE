@@ -82,7 +82,7 @@ namespace live::tritone::vie::processor::component
 		/**
 		 * A given zombie note is a zombie note that is set as input.
 		 */
-		std::unordered_set<uint32_t> given_zombie_notes_ids_;
+		//std::unordered_set<uint32_t> given_zombie_notes_ids_;
 		/**
 		 * A requested zombie note is a zombie note that this component requests to caller.
 		 */

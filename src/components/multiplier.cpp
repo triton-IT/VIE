@@ -63,18 +63,23 @@ namespace live::tritone::vie::processor::component
 				output.output_id = id_;
 
 				float operand1 = 0;
+				note_mode operand1_node_mode = note_mode::normal;
 				if (nb_inputs_multipliers_ > input_id) {
 					operand1 = multipliers_[input_id].values[frame];
+					operand1_node_mode = multipliers_[input_id].note_mode;
 				}
 
 				float operand2 = 0;
+				note_mode operand2_node_mode = note_mode::normal;
 				if (nb_inputs_multiplicands_ > input_id) {
 					operand2 = multiplicands_[input_id].values[frame];
+					operand2_node_mode = multipliers_[input_id].note_mode;
 				}
 
 				const float result = operand1 * operand2;
 
 				output.values[frame] = result;
+				output.note_mode = (operand1_node_mode == note_mode::zombie && operand2_node_mode == note_mode::zombie)?note_mode::zombie:note_mode::normal;
 			}
 
 			nb_products_++;

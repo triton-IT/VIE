@@ -15,8 +15,6 @@ namespace live::tritone::vie::processor::component
 		nb_values_(0),
 		frequencies_outputs_(),
 		velocities_outputs_(),
-		nb_are_actives_values_(0),
-		are_actives_outputs_(),
 		nb_notes_on_values_(0),
 		notes_on_outputs_(),
 		nb_notes_off_values_(0),
@@ -48,10 +46,6 @@ namespace live::tritone::vie::processor::component
 		{
 			return velocities_output_id;
 		}
-		if (slot_name == are_actives_output_name)
-		{
-			return are_actives_output_id;
-		}
 		if (slot_name == notes_on_output_name)
 		{
 			return notes_on_output_id;
@@ -82,34 +76,34 @@ namespace live::tritone::vie::processor::component
 	{
 		//Get all outputs information from midi event.
 		nb_values_ = 0;
-		nb_are_actives_values_ = 0;
 		for (auto& [note_id, note_on_event] : notes_)
 		{
 			//If element is found as 'note on' it's not a zombie anymore.
 			zombie_notes_.erase(note_id);
 
-			handle_processing_(note_id, note_on_event);
+			handle_processing_(note_id, note_mode::normal, note_on_event);
 		}
 
 		for (auto& [note_id, note_on_event] : zombie_notes_)
 		{
-			handle_processing_(note_id, note_on_event);
+			handle_processing_(note_id, note_mode::zombie, note_on_event);
 		}
 	}
 
-	void midi::handle_processing_(uint32_t note_id, const note_event& note_event)
+	void midi::handle_processing_(uint32_t note_id, note_mode note_mode, const note_event& note_event)
 	{
 		const float frequency = midi_notes_frequencies[note_event.id];
 
 		float_component_output& frequencies_output = frequencies_outputs_[nb_values_];
 		frequencies_output.output_id = note_id;
+		frequencies_output.note_mode = note_mode;
 		frequencies_output.value = frequency;
 
 		float_component_output& velocities_output = velocities_outputs_[nb_values_];
 		velocities_output.output_id = note_id;
+		velocities_output.note_mode = note_mode;
 		velocities_output.value = note_event.velocity;
 
-		are_actives_outputs_[nb_values_] = note_id;
 		nb_values_++;
 	}
 
@@ -125,10 +119,6 @@ namespace live::tritone::vie::processor::component
 		case velocities_output_id:
 			*output_values = velocities_outputs_;
 			nb_values = nb_values_;
-			break;
-		case are_actives_output_id:
-			*output_values = are_actives_outputs_;
-			nb_values = nb_are_actives_values_;
 			break;
 		case notes_on_output_id:
 			*output_values = notes_on_outputs_;
@@ -158,6 +148,8 @@ namespace live::tritone::vie::processor::component
 
 	void midi::set_zombie_notes_ids(const std::unordered_set<uint32_t>& zombie_notes_ids)
 	{
+		zombie_notes_.clear();
+
 		for (auto note_id : zombie_notes_ids) {
 			note_event& event = notes_[note_id];
 			zombie_notes_.emplace(note_id, event);
