@@ -90,9 +90,8 @@ namespace live::tritone::vie::processor::component
 		return true;
 	}
 
-	uint_fast8_t mixer::get_zombie_notes_ids(std::unordered_set<uint32_t>& zombie_notes_ids)
+	void mixer::get_zombie_notes_ids(std::unordered_set<uint32_t>& zombie_notes_ids)
 	{
-		return 0;
 	}
 
 	void mixer::set_zombie_notes_ids(const std::unordered_set<uint32_t>& zombie_notes_idss)

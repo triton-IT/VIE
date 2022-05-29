@@ -128,7 +128,7 @@ namespace live::tritone::vie
 		 * Get the identifiers of the zombie notes.
 		 * A zombie note is a note that must continue to play even if it as been released (e.g. during the release phase of an envelope).
 		 */
-		virtual uint_fast8_t get_zombie_notes_ids(std::unordered_set<uint32_t>& zombie_notes_ids) = 0;
+		virtual void get_zombie_notes_ids(std::unordered_set<uint32_t>& zombie_notes_ids) = 0;
 
 		/**
 		 * Set the identifiers of zombie notes.

@@ -37,7 +37,7 @@ namespace live::tritone::vie::processor::component
 
 		bool has_finished() override;
 
-		uint_fast8_t get_zombie_notes_ids(std::unordered_set<uint32_t>& zombie_notes_ids) override;
+		void get_zombie_notes_ids(std::unordered_set<uint32_t>& zombie_notes_ids) override;
 
 		void set_zombie_notes_ids(const std::unordered_set<uint32_t>& zombie_notes_ids) override;
 
@@ -86,6 +86,6 @@ namespace live::tritone::vie::processor::component
 		/**
 		 * A requested zombie note is a zombie note that this component requests to caller.
 		 */
-		std::unordered_set<uint32_t> requested_zombie_notes_ids_;
+		std::unordered_set<uint32_t> zombie_notes_ids_;
 	};
 } // namespace

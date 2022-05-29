@@ -36,7 +36,7 @@ namespace live::tritone::vie::processor::component
 
 		bool has_finished() override;
 
-		uint_fast8_t get_zombie_notes_ids(std::unordered_set<uint32_t>& zombie_notes_ids) override;
+		void get_zombie_notes_ids(std::unordered_set<uint32_t>& zombie_notes_ids) override;
 
 		void set_zombie_notes_ids(const std::unordered_set<uint32_t>& zombie_notes_ids) override;
 
@@ -70,6 +70,7 @@ namespace live::tritone::vie::processor::component
 		note_event_component_output notes_off_outputs_[32];
 		
 		std::unordered_map<uint32_t, note_event> zombie_notes_;
+		std::unordered_set<uint32_t> notes_ids_to_delete_;
 
 		void handle_processing_(uint32_t note_id, note_mode note_mode, const note_event& note_on_event);
 	};

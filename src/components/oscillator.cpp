@@ -95,7 +95,6 @@ namespace live::tritone::vie::processor::component
 					output.values[frame] = q::sin(phaseDescriptor.phase_iterator);
 					++phaseDescriptor.phase_iterator;
 				}
-				nb_outputs_++;
 				break;
 			case signal_type::saw:
 				for (uint_fast32_t frame = 0; frame < output_process_data.num_samples; frame++)
@@ -103,9 +102,9 @@ namespace live::tritone::vie::processor::component
 					output.values[frame] = q::saw(phaseDescriptor.phase_iterator);
 					++phaseDescriptor.phase_iterator;
 				}
-				nb_outputs_++;
 				break;
 			}
+			nb_outputs_++;
 		}
 	}
 
@@ -120,9 +119,8 @@ namespace live::tritone::vie::processor::component
 		return true;
 	}
 
-	uint_fast8_t oscillator::get_zombie_notes_ids(std::unordered_set<uint32_t>& zombie_notes_ids)
+	void oscillator::get_zombie_notes_ids(std::unordered_set<uint32_t>& zombie_notes_ids)
 	{
-		return 0;
 	}
 
 	void oscillator::set_zombie_notes_ids(const std::unordered_set<uint32_t>& zombie_notes_ids)

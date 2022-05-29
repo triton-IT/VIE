@@ -126,7 +126,10 @@ namespace live::tritone::vie
 			process(source_component, output_process_data);
 		}
 
-		/*for (int i = 0; i < nb_midi_components_; i++)
+		//Now that process has been called with previous zombie notes, we can clean them and start again collecting them.
+		zombie_notes_ids_.clear();
+
+		for (int i = 0; i < nb_midi_components_; i++)
 		{
 			auto* source_component = sources_components_[i];
 			get_zombie_notes_ids(source_component, zombie_notes_ids_);
@@ -136,7 +139,7 @@ namespace live::tritone::vie
 		{
 			auto* source_component = sources_components_[i];
 			set_zombie_notes_ids(source_component, zombie_notes_ids_);
-		}*/
+		}
 	}
 
 	void processor_orchestrator::process(processor_component* source_component,
