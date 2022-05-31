@@ -19,8 +19,7 @@ namespace live::tritone::vie::processor::component
 		velocities_filled_(false),
 		notes_on_filled_(false),
 		notes_off_filled_(false),
-		nb_outputs_(0),
-		nb_zombie_notes_(0)
+		nb_outputs_(0)
 	{
 	}
 
@@ -97,10 +96,9 @@ namespace live::tritone::vie::processor::component
 					output.values[frame] = q_envelope->operator()();
 				}
 
-				//FIXME: Move this to can_process().
 				if(q_envelope->state() == cycfi::q::envelope::note_off_state)
 				{
-					requested_zombie_notes_ids_.erase(note_id);
+					zombie_notes_ids_.erase(note_id);
 					envelopes_->erase(envelope_iterator);
 					delete q_envelope;
 				}
@@ -122,23 +120,17 @@ namespace live::tritone::vie::processor::component
 		return false;
 	}
 
-	uint_fast8_t envelope::get_zombie_notes_ids(std::unordered_set<uint32_t>& zombie_notes_ids)
+	void envelope::get_zombie_notes_ids(std::unordered_set<uint32_t>& zombie_notes_ids)
 	{
-		for(auto zombie_note_id: requested_zombie_notes_ids_)
+		for(auto zombie_note_id: zombie_notes_ids_)
 		{
 			zombie_notes_ids.insert(zombie_note_id);
 		}
-
-		requested_zombie_notes_ids_.clear();
-
-		return nb_zombie_notes_;
 	}
 
 	void envelope::set_zombie_notes_ids(const std::unordered_set<uint32_t>& zombie_notes_ids)
 	{
-		for (auto zombie_note_id : zombie_notes_ids) {
-			given_zombie_notes_ids_.emplace(zombie_note_id);
-		}
+		//Method only useful for inputs, for them to replay zombie note.
 	}
 
 	uint_fast16_t envelope::get_slot_id(const std::string& slot_name)
@@ -164,9 +156,7 @@ namespace live::tritone::vie::processor::component
 	}
 
 	void envelope::set_input_values(const uint_fast16_t slot_id, void* values, const uint_fast32_t nb_values)
-	{
-		nb_zombie_notes_ = 0;
-		
+	{		
 		switch (slot_id)
 		{
 		case notes_on_input_id:
@@ -179,8 +169,7 @@ namespace live::tritone::vie::processor::component
 				uint32_t note_id = note_event_component.output_id;
 
 				//FIXME: Remove this zombie notes.
-				requested_zombie_notes_ids_.insert(note_id);
-				nb_zombie_notes_++;
+				zombie_notes_ids_.insert(note_id);
 
 				q::envelope* q_envelope;
 				if (auto envelope_iterator = envelopes_->find(note_id); envelope_iterator != envelopes_->end())
@@ -190,7 +179,7 @@ namespace live::tritone::vie::processor::component
 				else
 				{
 					q::envelope::config config;
-					config.release_rate = 1000_ms;
+					config.release_rate = 10_s;
 					q_envelope = new q::envelope(static_cast<uint32_t>(config, sample_rate_));
 					envelopes_->emplace(note_id, q_envelope);
 				}
@@ -212,9 +201,12 @@ namespace live::tritone::vie::processor::component
 			break;
 		case velocities_input_id:
 			assert(nb_values <= 32);
-			nb_velocities_inputs_ = nb_values;
+			// If nb of velocity is positive, set it. Otherwise, let is as-is, it will serve for the note off.
 			if (nb_values > 0) {
-				velocities_ = static_cast<float_component_output*>(values);
+				nb_velocities_inputs_ = nb_values;
+				if (nb_values > 0) {
+					velocities_ = static_cast<float_component_output*>(values);
+				}
 			}
 			velocities_filled_ = true;
 			break;

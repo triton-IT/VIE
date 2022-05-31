@@ -34,7 +34,7 @@ namespace live::tritone::vie::processor::component
 
 		bool has_finished() override;
 
-		uint_fast8_t get_zombie_notes_ids(std::unordered_set<uint32_t>& zombie_notes_ids) override;
+		void get_zombie_notes_ids(std::unordered_set<uint32_t>& zombie_notes_ids) override;
 
 		void set_zombie_notes_ids(const std::unordered_set<uint32_t>& zombie_notes_ids) override;
 
@@ -56,8 +56,13 @@ namespace live::tritone::vie::processor::component
 		std::string type_;
 		double sample_rate_;
 
-		std::unordered_map<uint_fast16_t, cycfi::q::phase_iterator>* current_phases_iterators_;
-		std::unordered_map<uint_fast16_t, cycfi::q::phase_iterator>* next_phases_iterators_;
+		struct phase_descriptor {
+			note_mode note_mode;
+			cycfi::q::phase_iterator phase_iterator;
+		};
+
+		std::unordered_map<uint_fast16_t, phase_descriptor>* current_phases_descriptors_;
+		std::unordered_map<uint_fast16_t, phase_descriptor>* next_phases_descriptors_;
 
 		enum class signal_type
 		{

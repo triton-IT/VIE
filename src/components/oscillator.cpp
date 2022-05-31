@@ -13,8 +13,8 @@ namespace live::tritone::vie::processor::component
 		id_(oscillator_definition["id"]),
 		name_(oscillator_definition["name"]),
 		sample_rate_(.0),
-		current_phases_iterators_(new std::unordered_map<uint_fast16_t, q::phase_iterator>),
-		next_phases_iterators_(new std::unordered_map<uint_fast16_t, q::phase_iterator>),
+		current_phases_descriptors_(new std::unordered_map<uint_fast16_t, phase_descriptor>),
+		next_phases_descriptors_(new std::unordered_map<uint_fast16_t, phase_descriptor>),
 		can_process_(false),
 		nb_outputs_(0)
 	{
@@ -41,8 +41,8 @@ namespace live::tritone::vie::processor::component
 			}
 		}
 
-		delete current_phases_iterators_;
-		delete next_phases_iterators_;
+		delete current_phases_descriptors_;
+		delete next_phases_descriptors_;
 	}
 
 	uint16_t oscillator::get_id()
@@ -70,7 +70,7 @@ namespace live::tritone::vie::processor::component
 		can_process_ = false;
 
 		nb_outputs_ = 0;
-		for (auto& [noteId, phaseIterator] : *current_phases_iterators_)
+		for (auto& [noteId, phaseDescriptor] : *current_phases_descriptors_)
 		{
 			float_array_component_output& output = outputs_[nb_outputs_];
 
@@ -86,25 +86,25 @@ namespace live::tritone::vie::processor::component
 			}
 
 			output.output_id = noteId;
+			output.note_mode = phaseDescriptor.note_mode;
 			switch (signal_type_)
 			{
 			case signal_type::sin:
 				for (uint_fast32_t frame = 0; frame < output_process_data.num_samples; frame++)
 				{
-					output.values[frame] = q::sin(phaseIterator);
-					++phaseIterator;
+					output.values[frame] = q::sin(phaseDescriptor.phase_iterator);
+					++phaseDescriptor.phase_iterator;
 				}
-				nb_outputs_++;
 				break;
 			case signal_type::saw:
 				for (uint_fast32_t frame = 0; frame < output_process_data.num_samples; frame++)
 				{
-					output.values[frame] = q::saw(phaseIterator);
-					++phaseIterator;
+					output.values[frame] = q::saw(phaseDescriptor.phase_iterator);
+					++phaseDescriptor.phase_iterator;
 				}
-				nb_outputs_++;
 				break;
 			}
+			nb_outputs_++;
 		}
 	}
 
@@ -119,9 +119,8 @@ namespace live::tritone::vie::processor::component
 		return true;
 	}
 
-	uint_fast8_t oscillator::get_zombie_notes_ids(std::unordered_set<uint32_t>& zombie_notes_ids)
+	void oscillator::get_zombie_notes_ids(std::unordered_set<uint32_t>& zombie_notes_ids)
 	{
-		return 0;
 	}
 
 	void oscillator::set_zombie_notes_ids(const std::unordered_set<uint32_t>& zombie_notes_ids)
@@ -153,29 +152,33 @@ namespace live::tritone::vie::processor::component
 
 				const auto note_id = component_output.output_id;
 
-				if (const auto phase_iterator = current_phases_iterators_->find(note_id); phase_iterator != current_phases_iterators_->end())
+				if (const auto current_phase_descriptor = current_phases_descriptors_->find(note_id); current_phase_descriptor != current_phases_descriptors_->end())
 				{
 					//If frequency was already set before, we don't want to erase its phase.
 					//So, keep the old one.
-					next_phases_iterators_->operator[](note_id) = phase_iterator->second;
+					phase_descriptor& phase_descriptor = next_phases_descriptors_->operator[](note_id);
+					phase_descriptor.note_mode = component_output.note_mode;
+					phase_descriptor.phase_iterator = current_phase_descriptor->second.phase_iterator;
 				}
 				else
 				{
 					//If frequency is a new one, create a phase for it.
 					const auto raw_frequency = component_output.value;
 					const auto frequency = q::frequency(static_cast<double>(raw_frequency));
-					next_phases_iterators_->operator[](note_id) = q::phase_iterator(
-						frequency, static_cast<std::uint32_t>(sample_rate_));
+
+					phase_descriptor& phase_descriptor = next_phases_descriptors_->operator[](note_id);
+					phase_descriptor.note_mode = component_output.note_mode;
+					phase_descriptor.phase_iterator = q::phase_iterator(frequency, static_cast<std::uint32_t>(sample_rate_));
 				}
 			}
 
 			//Switching between current and next phases is done to simplify the deletion of phases no more used.
-			std::unordered_map<uint_fast32_t, q::phase_iterator>* tmp_phases_iterators = current_phases_iterators_;
-			current_phases_iterators_ = next_phases_iterators_;
-			next_phases_iterators_ = tmp_phases_iterators;
+			std::unordered_map<uint_fast32_t, phase_descriptor>* tmp_phases_descriptors = current_phases_descriptors_;
+			current_phases_descriptors_ = next_phases_descriptors_;
+			next_phases_descriptors_ = tmp_phases_descriptors;
 
 			//Clear the phases for next call.
-			next_phases_iterators_->clear();
+			next_phases_descriptors_->clear();
 
 			can_process_ = true;
 		}

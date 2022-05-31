@@ -15,8 +15,6 @@ namespace live::tritone::vie::processor::component
 		nb_values_(0),
 		frequencies_outputs_(),
 		velocities_outputs_(),
-		nb_are_actives_values_(0),
-		are_actives_outputs_(),
 		nb_notes_on_values_(0),
 		notes_on_outputs_(),
 		nb_notes_off_values_(0),
@@ -48,10 +46,6 @@ namespace live::tritone::vie::processor::component
 		{
 			return velocities_output_id;
 		}
-		if (slot_name == are_actives_output_name)
-		{
-			return are_actives_output_id;
-		}
 		if (slot_name == notes_on_output_name)
 		{
 			return notes_on_output_id;
@@ -82,34 +76,33 @@ namespace live::tritone::vie::processor::component
 	{
 		//Get all outputs information from midi event.
 		nb_values_ = 0;
-		nb_are_actives_values_ = 0;
 		for (auto& [note_id, note_on_event] : notes_)
 		{
 			//If element is found as 'note on' it's not a zombie anymore.
 			zombie_notes_.erase(note_id);
 
-			handle_processing_(note_id, note_on_event);
+			handle_processing_(note_id, note_mode::normal, note_on_event);
 		}
 
 		for (auto& [note_id, note_on_event] : zombie_notes_)
 		{
-			handle_processing_(note_id, note_on_event);
+			handle_processing_(note_id, note_mode::zombie, note_on_event);
 		}
 	}
 
-	void midi::handle_processing_(uint32_t note_id, const note_event& note_event)
+	void midi::handle_processing_(uint32_t note_id, note_mode note_mode, const note_event& note_event)
 	{
-		const float frequency = midi_notes_frequencies[note_event.id];
-
 		float_component_output& frequencies_output = frequencies_outputs_[nb_values_];
 		frequencies_output.output_id = note_id;
+		frequencies_output.note_mode = note_mode;
+		const float frequency = midi_notes_frequencies[note_event.id];
 		frequencies_output.value = frequency;
 
 		float_component_output& velocities_output = velocities_outputs_[nb_values_];
 		velocities_output.output_id = note_id;
+		velocities_output.note_mode = note_mode;
 		velocities_output.value = note_event.velocity;
 
-		are_actives_outputs_[nb_values_] = note_id;
 		nb_values_++;
 	}
 
@@ -125,10 +118,6 @@ namespace live::tritone::vie::processor::component
 		case velocities_output_id:
 			*output_values = velocities_outputs_;
 			nb_values = nb_values_;
-			break;
-		case are_actives_output_id:
-			*output_values = are_actives_outputs_;
-			nb_values = nb_are_actives_values_;
 			break;
 		case notes_on_output_id:
 			*output_values = notes_on_outputs_;
@@ -151,16 +140,31 @@ namespace live::tritone::vie::processor::component
 		return true;
 	}
 
-	uint_fast8_t midi::get_zombie_notes_ids(std::unordered_set<uint32_t>& zombie_notes_ids)
+	void midi::get_zombie_notes_ids(std::unordered_set<uint32_t>& zombie_notes_ids)
 	{
-		return 0;
 	}
 
 	void midi::set_zombie_notes_ids(const std::unordered_set<uint32_t>& zombie_notes_ids)
 	{
+		zombie_notes_.clear();
+
 		for (auto note_id : zombie_notes_ids) {
-			note_event& event = notes_[note_id];
-			zombie_notes_.emplace(note_id, event);
+			auto note_iterator = notes_.find(note_id);
+			if (note_iterator != notes_.end()) {
+				zombie_notes_.emplace(note_id, note_iterator->second);
+			}
+		}
+
+		// Delete all notes that are off and not zombie.
+		for (auto iterator = notes_ids_to_delete_.begin(), end = notes_ids_to_delete_.end(); iterator != end;) {
+			auto& note_id_to_delete = *iterator;
+			if (zombie_notes_ids.find(note_id_to_delete) == zombie_notes_ids.end()) {
+				notes_.erase(note_id_to_delete);
+				iterator = notes_ids_to_delete_.erase(iterator);
+			}
+			else {
+				iterator++;
+			}
 		}
 	}
 
@@ -180,12 +184,15 @@ namespace live::tritone::vie::processor::component
 	{
 		const uint32_t midi_note_id = (get_id() << sizeof(uint16_t)) + note_off_event.pitch;
 		note_off_event.id = midi_note_id;
-		notes_.erase(midi_note_id);
 		
 		note_event_component_output note_off_event_output;
 		note_off_event_output.output_id = midi_note_id;
 		note_off_event_output.value = note_off_event;
 		notes_off_outputs_[nb_notes_off_values_] = note_off_event_output;
 		nb_notes_off_values_++;
+
+		// We cannot erase note from notes_ because a zombie note could still need its definition.
+		// So mark it as deleted and delete if not required by a zombie note.
+		notes_ids_to_delete_.emplace(midi_note_id);
 	}
 } // namespace

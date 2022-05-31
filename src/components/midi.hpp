@@ -36,7 +36,7 @@ namespace live::tritone::vie::processor::component
 
 		bool has_finished() override;
 
-		uint_fast8_t get_zombie_notes_ids(std::unordered_set<uint32_t>& zombie_notes_ids) override;
+		void get_zombie_notes_ids(std::unordered_set<uint32_t>& zombie_notes_ids) override;
 
 		void set_zombie_notes_ids(const std::unordered_set<uint32_t>& zombie_notes_ids) override;
 
@@ -51,12 +51,10 @@ namespace live::tritone::vie::processor::component
 		static constexpr int notes_on_output_id = 0;
 		static constexpr const char* notes_off_output_name = "notes off output";
 		static constexpr int notes_off_output_id = 1;
-		static constexpr const char* are_actives_output_name = "actives output";
-		static constexpr int are_actives_output_id = 2;
 		static constexpr const char* frequencies_output_name = "frequencies output";
-		static constexpr int frequencies_output_id = 3;
+		static constexpr int frequencies_output_id = 2;
 		static constexpr const char* velocities_output_name = "velocities output";
-		static constexpr int velocities_output_id = 4;
+		static constexpr int velocities_output_id = 3;
 
 		uint16_t id_;
 
@@ -66,15 +64,14 @@ namespace live::tritone::vie::processor::component
 		uint_fast32_t nb_values_;
 		float_component_output frequencies_outputs_[32];
 		float_component_output velocities_outputs_[32];
-		uint_fast32_t nb_are_actives_values_;
-		uint32_t are_actives_outputs_[32];
 		uint_fast32_t nb_notes_on_values_;
 		note_event_component_output notes_on_outputs_[32];
 		uint_fast32_t nb_notes_off_values_;
 		note_event_component_output notes_off_outputs_[32];
 		
 		std::unordered_map<uint32_t, note_event> zombie_notes_;
+		std::unordered_set<uint32_t> notes_ids_to_delete_;
 
-		void handle_processing_(uint32_t note_id, const note_event& note_on_event);
+		void handle_processing_(uint32_t note_id, note_mode note_mode, const note_event& note_on_event);
 	};
 } // namespace
