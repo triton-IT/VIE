@@ -93,6 +93,7 @@ message(STATUS "VIE> Setting-up dependencies")
 add_dependencies(${PROJECT_NAME}
         vst_interfaces
         cycfi_q
+        webview_static
         )
 
 message(STATUS "VIE> Adding nlohman's json header directory")
@@ -103,6 +104,9 @@ target_link_libraries(${PROJECT_NAME} vst_interfaces)
 
 message(STATUS "VIE> Linking-up cycfi Q")
 target_link_libraries(${PROJECT_NAME} cycfi_q)
+
+message(STATUS "VIE> Linking-up webview2")
+target_link_libraries(${PROJECT_NAME} webview_static)
 
 # Copy built VST to VST3 system folder
 if (DEPLOY_TO_VST_FOLDER)

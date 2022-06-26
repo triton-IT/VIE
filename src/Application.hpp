@@ -4,7 +4,7 @@
 #include "logger.hpp"
 
 extern void* module_handle;
-extern std::string content_path;
+extern std::wstring content_path;
 
 #ifdef VIE_DEBUG
 extern live::tritone::vie::utils::Logger debugLogger;

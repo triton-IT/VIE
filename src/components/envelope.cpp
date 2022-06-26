@@ -179,8 +179,8 @@ namespace live::tritone::vie::processor::component
 				else
 				{
 					q::envelope::config config;
-					config.release_rate = 10_s;
-					q_envelope = new q::envelope(static_cast<uint32_t>(config, sample_rate_));
+					config.release_rate = 1_s;
+					q_envelope = new q::envelope(config, static_cast<uint32_t>(sample_rate_));
 					envelopes_->emplace(note_id, q_envelope);
 				}
 				q_envelope->trigger(velocity * 255);

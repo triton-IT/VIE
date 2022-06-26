@@ -19,7 +19,7 @@ namespace live::tritone::vie {
 	}
 
 	void vie_processor::initialize() {
-		ifstream defaultInstrumentStream(content_path + "default_instrument.json");
+		ifstream defaultInstrumentStream(content_path + L"default_instrument.json");
 		json defaultInstrument;
 		defaultInstrumentStream >> defaultInstrument;
 
