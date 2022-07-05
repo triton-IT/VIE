@@ -27,6 +27,7 @@ set(HEADER_FILES
         "components/midi.hpp"
         "components/mixer.hpp"
         "components/multiplier.hpp"
+        "components/noise.hpp"
         "components/oscillator.hpp"
         "components/output.hpp"
         )
@@ -61,6 +62,7 @@ set(SOURCE_FILES
         "components/midi.cpp"
         "components/mixer.cpp"
         "components/multiplier.cpp"
+        "components/noise.cpp"
         "components/oscillator.cpp"
         "components/output.cpp"
         )

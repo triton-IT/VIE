@@ -201,7 +201,7 @@ namespace live::tritone::vie::processor::component
 			break;
 		case velocities_input_id:
 			assert(nb_values <= 32);
-			// If nb of velocity is positive, set it. Otherwise, let is as-is, it will serve for the note off.
+			// If nb of velocity is positive, set it. Otherwise, let it as-is, it will serve for the note off.
 			if (nb_values > 0) {
 				nb_velocities_inputs_ = nb_values;
 				if (nb_values > 0) {

@@ -70,7 +70,7 @@ namespace live::tritone::vie::processor::component
 		can_process_ = false;
 
 		nb_outputs_ = 0;
-		for (auto& [noteId, phaseDescriptor] : *current_phases_descriptors_)
+		for (auto& [note_id, phase_descriptor] : *current_phases_descriptors_)
 		{
 			float_array_component_output& output = outputs_[nb_outputs_];
 
@@ -85,22 +85,22 @@ namespace live::tritone::vie::processor::component
 				output.nb_samples = output_process_data.num_samples;
 			}
 
-			output.output_id = noteId;
-			output.note_mode = phaseDescriptor.note_mode;
+			output.output_id = note_id;
+			output.note_mode = phase_descriptor.note_mode;
 			switch (signal_type_)
 			{
 			case signal_type::sin:
 				for (uint_fast32_t frame = 0; frame < output_process_data.num_samples; frame++)
 				{
-					output.values[frame] = q::sin(phaseDescriptor.phase_iterator);
-					++phaseDescriptor.phase_iterator;
+					output.values[frame] = q::sin(phase_descriptor.phase_iterator);
+					++phase_descriptor.phase_iterator;
 				}
 				break;
 			case signal_type::saw:
 				for (uint_fast32_t frame = 0; frame < output_process_data.num_samples; frame++)
 				{
-					output.values[frame] = q::saw(phaseDescriptor.phase_iterator);
-					++phaseDescriptor.phase_iterator;
+					output.values[frame] = q::saw(phase_descriptor.phase_iterator);
+					++phase_descriptor.phase_iterator;
 				}
 				break;
 			}
@@ -146,6 +146,7 @@ namespace live::tritone::vie::processor::component
 	{
 		if (slot_id == frequency_input_id)
 		{
+			assert(nb_values <= 32);
 			for (uint_fast16_t i = 0; i < nb_values; i++)
 			{
 				const auto& component_output = static_cast<float_component_output*>(values)[i];
