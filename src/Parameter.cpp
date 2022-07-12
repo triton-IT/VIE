@@ -1,7 +1,9 @@
 #include "parameter.hpp"
 
+#include <cmath>
 #include <cwchar>
 #include <limits>
+#include <cstring>
 
 namespace live::tritone::vie {
 	parameter::parameter(
@@ -21,9 +23,15 @@ namespace live::tritone::vie {
 		  normalized_value_(0),
 		  listener_(nullptr)
 	{
+	#if defined(_WIN32) || defined(_WIN64) 
 		wcscpy(title_, title);
 		wcscpy(short_title_, short_title);
 		wcscpy(units_, units);
+	#else
+		wcscpy((wchar_t*)title_, title);
+		wcscpy((wchar_t*)short_title_, short_title);
+		wcscpy((wchar_t*)units_, units);
+	#endif
 	}
 
 	unsigned long parameter::get_id() const
@@ -33,17 +41,29 @@ namespace live::tritone::vie {
 
 	void parameter::get_title(wchar_t out[128]) const
 	{
+	#if defined(_WIN32) || defined(_WIN64) 
 		wcscpy(out, title_);
+	#else
+		wcscpy(out, (wchar_t*)title_);
+	#endif
 	}
 
 	void parameter::get_short_title(wchar_t out[128]) const
 	{
+	#if defined(_WIN32) || defined(_WIN64) 
 		wcscpy(out, short_title_);
+	#else
+		wcscpy(out, (wchar_t*)title_);
+	#endif
 	}
 
 	void parameter::get_units(wchar_t out[128]) const
 	{
+	#if defined(_WIN32) || defined(_WIN64) 
 		wcscpy(out, units_);
+	#else
+		wcscpy(out, (wchar_t*)title_);
+	#endif
 	}
 
 	long parameter::get_step_count() const
@@ -96,7 +116,7 @@ namespace live::tritone::vie {
 	}
 
 	void parameter::to_string(const double normalized_value, wchar_t string[128]) {
-		swprintf_s(string, 128, L"%.4f", normalized_value);
+		swprintf(string, 128, L"%.4f", normalized_value);
 	}
 
 	bool parameter::from_string(const wchar_t* string, double& normalized_value) {

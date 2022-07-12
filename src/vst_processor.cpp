@@ -152,7 +152,11 @@ namespace live::tritone::vie
 			bus_info.mediaType = (core_bus_info.media_type == media_type::audio)
 					            ? Steinberg::Vst::kAudio
 					            : Steinberg::Vst::kEvent;
-			wcscpy(bus_info.name, core_bus_info.name);
+#if defined(_WIN32) || defined(_WIN64)
+            wcscpy((wchar_t*) bus_info.name, core_bus_info.name);
+#else
+            wcscpy((wchar_t*) bus_info.name, core_bus_info.name);
+#endif
 
 			return Steinberg::kResultTrue;
 		}
@@ -361,7 +365,11 @@ namespace live::tritone::vie
 				const unsigned long parameter_id = param_value_queue->getParameterId();
 				for (int i = 0; i < points_count; i++)
 				{
-					if (param_value_queue->getPoint(i, sample_offset, parameter_value) == Steinberg::kResultTrue)
+#if defined(_WIN32) || defined(_WIN64)
+                    if (param_value_queue->getPoint(i, sample_offset, parameter_value) == Steinberg::kResultTrue)
+#else
+                        if (param_value_queue->getPoint(i, reinterpret_cast<Steinberg::int32&>(sample_offset), parameter_value) == Steinberg::kResultTrue)
+#endif
 					{
 						vie_processor_.input_parameter_changed(parameter_id, sample_offset, parameter_value);
 					}

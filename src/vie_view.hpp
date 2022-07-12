@@ -54,8 +54,9 @@ namespace live::tritone::vie
 
 		int width_;
 		int height_;
-
+#if defined (_WIN32) || defined (_WIN64)
 		ICoreWebView2Controller* web_view_controller;
 		ICoreWebView2* web_view_window;
+#endif
 	};
 }

@@ -116,9 +116,16 @@ namespace live::tritone::vie {
 
 		ParameterInfo param_info{};
 		param_info.id = parameter->get_id();
-		parameter->get_title(param_info.title);
-		parameter->get_short_title(param_info.shortTitle);
-		parameter->get_units(param_info.units);
+		
+		#if defined(_WIN32) || defined(_WIN64) 
+			parameter->get_title(param_info.title);
+			parameter->get_short_title(param_info.shortTitle);
+			parameter->get_units(param_info.units);
+		#else
+			parameter->get_title((wchar_t*)param_info.title);
+			parameter->get_short_title((wchar_t*)param_info.shortTitle);
+			parameter->get_units((wchar_t*)param_info.units);
+		#endif
 		param_info.stepCount = parameter->get_step_count();
 		param_info.defaultNormalizedValue = parameter->get_default_normalized_value();
 		param_info.unitId = parameter->get_unit_id();
@@ -150,7 +157,12 @@ namespace live::tritone::vie {
 	tresult __stdcall vst_controller::getParamValueByString(ParamID id, TChar* string /*in*/, Steinberg::Vst::ParamValue & valueNormalized /*out*/)
 	{
 		if (const parameter* parameter = parameters_list_[parameters_map_[id]]; parameter->get_step_count() == 1) {
+		
+		#if defined(_WIN32) || defined(_WIN64) 
 			if (wcscmp(string, L"On") == 0) {
+		#else
+			if (wcscmp((wchar_t*)string, L"On") == 0) {
+		#endif
 				valueNormalized = 0.0;
 			}
 			else {

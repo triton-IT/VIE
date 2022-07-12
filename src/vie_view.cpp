@@ -2,7 +2,9 @@
 
 #include "application.hpp"
 
+#if defined(_WIN32) || defined(_WIN64)
 #include <wrl.h>
+#endif
 
 using namespace Steinberg;
 using namespace Vst;
@@ -60,6 +62,7 @@ namespace live::tritone::vie
 
 	tresult __stdcall vie_view::attached(void* parent, FIDString /*type*/)
 	{
+	#if defined (_WIN32) || defined (_WIN64)
 		HWND hWnd = static_cast<HWND>(parent);
 
 		auto web_view_controller_handle = &web_view_controller;
@@ -91,7 +94,7 @@ namespace live::tritone::vie
 						}).Get());
 					return S_OK;
 				}).Get());
-
+	#endif
 		return kResultTrue;
 	}
 

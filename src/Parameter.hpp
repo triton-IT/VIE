@@ -55,9 +55,15 @@ namespace live::tritone::vie {
 
 	private:
 		unsigned long id_;
+		#if defined(_WIN32) || defined(_WIN64) 
 		wchar_t title_[128]{};
 		wchar_t short_title_[128]{};
 		wchar_t units_[128]{};
+		#else
+		Steinberg::char16 title_[128]{};
+		Steinberg::char16 short_title_[128]{};
+		Steinberg::char16 units_[128]{};
+		#endif
 		long step_count_;
 		double default_normalized_value_;
 		long unit_id_;

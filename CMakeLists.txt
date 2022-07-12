@@ -10,6 +10,9 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 project(VIE)
 
+message("cmake compiler id: ${CMAKE_CXX_COMPILER_ID}")
+message("cmake compiler version: ${CMAKE_CXX_COMPILER_VERSION}")
+
 message(STATUS "VIE> Adding VST interfaces")
 add_subdirectory(third_party/vst)
 

@@ -78,7 +78,7 @@
 		34C0FDD828144A8E00DA10B1 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
 		34C0FDDA28144A8E00DA10B1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		34C0FDDE28144A8E00DA10B1 /* vieauv3.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = vieauv3.entitlements; sourceTree = "<group>"; };
-		34C354F82815A99200605131 /* view */ = {isa = PBXFileReference; lastKnownFileType = folder; name = view; path = ../../src/assets/view; sourceTree = "<group>"; };
+		34C354F82815A99200605131 /* view */ = {isa = PBXFileReference; lastKnownFileType = folder; name = view; path = ../../assets/view; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */

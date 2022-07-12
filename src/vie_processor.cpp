@@ -31,25 +31,42 @@ namespace live::tritone::vie {
 		orchestrator_.terminate();
 
 		//Release processor audio input buses.
+        
+#if defined(_WIN32) || defined(_WIN64)
 		for each (auto bus in audio_input_buses_) {
+#else
+        for (bus* bus : audio_input_buses_) {
+#endif
 			delete bus;
 		}
 		audio_input_buses_.clear();
 
 		//Release audio output buses.
+#if defined(_WIN32) || defined(_WIN64)
 		for each (auto bus in audio_output_buses_) {
+#else
+        for (bus* bus : audio_output_buses_) {
+#endif
 			delete bus;
 		}
 		audio_output_buses_.clear();
 
 		//Release event input buses.
+#if defined(_WIN32) || defined(_WIN64)
 		for each (auto bus in event_input_buses_) {
+#else
+        for (bus* bus : event_input_buses_) {
+#endif
 			delete bus;
 		}
 		event_input_buses_.clear();
 
 		//Release event output buses.
+#if defined(_WIN32) || defined(_WIN64)
 		for each (auto bus in event_output_buses_) {
+#else
+        for (bus* bus : event_output_buses_) {
+#endif
 			delete bus;
 		}
 		event_output_buses_.clear();
@@ -67,7 +84,11 @@ namespace live::tritone::vie {
 			bus_info.media_type = media_type;
 			bus_info.direction = bus_direction;
 			bus_info.channel_count = bus->get_channel_count();
-			wcscpy_s(bus_info.name, bus->get_name().c_str());
+#if defined(_WIN32) || defined(_WIN64)
+            wcscpy_s(bus_info.name, bus->get_name().c_str());
+#else
+            wcscpy(bus_info.name, bus->get_name().c_str());
+#endif
 			switch (bus->get_type()) {
 			case bus_type::main:
 				bus_info.bus_type = bus_type::main;
