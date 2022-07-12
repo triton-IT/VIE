@@ -1,43 +1,66 @@
-#include "Bus.h"
+#include "bus.hpp"
 
 namespace live::tritone::vie {
-	Bus::Bus(std::wstring name, BusType type, short channelCount, short flags) : active_(false), arrangement_(0)
-	{
-		name_ = name;
-		type_ = type;
-		channelCount_ = channelCount;
-		flags_ = flags;
+	bus::bus(std::wstring name,
+		const bus_type type,
+		processor_component* processor_component,
+		const short channel_count,
+		const bool is_default_active,
+		const bool is_control_voltage):
+	name_(std::move(name)),
+	type_(type), channel_count_(channel_count),
+	is_default_active_(is_default_active),
+	is_control_voltage_(is_control_voltage),
+	active_(false),
+	arrangement_(0),
+	processor_component_(processor_component) {
 	}
 
-	const std::wstring Bus::getName() {
+	std::wstring bus::get_name()
+	{
 		return name_;
 	}
 
-	BusType Bus::getType() {
+	bus_type bus::get_type() const
+	{
 		return type_;
 	}
 
-	short Bus::getChannelCount() {
-		return channelCount_;
+	short bus::get_channel_count() const
+	{
+		return channel_count_;
 	}
 
-	short Bus::getFlags() {
-		return flags_;
+	bool bus::is_default_active() const
+	{
+		return is_default_active_;
 	}
 
-	bool Bus::getActive() {
+	bool bus::is_control_voltage() const
+	{
+		return is_control_voltage_;
+	}
+
+	bool bus::get_active() const
+	{
 		return active_;
 	}
 
-	void Bus::setActive(bool active) {
+	void bus::set_active(const bool active) {
 		active_ = active;
 	}
 
-	unsigned long int Bus::getArrangement() {
+	uint64_t bus::get_arrangement() const
+	{
 		return arrangement_;
 	}
 
-	void Bus::setArrangement(unsigned long int arrangement) {
+	void bus::set_arrangement(const uint64_t arrangement) {
 		arrangement_ = arrangement;
+	}
+
+	processor_component* bus::get_processor_component() const
+	{
+		return processor_component_;
 	}
 }

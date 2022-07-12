@@ -1,0 +1,47 @@
+{
+  "processors": [
+    {
+      "id": 0,
+      "name": "Midi",
+      "type": "midi"
+    },
+    {
+      "id": 1,
+      "name": "Noise generator",
+      "type": "noise",
+      "bindings": {
+        "type": "white"
+      }
+    },
+    {
+      "id": 2,
+      "name": "Mixer 1",
+      "type": "mixer"
+    },
+    {
+      "id": 3,
+      "name": "output",
+      "type": "output"
+    }
+  ],
+  "relations": [
+    {
+      "sourceComponent": 0,
+      "sourceOutputSlot": 2,
+      "targetComponent": 1,
+      "targetInputSlot": 0
+    },
+    {
+      "sourceComponent": 1,
+      "sourceOutputSlot": 1,
+      "targetComponent": 2,
+      "targetInputSlot": 0
+    },
+    {
+      "sourceComponent": 2,
+      "sourceOutputSlot": 1,
+      "targetComponent": 3,
+      "targetInputSlot": 0
+    }
+  ]
+}
