@@ -16,5 +16,8 @@ add_subdirectory(third_party/vst)
 message(STATUS "VIE> Adding cycfi Q")
 add_subdirectory(third_party/cycfi_q)
 
+message(STATUS "VIE> Adding webView 2")
+add_subdirectory(third_party/webview2)
+
 message(STATUS "VIE> Adding main application")
 add_subdirectory(src)

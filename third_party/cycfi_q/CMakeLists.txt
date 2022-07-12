@@ -5,7 +5,7 @@ include(FetchContent)
 FetchContent_Declare(
     cycfi_q
     GIT_REPOSITORY https://github.com/cycfi/Q
-    GIT_TAG        b55e199a34e58eceb9fcbddb7edd6f1e58768301
+    GIT_TAG        86142c85534169c293917c782484ee1f3406998e
 )
 
 FetchContent_GetProperties(cycfi_q)

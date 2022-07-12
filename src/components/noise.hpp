@@ -2,29 +2,27 @@
 
 #include <json.hpp>
 
-#include <q/support/phase.hpp>
-
 #include "../processor_component.hpp"
 
 namespace live::tritone::vie::processor::component
 {
-	class oscillator final : public processor_component
+	class noise final : public processor_component
 	{
 	public:
-		enum class signal_type
-		{
-			sin,
-			saw
+		enum class noise_type {
+			white,
+			pink,
+			brown
 		};
 
-		explicit oscillator(nlohmann::json oscillator_definition);
-		oscillator(const oscillator&) = default;
-		oscillator(oscillator&&) = default;
+		explicit noise(nlohmann::json noise_definition);
+		noise(const noise&) = default;
+		noise(noise&&) = default;
 
-		~oscillator() override;
+		~noise() override;
 
-		oscillator& operator=(const oscillator&) = default;
-		oscillator& operator=(oscillator&&) = default;
+		noise& operator=(const noise&) = default;
+		noise& operator=(noise&&) = default;
 
 		uint16_t get_id() override;
 
@@ -46,13 +44,15 @@ namespace live::tritone::vie::processor::component
 
 		uint_fast16_t get_slot_id(const std::string& slot_name) override;
 
-		void set_input_values(uint_fast16_t slot_id, void* values, uint_fast16_t nb_values) override;
+		void set_input_values(uint_fast16_t slot_id, void* values, uint_fast32_t nb_values) override;
 
 		uint_fast32_t get_max_nb_input_values(uint_fast16_t slot_id) override;
 
+		void set_noise_type(noise_type noise_type);
+
 	private:
-		constexpr static const char* frequency_input_name = "frequencies input";
-		constexpr static int frequency_input_id = 0;
+		constexpr static const char* noise_on_input_name = "On input";
+		constexpr static int noise_on_input_id = 0;
 
 		constexpr static const char* amplitudes_output_name = "amplitudes output";
 		constexpr static int amplitudes_output_id = 1;
@@ -62,15 +62,16 @@ namespace live::tritone::vie::processor::component
 		std::string type_;
 		double sample_rate_;
 
-		struct phase_descriptor {
+		template <typename Synth>
+		struct noise_descriptor {
 			note_mode note_mode;
-			cycfi::q::phase_iterator phase_iterator;
+			Synth* noise_synth;
 		};
 
-		std::unordered_map<uint_fast16_t, phase_descriptor>* current_phases_descriptors_;
-		std::unordered_map<uint_fast16_t, phase_descriptor>* next_phases_descriptors_;
+		std::unordered_map<uint_fast16_t, noise_descriptor<void>>* current_noises_descriptors_;
+		std::unordered_map<uint_fast16_t, noise_descriptor<void>>* next_noises_descriptors_;
 
-		signal_type signal_type_;
+		noise_type noise_type_;
 
 		bool can_process_;
 

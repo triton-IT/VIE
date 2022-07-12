@@ -2,6 +2,7 @@
 
 #include "components/midi.hpp"
 #include "components/oscillator.hpp"
+#include "components/noise.hpp"
 #include "components/envelope.hpp"
 #include "components/multiplier.hpp"
 #include "components/mixer.hpp"
@@ -23,6 +24,10 @@ namespace live::tritone::vie
 		else if (type == "oscillator")
 		{
 			component = new oscillator(processor_definition);
+		}
+		else if (type == "noise")
+		{
+			component = new noise(processor_definition);
 		}
 		else if (type == "envelope")
 		{

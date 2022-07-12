@@ -2,6 +2,8 @@
 
 #include "application.hpp"
 
+#include <wrl.h>
+
 using namespace Steinberg;
 using namespace Vst;
 
@@ -9,12 +11,12 @@ namespace live::tritone::vie
 {
 	vie_view::vie_view(std::vector<parameter*>& parameters) :
 		parameters_(parameters),
-		m_p_editor_view_(nullptr),
 		nb_ref_(0),
 		frame_(nullptr),
 		width_(1024),
 		height_(600),
-		is_renderer_running_(true)
+		web_view_controller(nullptr),
+		web_view_window(nullptr)
 	{
 	}
 
@@ -58,37 +60,43 @@ namespace live::tritone::vie
 
 	tresult __stdcall vie_view::attached(void* parent, FIDString /*type*/)
 	{
-		m_p_editor_view_ = new editor_view(parent);
+		HWND hWnd = static_cast<HWND>(parent);
 
-		auto view_renderer_thread = [](vie_view* view, const bool* is_running)
-		{
-			using ms = std::chrono::milliseconds;
-			while (*is_running)
-			{
-				view->render();
-				std::this_thread::sleep_for(ms(15));
-			}
-		};
-		renderer_thread_.reset(new std::thread(view_renderer_thread, this, &is_renderer_running_));
+		auto web_view_controller_handle = &web_view_controller;
+		auto web_view_window_handle = &web_view_window;
+
+		CreateCoreWebView2EnvironmentWithOptions(nullptr, L"c:/tmp/", nullptr,
+			Microsoft::WRL::Callback<ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler>(
+				[hWnd, web_view_controller_handle, web_view_window_handle](HRESULT result, ICoreWebView2Environment* env) -> HRESULT {
+
+					// Create a CoreWebView2Controller and get the associated CoreWebView2 whose parent is the main window hWnd
+					env->CreateCoreWebView2Controller(hWnd, Microsoft::WRL::Callback<ICoreWebView2CreateCoreWebView2ControllerCompletedHandler>(
+						[hWnd, web_view_controller_handle, web_view_window_handle](HRESULT result, ICoreWebView2Controller* controller) -> HRESULT {
+							if (controller != nullptr) {
+								*web_view_controller_handle = controller;
+								controller->AddRef();
+								(*web_view_controller_handle)->get_CoreWebView2(web_view_window_handle);
+								(*web_view_window_handle)->AddRef();
+
+								// Resize WebView to fit the bounds of the parent window
+								RECT bounds;
+								GetClientRect(hWnd, &bounds);
+								(*web_view_controller_handle)->put_Bounds(bounds);
+
+								// Schedule an async task to navigate to Bing
+								(*web_view_window_handle)->Navigate(L"https://www.bing.com/");
+							}
+
+							return S_OK;
+						}).Get());
+					return S_OK;
+				}).Get());
 
 		return kResultTrue;
 	}
 
 	tresult __stdcall vie_view::removed()
 	{
-		//Stop renderer loop.
-		is_renderer_running_ = false;
-
-		if (renderer_thread_)
-		{
-			renderer_thread_->join();
-			renderer_thread_.reset();
-			renderer_thread_ = nullptr;
-		}
-
-		delete m_p_editor_view_;
-		m_p_editor_view_ = nullptr;
-
 		return kResultTrue;
 	}
 

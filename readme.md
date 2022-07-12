@@ -166,7 +166,7 @@ Each component is of a given type (input, middle or output).
 The 'set_input_values' of the (middle or output) component is called.
 The 'set_zombie_notes_ids' of the component is called.
 When component is ready to process (e.g. when all inputs are filled), the 'can_process' method must result 'true').
-If component replied 'true' to 'can_process', then 'process'' method is called. Typically, the component behavior is launched and its output buffers are filled.
+If component replied 'true' to 'can_process', then 'process' method is called. Typically, the component behavior is launched and its output buffers are filled.
 The 'get_output_values' method is then call and the resulting values are passed to the next linked components as input values.
 
 When all components are processed, the orchestrator then call the 'has_finished' method of each component.
@@ -175,6 +175,6 @@ When a component returns false to the 'has_finished' method, then, the 'get_zomb
 If the notes whose processing is not finished are still alive, then they are sent on the next loop as normal notes, not zombie ones.
 If a note is released and as been marked as 'zombie' by a component, then it is sent on the next loop as a 'zombie' note.
 All components process this notes as a normal notes, but keep the 'zombie' tag on the note.
-The component that did not finished the processing process the note but removes the 'zombie' tag.
+The component that did not finished the processing on previous loop, processes the note but removes the 'zombie' tag.
 If an output receives a note as 'zombie', then it must not render it.
 This sequence with the 'zombie' note as to be battle tested, but should allow to handle logics like envelopes that must continue processing even if note is not played anymore.

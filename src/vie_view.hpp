@@ -12,6 +12,7 @@
 #ifdef _WIN32
 
 #include "windows/editor_view.hpp"
+#include "WebView2.h"
 
 #endif
 
@@ -48,15 +49,13 @@ namespace live::tritone::vie
 	private:
 		std::vector<parameter*>& parameters_;
 
-		editor_view* m_p_editor_view_;
-
 		Steinberg::uint32 nb_ref_;
 		Steinberg::IPlugFrame* frame_;
 
 		int width_;
 		int height_;
 
-		std::unique_ptr<std::thread> renderer_thread_;
-		bool is_renderer_running_;
+		ICoreWebView2Controller* web_view_controller;
+		ICoreWebView2* web_view_window;
 	};
 }

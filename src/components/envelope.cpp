@@ -179,8 +179,8 @@ namespace live::tritone::vie::processor::component
 				else
 				{
 					q::envelope::config config;
-					config.release_rate = 10_s;
-					q_envelope = new q::envelope(static_cast<uint32_t>(config, sample_rate_));
+					config.release_rate = 1_s;
+					q_envelope = new q::envelope(config, static_cast<uint32_t>(sample_rate_));
 					envelopes_->emplace(note_id, q_envelope);
 				}
 				q_envelope->trigger(velocity * 255);
@@ -201,7 +201,7 @@ namespace live::tritone::vie::processor::component
 			break;
 		case velocities_input_id:
 			assert(nb_values <= 32);
-			// If nb of velocity is positive, set it. Otherwise, let is as-is, it will serve for the note off.
+			// If nb of velocity is positive, set it. Otherwise, let it as-is, it will serve for the note off.
 			if (nb_values > 0) {
 				nb_velocities_inputs_ = nb_values;
 				if (nb_values > 0) {
