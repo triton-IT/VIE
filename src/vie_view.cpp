@@ -65,8 +65,13 @@ namespace live::tritone::vie
 		auto web_view_controller_handle = &web_view_controller;
 		auto web_view_window_handle = &web_view_window;
 
-		CreateCoreWebView2EnvironmentWithOptions(nullptr, L"c:/tmp/", nullptr,
+		char* appdataPath = getenv("APPDATA");
+		wchar_t* appdataWPath = new wchar_t[4096];
+		MultiByteToWideChar(CP_ACP, 0, appdataPath, -1, appdataWPath, 4096);
+
+		CreateCoreWebView2EnvironmentWithOptions(nullptr, appdataWPath, nullptr,
 			Microsoft::WRL::Callback<ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler>(
+		//CreateCoreWebView2Environment(Microsoft::WRL::Callback<ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler>(
 				[hWnd, web_view_controller_handle, web_view_window_handle](HRESULT result, ICoreWebView2Environment* env) -> HRESULT {
 
 					// Create a CoreWebView2Controller and get the associated CoreWebView2 whose parent is the main window hWnd
@@ -84,7 +89,10 @@ namespace live::tritone::vie
 								(*web_view_controller_handle)->put_Bounds(bounds);
 
 								// Schedule an async task to navigate to Bing
-								(*web_view_window_handle)->Navigate(L"https://www.bing.com/");
+								(*web_view_window_handle)->Navigate(
+									//L"file://C:/Users/RégisRamillien/source/repos/triton-IT/VIE/src/assets/view/index.html"
+									(std::wstring(L"file://") + content_path + L"/view/index.html").c_str()
+								);
 							}
 
 							return S_OK;
