@@ -12,7 +12,7 @@ FetchContent_GetProperties(cycfi_q)
 if(NOT cycfi_q_POPULATED)
 	FetchContent_Populate(cycfi_q)
 endif()
-	
+
 message(STATUS "VIE> Cycfi Q> Add library")
 add_library(cycfi_q INTERFACE)
 

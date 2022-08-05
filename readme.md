@@ -79,10 +79,10 @@ type: note_event\[32\]
 ### Oscillator
 Oscillator is a middle component. It consumes signal bound to is input slots and produces signal to its output ones.
 It generate a simple signal based on the chosen input type.
-#### type => wave form
+#### type
 way: input
 type: enum\[32\] (sin, saw, square)
-Type of signal to generate in output slot.
+Type of signal (wave form) to generate in output slot.
 #### frequency
 way: input
 type: float\[32\]
@@ -90,7 +90,16 @@ Frequency of the output signal to generate.
 #### amplitudes
 way: output
 type: float\[32\]\[\<nb frames\>\]
-Array of amplitudes generated from input type and input frequency.
+
+### Noise
+#### On
+way: input
+type: bool
+Must be on for noise to be generated.
+#### amplitudes
+way: output
+type: float\[32\]\[\<nb frames\>\]
+Array of amplitudes representing noise.
 
 ### Envelope 
 Envelope is a middle component. It consumes signal bound to is input slots and produces signal to its output ones.

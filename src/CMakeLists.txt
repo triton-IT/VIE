@@ -97,9 +97,12 @@ add_dependencies(${PROJECT_NAME}
         cycfi_q
         webview_static
         )
+        
+message(STATUS "VIE> Set target C++ standard to 17")
+target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_17)
 
 message(STATUS "VIE> Adding nlohman's json header directory")
-target_include_directories(VIE PUBLIC ${JSON_DIRECTORY})
+target_include_directories(${PROJECT_NAME} PUBLIC ${JSON_DIRECTORY})
 
 message(STATUS "VIE> Linking-up VST interfaces")
 target_link_libraries(${PROJECT_NAME} vst_interfaces)
