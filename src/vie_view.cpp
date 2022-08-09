@@ -1,23 +1,19 @@
 #include "vie_view.hpp"
 
-#include "application.hpp"
-
-#include <wrl.h>
-
 using namespace Steinberg;
 using namespace Vst;
 
 namespace live::tritone::vie
 {
-	vie_view::vie_view(std::vector<parameter*>& parameters) :
+	vie_view::vie_view(std::vector<parameter*>& parameters, Steinberg::Vst::IComponentHandler* handler) :
 		parameters_(parameters),
 		nb_ref_(0),
-		frame_(nullptr),
+		ptr_frame_(nullptr),
 		width_(1024),
 		height_(600),
-		web_view_controller(nullptr),
-		web_view_window(nullptr)
+		handler_(handler)
 	{
+		editor_view.set_component_handler(handler);
 	}
 
 	tresult __stdcall vie_view::queryInterface(const TUID iid, void** obj)
@@ -60,51 +56,15 @@ namespace live::tritone::vie
 
 	tresult __stdcall vie_view::attached(void* parent, FIDString /*type*/)
 	{
-		HWND hWnd = static_cast<HWND>(parent);
-
-		auto web_view_controller_handle = &web_view_controller;
-		auto web_view_window_handle = &web_view_window;
-
-		char* appdataPath = getenv("APPDATA");
-		wchar_t* appdataWPath = new wchar_t[4096];
-		MultiByteToWideChar(CP_ACP, 0, appdataPath, -1, appdataWPath, 4096);
-
-		CreateCoreWebView2EnvironmentWithOptions(nullptr, appdataWPath, nullptr,
-			Microsoft::WRL::Callback<ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler>(
-		//CreateCoreWebView2Environment(Microsoft::WRL::Callback<ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler>(
-				[hWnd, web_view_controller_handle, web_view_window_handle](HRESULT result, ICoreWebView2Environment* env) -> HRESULT {
-
-					// Create a CoreWebView2Controller and get the associated CoreWebView2 whose parent is the main window hWnd
-					env->CreateCoreWebView2Controller(hWnd, Microsoft::WRL::Callback<ICoreWebView2CreateCoreWebView2ControllerCompletedHandler>(
-						[hWnd, web_view_controller_handle, web_view_window_handle](HRESULT result, ICoreWebView2Controller* controller) -> HRESULT {
-							if (controller != nullptr) {
-								*web_view_controller_handle = controller;
-								controller->AddRef();
-								(*web_view_controller_handle)->get_CoreWebView2(web_view_window_handle);
-								(*web_view_window_handle)->AddRef();
-
-								// Resize WebView to fit the bounds of the parent window
-								RECT bounds;
-								GetClientRect(hWnd, &bounds);
-								(*web_view_controller_handle)->put_Bounds(bounds);
-
-								// Schedule an async task to navigate to Bing
-								(*web_view_window_handle)->Navigate(
-									//L"file://C:/Users/RégisRamillien/source/repos/triton-IT/VIE/src/assets/view/index.html"
-									(std::wstring(L"file://") + content_path + L"/view/index.html").c_str()
-								);
-							}
-
-							return S_OK;
-						}).Get());
-					return S_OK;
-				}).Get());
+		editor_view.attached(parent);
 
 		return kResultTrue;
 	}
 
 	tresult __stdcall vie_view::removed()
 	{
+		editor_view.removed();
+
 		return kResultTrue;
 	}
 
@@ -146,7 +106,7 @@ namespace live::tritone::vie
 
 	tresult __stdcall vie_view::setFrame(IPlugFrame* frame)
 	{
-		frame_ = frame;
+		ptr_frame_ = frame;
 
 		return kResultOk;
 	}
@@ -169,6 +129,11 @@ namespace live::tritone::vie
 	tresult vie_view::get_state(IBStream* state)
 	{
 		return kResultTrue;
+	}
+
+	void vie_view::set_component_handler(Steinberg::Vst::IComponentHandler* handler)
+	{
+		handler_ = handler;
 	}
 
 	void vie_view::render()

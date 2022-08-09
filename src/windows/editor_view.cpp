@@ -1,146 +1,84 @@
-#include <sstream>
-
 #include "editor_view.hpp"
+
+#include <functional>
+#include <OAIdl.h>
+
+#include "../application.hpp"
 
 namespace live::tritone::vie
 {
-	editor_view::editor_view(void* parent)
+	editor_view::editor_view() :
+		ptr_web_view_controller_(nullptr),
+		ptr_web_view_window_(nullptr),
+		web_message_received_token_(),
+		handler_(nullptr)
 	{
-		const auto title = L"Virtual Instrument Engine";
-
-		const WNDCLASSEX window_class_ex = {
-			sizeof(WNDCLASSEX), CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS, message_proc,
-			0L, 0L, GetModuleHandle(nullptr), nullptr, nullptr, nullptr, nullptr, L"VIE", nullptr
-		};
-		RegisterClassEx(&window_class_ex);
-
-		RECT window_rect = {0, 0, 1024, 768};
-
-		AdjustWindowRect(&window_rect, WS_OVERLAPPEDWINDOW, FALSE);
-		h_wnd_ = CreateWindow(L"VIE", title,
-		                      WS_CHILD | WS_VISIBLE,
-		                      0, 0,
-		                      window_rect.right - window_rect.left, window_rect.bottom - window_rect.top,
-		                      static_cast<HWND>(parent), NULL, GetModuleHandle(NULL), NULL);
-
-		if (!h_wnd_)
-		{
-			MessageBox(nullptr, L"Cannot create window", L"Error", MB_OK | MB_ICONERROR);
-			return;
-		}
-
-		SetWindowLongPtr(h_wnd_, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(this));
-
-		ShowWindow(h_wnd_, 1);
+		//Get appdata path which will be used to create temporary files required to use webview.
+		char* appdata_ASCII_path = getenv("APPDATA");
+		MultiByteToWideChar(CP_ACP, 0, appdata_ASCII_path, -1, appdata_path, 4096);
 	}
 
 	editor_view::~editor_view()
 	{
-		if (h_wnd_)
-		{
-			DestroyWindow(h_wnd_);
-			h_wnd_ = nullptr;
-		}
-		UnregisterClass(L"VIE", GetModuleHandle(nullptr));
 	}
 
-	LRESULT CALLBACK editor_view::message_proc(HWND window_handle,
-	                                           const UINT message,
-	                                           const WPARAM wide_parameter,
-	                                           const LPARAM low_parameter
-	)
-	{
-		handle_win32_message(window_handle, message, wide_parameter, low_parameter);
+	void editor_view::attached(void* parent) {
+		HWND hWnd = static_cast<HWND>(parent);
 
-		return DefWindowProc(window_handle, message, wide_parameter, low_parameter);
+		// Create web view environment based on Appdata path.
+		CreateCoreWebView2EnvironmentWithOptions(nullptr, appdata_path, nullptr,
+			Microsoft::WRL::Callback<ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler>(
+				[hWnd, this]
+		(HRESULT result, ICoreWebView2Environment* env) -> HRESULT {
+					// Create a CoreWebView2Controller and get the associated CoreWebView2 whose parent is the main window hWnd
+					env->CreateCoreWebView2Controller(hWnd, Microsoft::WRL::Callback<ICoreWebView2CreateCoreWebView2ControllerCompletedHandler>(
+						[hWnd, this]
+					(HRESULT result, ICoreWebView2Controller* controller) -> HRESULT {
+							if (controller != nullptr) {
+								ptr_web_view_controller_ = controller;
+								controller->AddRef();
+								ptr_web_view_controller_->get_CoreWebView2(&ptr_web_view_window_);
+								ptr_web_view_window_->AddRef();
+
+								// Should use AddHostObjectToScript but can't make it work. So use messages instead.
+								ptr_web_view_window_->add_WebMessageReceived(
+									Microsoft::WRL::Callback<ICoreWebView2WebMessageReceivedEventHandler>(
+										[this](ICoreWebView2* sender, ICoreWebView2WebMessageReceivedEventArgs* args) {
+											if (handler_ != nullptr) {
+												handler_->beginEdit(frequency_id);
+												wil::unique_cotaskmem_string jsonString;
+												args->get_WebMessageAsJson(&jsonString);
+												std::wstring jsonWString = jsonString.get();
+												//FIXME: use a real normalized value after POC.
+												handler_->performEdit(frequency_id, 0.123456f);
+												handler_->endEdit(frequency_id);
+											}
+											return S_OK;
+										}).Get(), &web_message_received_token_);
+
+								// Resize WebView to fit the bounds of the parent window
+								RECT bounds;
+								GetClientRect(hWnd, &bounds);
+								ptr_web_view_controller_->put_Bounds(bounds);
+
+								// Open VIE HTML view.
+								ptr_web_view_window_->Navigate(
+									(std::wstring(L"file://") + content_path + L"/view/index.html").c_str()
+								);
+							}
+							return S_OK;
+						}).Get());
+					return S_OK;
+				}).Get());
 	}
 
-	LONG_PTR WINAPI editor_view::handle_win32_message(HWND
-	                                                  window_handle,
-	                                                  const UINT message, const WPARAM
-	                                                  wide_param,
-	                                                  const LPARAM low_param
-	)
+	void editor_view::removed()
 	{
-		int result = 0;
 
-		switch (message)
-		{
-		case WM_KEYDOWN:
-		case WM_KEYUP:
-		case WM_SYSKEYDOWN:
-		case WM_SYSKEYUP:
-			{
-				const int ctrl = GetKeyState(VK_CONTROL) & (1 << 15);
-
-				switch (wide_param)
-				{
-				case VK_SHIFT:
-				case VK_LSHIFT:
-				case VK_RSHIFT:
-				case VK_DELETE:
-				case VK_RETURN:
-				case VK_TAB:
-				case VK_LEFT:
-				case VK_RIGHT:
-				case VK_BACK:
-				case VK_HOME:
-				case VK_END:
-				case VK_NEXT:
-				case VK_PRIOR:
-					result = 1;
-					break;
-				case 'C':
-				case 'V':
-				case 'X':
-				case 'Z':
-				case 'Y':
-					if (ctrl)
-					{
-						result = 1;
-					}
-					break;
-				default:
-					break;
-				}
-			}
-			break;
-		case WM_ERASEBKGND:
-		case WM_PAINT:
-		case WM_MOUSEMOVE:
-		case WM_MOUSEWHEEL:
-		case WM_LBUTTONDBLCLK:
-			result = 1;
-			break;
-		case WM_LBUTTONDOWN:
-		case WM_MBUTTONDOWN:
-		case WM_RBUTTONDOWN:
-			SetCapture(window_handle);
-			result = 1;
-			break;
-		case WM_LBUTTONUP:
-		case WM_MBUTTONUP:
-		case WM_RBUTTONUP:
-			ReleaseCapture();
-			result = 1;
-			break;
-		case WM_CHAR:
-			if (wide_param >= 32)
-			{
-				result = 1;
-			}
-			break;
-		default:
-			result = 1;
-			break;
-		}
-
-		return
-			result;
 	}
 
-	void* editor_view::get_handle() const
+	void editor_view::set_component_handler(Steinberg::Vst::IComponentHandler* handler)
 	{
-		return h_wnd_;
+		handler_ = handler;
 	}
 } // namespace

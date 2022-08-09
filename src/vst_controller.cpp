@@ -208,7 +208,6 @@ namespace live::tritone::vie {
 		if (component_handler_ != nullptr)
 		{
 			component_handler_->release();
-
 		}
 
 		component_handler_ = handler;
@@ -217,7 +216,11 @@ namespace live::tritone::vie {
 		if (component_handler_ != nullptr)
 		{
 			component_handler_->addRef();
+		}
 
+		if (view_ != nullptr)
+		{
+			view_->set_component_handler(component_handler_);
 		}
 
 		return kResultTrue;
@@ -225,7 +228,7 @@ namespace live::tritone::vie {
 
 	IPlugView* __stdcall vst_controller::createView(FIDString /*name*/)
 	{
-		view_ = new vie_view(parameters_list_);
+		view_ = new vie_view(parameters_list_, component_handler_);
 
 		return view_;
 	}

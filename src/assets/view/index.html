@@ -14,13 +14,20 @@
     <script src='js/atome/kernel.js'></script>
     <title>Vie</title>
 </head>
-<body id='user_view' oncontextmenu="return false;" >
+<body id='user_view' oncontextmenu="return false;">
     <h1>Vie Html view</h1>
     <h2 id="value">Toggle Switch is off</h2>
-        <label class="switch">
-            <input type="checkbox" name="myCheckbox">
-            <span class="slider round"></span>
-        </label>
+    <label class="switch">
+        <input type="checkbox" name="myCheckbox">
+        <span class="slider round"></span>
+    </label>
+    
+    <button id="postMessageButton">Post message</button>
 </body>
 <script src='js/application.js'></script>
+<script>
+    document.getElementById("postMessageButton").addEventListener("click", () => {
+        window.chrome.webview.postMessage("{}");
+    });
+</script>
 </html>
