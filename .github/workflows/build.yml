@@ -2,7 +2,7 @@ name: Build
 on:
   push:
     branches:
-      - sonar_integration
+      - main
   pull_request:
     types: [opened, synchronize, reopened]
 jobs:
