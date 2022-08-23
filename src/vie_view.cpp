@@ -5,8 +5,7 @@ using namespace Vst;
 
 namespace live::tritone::vie
 {
-	vie_view::vie_view(std::vector<parameter*>& parameters, Steinberg::Vst::IComponentHandler* handler) :
-		parameters_(parameters),
+	vie_view::vie_view(Steinberg::Vst::IComponentHandler* handler) :
 		nb_ref_(0),
 		ptr_frame_(nullptr),
 		width_(1024),

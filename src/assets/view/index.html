@@ -21,13 +21,19 @@
         <input type="checkbox" name="myCheckbox">
         <span class="slider round"></span>
     </label>
-    
+
     <button id="postMessageButton">Post message</button>
+
+    <script src='js/application.js'></script>
+    <script>
+        document.getElementById("postMessageButton").addEventListener("click", () => {
+            var json = {
+                "id": 1,
+                "slot": 2,
+                "value   0
+            };
+            window.chrome.webview.postMessage(json);
+        });
+    </script>
 </body>
-<script src='js/application.js'></script>
-<script>
-    document.getElementById("postMessageButton").addEventListener("click", () => {
-        window.chrome.webview.postMessage("{}");
-    });
-</script>
 </html>

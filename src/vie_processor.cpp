@@ -13,9 +13,8 @@ using json = nlohmann::json;
 namespace live::tritone::vie {
 	vie_processor::vie_processor() :
 		active_(false),
-		processing_(false),
-		frequency_multiplier_(0.),
-		bypass_(false) {
+		processing_(false)
+	{
 	}
 
 	void vie_processor::initialize() {
@@ -138,24 +137,7 @@ namespace live::tritone::vie {
 	}
 
 	void vie_processor::input_parameter_changed(const unsigned long parameter_id, long sample_offset, const double parameter_value) {
-		if (active_ && processing_) {
-			switch (parameter_id) {
-			case bypass_id:
-				bypass_ = (parameter_value > 0.5);
-				break;
-
-			case frequency_id:
-				frequency_multiplier_ = parameter_value;
-				break;
-
-			case wave_form_id:
-				//FIXME: removed while working on processor_component. Make it generic after.
-				//waveForm_ = (parameterValue > 0.5f);
-				//break;
-			default:
-				break;
-			}
-		}
+		orchestrator_.parameter_changed(parameter_id, sample_offset, parameter_value);
 	}
 
 	void vie_processor::process_input_event(event& event) const
@@ -164,9 +146,7 @@ namespace live::tritone::vie {
 	}
 	
 	bool vie_processor::process_output_data(output_process_data& output_process_data) {
-		if (!bypass_) {
-			orchestrator_.process(output_process_data);
-		}
+		orchestrator_.process(output_process_data);
 
 		return true;
 	}

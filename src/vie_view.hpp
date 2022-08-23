@@ -21,7 +21,7 @@ namespace live::tritone::vie
 	class vie_view final : public Steinberg::IPlugView
 	{
 	public:
-		explicit vie_view(std::vector<parameter*>& parameters, Steinberg::Vst::IComponentHandler* handler);
+		explicit vie_view(Steinberg::Vst::IComponentHandler* handler);
 
 		virtual ~vie_view() = default;
 
@@ -49,8 +49,6 @@ namespace live::tritone::vie
 		void render();
 
 	private:
-		std::vector<parameter*>& parameters_;
-
 		Steinberg::uint32 nb_ref_;
 		Steinberg::IPlugFrame* ptr_frame_;
 

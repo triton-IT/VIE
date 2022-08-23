@@ -22,7 +22,8 @@ namespace live::tritone::vie
 	                                                   processor_components_{}, nb_midi_components_(0),
 	                                                   sources_components_{}, processing_setup_(),
 	                                                   relations_{},
-	                                                   zombie_notes_ids_{}
+	                                                   zombie_notes_ids_{},
+													   bypass_(false)
 	{
 		memset(nb_component_relations_, 0, 128);
 	}
@@ -38,6 +39,8 @@ namespace live::tritone::vie
 		}
 
 		processor_components_[nb_components_] = component;
+		processor_components_map_[component->get_id()] = component;
+
 		nb_components_++;
 		return component;
 	}
@@ -119,26 +122,28 @@ namespace live::tritone::vie
 
 	void processor_orchestrator::process(output_process_data& output_process_data)
 	{
-		for (int i = 0; i < nb_midi_components_; i++)
-		{
-			auto* source_component = sources_components_[i];
-			//TODO: Multi-thread call to this method.
-			process(source_component, output_process_data);
-		}
+		if (!bypass_) {
+			for (int i = 0; i < nb_midi_components_; i++)
+			{
+				auto* source_component = sources_components_[i];
+				//TODO: Multi-thread call to this method.
+				process(source_component, output_process_data);
+			}
 
-		//Now that process has been called with previous zombie notes, we can clean them and start again collecting them.
-		zombie_notes_ids_.clear();
+			//Now that process has been called with previous zombie notes, we can clean them and start again collecting them.
+			zombie_notes_ids_.clear();
 
-		for (int i = 0; i < nb_midi_components_; i++)
-		{
-			auto* source_component = sources_components_[i];
-			get_zombie_notes_ids(source_component, zombie_notes_ids_);
-		}
+			for (int i = 0; i < nb_midi_components_; i++)
+			{
+				auto* source_component = sources_components_[i];
+				get_zombie_notes_ids(source_component, zombie_notes_ids_);
+			}
 
-		for (int i = 0; i < nb_midi_components_; i++)
-		{
-			auto* source_component = sources_components_[i];
-			set_zombie_notes_ids(source_component, zombie_notes_ids_);
+			for (int i = 0; i < nb_midi_components_; i++)
+			{
+				auto* source_component = sources_components_[i];
+				set_zombie_notes_ids(source_component, zombie_notes_ids_);
+			}
 		}
 	}
 
@@ -174,6 +179,17 @@ namespace live::tritone::vie
 				process(target_component, output_process_data);
 			}
 		}
+	}
+
+	void processor_orchestrator::parameter_changed(const unsigned long parameter_id, long sample_offset, double parameter_value) {
+		unsigned int component_id = parameter_id >> 16;
+		unsigned int component_parameter_id = parameter_id & 0xffff;
+
+		//TODO: Get component by id
+		processor_components_map_[component_id]->set_input_values(component_parameter_id,
+			static_cast<void*>(&parameter_value),
+			1
+		);
 	}
 
 	void processor_orchestrator::get_zombie_notes_ids(processor_component* source_component,

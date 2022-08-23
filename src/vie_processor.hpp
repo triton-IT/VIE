@@ -60,8 +60,5 @@ namespace live::tritone::vie {
 		std::vector<bus*> audio_output_buses_;
 		std::vector<bus*> event_input_buses_;
 		std::vector<bus*> event_output_buses_;
-
-		double frequency_multiplier_;
-		bool bypass_;
 	};
 } // namespace

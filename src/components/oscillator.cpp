@@ -9,7 +9,7 @@ using namespace cycfi;
 
 namespace live::tritone::vie::processor::component
 {
-	oscillator::oscillator(nlohmann::json oscillator_definition) :
+	oscillator::oscillator(nlohmann::json oscillator_definition) : processor_component(),
 		id_(oscillator_definition["id"]),
 		name_(oscillator_definition["name"]),
 		sample_rate_(.0),
@@ -133,6 +133,10 @@ namespace live::tritone::vie::processor::component
 		{
 			return frequency_input_id;
 		}
+		if (slot_name == signal_type_input_name)
+		{
+			return signal_type_input_id;
+		}
 		if (slot_name == amplitudes_output_name)
 		{
 			return amplitudes_output_id;
@@ -182,6 +186,17 @@ namespace live::tritone::vie::processor::component
 
 			can_process_ = true;
 		}
+		else if (slot_id == signal_type_input_id) {
+			const auto value = static_cast<float*>(values)[0];
+			if (value < 0.5f)
+			{
+				signal_type_ = signal_type::saw;
+			}
+			else
+			{
+				signal_type_ = signal_type::sin;
+			}
+		}
 	}
 
 	uint_fast32_t oscillator::get_max_nb_input_values(const uint_fast16_t slot_id)
@@ -192,5 +207,10 @@ namespace live::tritone::vie::processor::component
 		}
 
 		return -1;
+	}
+
+	void oscillator::set_parameter(parameter parameter)
+	{
+
 	}
 } // namespace

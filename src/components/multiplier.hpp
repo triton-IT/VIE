@@ -45,6 +45,8 @@ namespace live::tritone::vie::processor::component
 
 		uint_fast32_t get_max_nb_input_values(uint_fast16_t slot_id) override;
 
+		void set_parameter(parameter parameter) override;
+
 	private:
 		constexpr static const char* multipliers_input_name = "multipliers input";
 		constexpr static int multipliers_input_id = 0;

@@ -7,6 +7,7 @@
 #include <unordered_set>
 
 #include "processor_definition.hpp"
+#include "parameter.hpp"
 
 namespace live::tritone::vie
 {
@@ -154,6 +155,20 @@ namespace live::tritone::vie
 		*/
 		virtual uint_fast32_t get_max_nb_input_values(uint_fast16_t slot_id) = 0;
 
+		/**
+		* Create a processor component from json file.
+		*/
 		static processor_component* create(nlohmann::json processor_definition);
+
+		/**
+		* Set a parameter to this processor.
+		*/
+		virtual void set_parameter(parameter parameter) = 0;
+
+	private:
+		/**
+		* Initialize component with specified configuration.
+		*/
+		void initialize(nlohmann::json processor_definition);
 	};
 } // namespace

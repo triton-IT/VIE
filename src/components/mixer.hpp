@@ -38,6 +38,8 @@ namespace live::tritone::vie::processor::component
 
 		uint_fast32_t get_max_nb_input_values(uint_fast16_t slot_id) override;
 
+		void set_parameter(parameter parameter) override;
+
 	private:
 		constexpr static const char* generics_input_name = "generics input";
 		constexpr static int generics_input_id = 0;

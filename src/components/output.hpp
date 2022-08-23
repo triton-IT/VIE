@@ -42,6 +42,8 @@ namespace live::tritone::vie::processor::component
 
 		uint_fast32_t get_max_nb_input_values(uint_fast16_t slot_id) override;
 
+		void set_parameter(parameter parameter) override;
+
 		void set_output_bus_id(uint_fast16_t bus_id);
 
 	private:

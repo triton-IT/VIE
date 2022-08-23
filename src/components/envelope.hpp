@@ -47,6 +47,8 @@ namespace live::tritone::vie::processor::component
 
 		uint_fast32_t get_max_nb_input_values(uint_fast16_t slot_id) override;
 
+		void set_parameter(parameter parameter) override;
+
 	private:
 		constexpr static const char* velocities_input_name = "velocities input";
 		constexpr static int velocities_input_id = 0;

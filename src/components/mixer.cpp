@@ -4,8 +4,12 @@
 
 namespace live::tritone::vie::processor::component
 {
-	mixer::mixer(nlohmann::json mixer_definition) : id_(mixer_definition["id"]), name_(mixer_definition["name"]),
-	                                                nb_generics_(0), generics_(nullptr), can_process_(true)
+	mixer::mixer(nlohmann::json mixer_definition) : processor_component(),
+		id_(mixer_definition["id"]),
+		name_(mixer_definition["name"]),
+		nb_generics_(0),
+		generics_(nullptr),
+		can_process_(true)
 	{
 	}
 
@@ -132,5 +136,10 @@ namespace live::tritone::vie::processor::component
 		}
 
 		return -1;
+	}
+
+	void mixer::set_parameter(parameter parameter)
+	{
+
 	}
 } // namespace

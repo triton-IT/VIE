@@ -9,7 +9,7 @@ using namespace q::literals;
 
 namespace live::tritone::vie::processor::component
 {
-	envelope::envelope(nlohmann::json envelope_definition) :
+	envelope::envelope(nlohmann::json envelope_definition) : processor_component(),
 		id_(envelope_definition["id"]),
 		name_(envelope_definition["name"]),
 		envelopes_(new envelope_by_id),
@@ -19,7 +19,8 @@ namespace live::tritone::vie::processor::component
 		velocities_filled_(false),
 		notes_on_filled_(false),
 		notes_off_filled_(false),
-		nb_outputs_(0)
+		nb_outputs_(0),
+		nb_zombie_notes_(0)
 	{
 	}
 
@@ -228,5 +229,10 @@ namespace live::tritone::vie::processor::component
 		}
 
 		return -1;
+	}
+
+	void envelope::set_parameter(parameter parameter)
+	{
+
 	}
 } // namespace

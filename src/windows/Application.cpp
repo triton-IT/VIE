@@ -46,3 +46,5 @@ BOOL WINAPI DllMain(HINSTANCE /*h_instance*/, DWORD /*dw_reason*/, LPVOID /*lpv_
 
 	return TRUE;
 }
+
+parameters application::parameters_;

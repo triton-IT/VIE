@@ -2,8 +2,16 @@
 
 #include <functional>
 #include <OAIdl.h>
+#include <json.hpp>
+
+#include <locale>
+#include <codecvt>
+#include <sstream>
 
 #include "../application.hpp"
+
+using namespace std;
+using json = nlohmann::json;
 
 namespace live::tritone::vie
 {
@@ -45,13 +53,32 @@ namespace live::tritone::vie
 									Microsoft::WRL::Callback<ICoreWebView2WebMessageReceivedEventHandler>(
 										[this](ICoreWebView2* sender, ICoreWebView2WebMessageReceivedEventArgs* args) {
 											if (handler_ != nullptr) {
-												handler_->beginEdit(frequency_id);
-												wil::unique_cotaskmem_string jsonString;
-												args->get_WebMessageAsJson(&jsonString);
-												std::wstring jsonWString = jsonString.get();
-												//FIXME: use a real normalized value after POC.
-												handler_->performEdit(frequency_id, 0.123456f);
-												handler_->endEdit(frequency_id);
+												//Get message from webview.
+												wil::unique_cotaskmem_string message_string;
+												args->get_WebMessageAsJson(&message_string);
+
+												//Transform message to string
+												std::wstring json_message_wstring = message_string.get();
+												int size_needed = WideCharToMultiByte(CP_UTF8, 0, &json_message_wstring[0], (int)json_message_wstring.size(), NULL, 0, NULL, NULL);
+												std::string json_message_string(size_needed, 0);
+												WideCharToMultiByte(CP_UTF8, 0, &json_message_wstring[0], (int)json_message_wstring.size(), &json_message_string[0], size_needed, NULL, NULL);
+
+												//Transform message string to json object.
+												const char* json_message_char_ptr = json_message_string.c_str();
+												nlohmann::json json_message = nlohmann::json::parse(json_message_char_ptr);
+
+												//get parameter values from json message.
+	 											const uint16_t parameter_component_id = json_message["id"];
+												const uint16_t parameter_slot_id = json_message["slot"];	
+												const double parameter_value = json_message["value"];
+
+												//Compute component and its parameter ids to one single id.
+												unsigned long parameter_id = (parameter_component_id << 16) | parameter_slot_id;
+
+												//Transmit parameter to host.
+												handler_->beginEdit(parameter_id);
+												handler_->performEdit(parameter_id, parameter_value);
+												handler_->endEdit(parameter_id);
 											}
 											return S_OK;
 										}).Get(), &web_message_received_token_);
