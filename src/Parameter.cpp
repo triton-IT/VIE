@@ -18,7 +18,7 @@ namespace live::tritone::vie {
 		  default_normalized_value_(default_normalized_value),
 		  unit_id_(unit_id),
 		  flags_(flags),
-		  normalized_value_(0)
+		  normalized_value_(default_normalized_value)
 	{
 		wcscpy(title_, title);
 		wcscpy(short_title_, short_title);
