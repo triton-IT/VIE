@@ -37,6 +37,11 @@ namespace live::tritone::vie::processor::component
 		return id_;
 	}
 
+	std::string noise::get_name()
+	{
+		return name_;
+	}
+
 	processor_component_type noise::get_type()
 	{
 		return processor_component_type::middle;
