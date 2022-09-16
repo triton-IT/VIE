@@ -28,6 +28,7 @@ set(HEADER_FILES
         "components/midi.hpp"
         "components/mixer.hpp"
         "components/multiplier.hpp"
+        "components/noise.hpp"
         "components/oscillator.hpp"
         "components/output.hpp"
         )
@@ -64,6 +65,7 @@ set(SOURCE_FILES
         "components/midi.cpp"
         "components/mixer.cpp"
         "components/multiplier.cpp"
+        "components/noise.cpp"
         "components/oscillator.cpp"
         "components/output.cpp"
         )
@@ -126,7 +128,7 @@ if (DEPLOY_TO_VST_FOLDER)
                 COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_LIST_DIR}/assets/config/desktop.ini ${CMAKE_CURRENT_BINARY_DIR}/desktop.ini
                 COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_LIST_DIR}/assets/config/default_instrument.json ${CMAKE_CURRENT_BINARY_DIR}/default_instrument.json
                 COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_LIST_DIR}/assets/view ${CMAKE_CURRENT_BINARY_DIR}/view
-                COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.dll ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.vst3
+                COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_BINARY_DIR}/Debug/${PROJECT_NAME}.dll ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.vst3
                 COMMAND attrib +s ${CMAKE_CURRENT_BINARY_DIR}/Vie.ico
                 COMMAND attrib +s ${CMAKE_CURRENT_BINARY_DIR}/desktop.ini
                 COMMAND attrib +s ${CMAKE_CURRENT_BINARY_DIR}/default_instrument.json

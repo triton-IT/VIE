@@ -11,7 +11,7 @@ extern void* module_handle;
 extern std::wstring content_path;
 
 #ifdef VIE_DEBUG
-extern live::tritone::vie::utils::Logger debugLogger;
+extern live::tritone::vie::utils::logger debugLogger;
 #define DLOG(log) debugLogger.write(log)
 #else
 // ReSharper disable once IdentifierTypo

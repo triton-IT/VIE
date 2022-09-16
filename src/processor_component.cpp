@@ -17,7 +17,7 @@ namespace live::tritone::vie
 
 			parameters& parameters = application::get_parameters();
 			parameter parameter = parameters.add_parameter(id, name, short_name, type, unit, value);
-		
+
 			set_parameter(parameter);
 		}
 	}

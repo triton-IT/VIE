@@ -48,6 +48,16 @@ namespace live::tritone::vie
 		T value;
 	};
 
+	struct novalue_component_output
+	{
+		novalue_component_output() : output_id(0), note_mode(note_mode::normal)
+		{
+		}
+
+		uint32_t output_id;
+		note_mode note_mode;
+	};
+
 	using float_component_output = simple_component_output<float>;
 
 	template <typename T>

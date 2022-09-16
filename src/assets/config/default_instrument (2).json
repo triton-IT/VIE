@@ -38,7 +38,7 @@
           "type": "float",
           "unit": "Hz",
           "value": 440
-        }
+      }
       ]
     },
     {
@@ -60,7 +60,7 @@
           "type": "boolean",
           "unit": "",
           "value": 1
-        }
+      }
       ]
     },
     {
