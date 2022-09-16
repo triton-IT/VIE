@@ -42,6 +42,11 @@ namespace live::tritone::vie::processor::component
 		return id_;
 	}
 
+	std::string envelope::get_name()
+	{
+		return name_;
+	}
+
 	processor_component_type envelope::get_type()
 	{
 		return processor_component_type::middle;

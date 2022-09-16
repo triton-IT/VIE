@@ -28,8 +28,8 @@
     <script>
         document.getElementById("postMessageButton").addEventListener("click", () => {
             var json = {
-                "id": 1,
-                "slot": 2,
+                "component": "Sin generator",
+                "slot": "signal type input",
                 "value": 0
             };
             window.chrome.webview.postMessage(json);

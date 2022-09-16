@@ -93,6 +93,11 @@ namespace live::tritone::vie
 		virtual uint16_t get_id() = 0;
 
 		/**
+		* Get this processor unique name.
+		*/
+		virtual std::string get_name() = 0;
+
+		/**
 		* Get component type. (input, output or middle).
 		*/
 		virtual processor_component_type get_type() = 0;
@@ -156,11 +161,6 @@ namespace live::tritone::vie
 		virtual uint_fast32_t get_max_nb_input_values(uint_fast16_t slot_id) = 0;
 
 		/**
-		* Create a processor component from json file.
-		*/
-		static processor_component* create(nlohmann::json processor_definition);
-
-		/**
 		* Set a parameter to this processor.
 		*/
 		virtual void set_parameter(parameter parameter) = 0;
@@ -170,5 +170,7 @@ namespace live::tritone::vie
 		* Initialize component with specified configuration.
 		*/
 		void initialize(nlohmann::json processor_definition);
+
+		friend class processor_components;
 	};
 } // namespace

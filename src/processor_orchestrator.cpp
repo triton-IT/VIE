@@ -28,21 +28,18 @@ namespace live::tritone::vie
 		memset(nb_component_relations_, 0, 128);
 	}
 
-	processor_component* processor_orchestrator::add_processor_component(json processor_definition)
+	void processor_orchestrator::add_processor_component(processor_component* processor)
 	{
-		processor_component* component = processor_component::create(processor_definition);
-
-		if (component->get_type() == processor_component_type::event_input)
+		if (processor->get_type() == processor_component_type::event_input)
 		{
-			sources_components_[nb_midi_components_] = static_cast<midi*>(component);
+			sources_components_[nb_midi_components_] = static_cast<midi*>(processor);
 			nb_midi_components_++;
 		}
 
-		processor_components_[nb_components_] = component;
-		processor_components_map_[component->get_id()] = component;
+		processor_components_[nb_components_] = processor;
+		processor_components_map_[processor->get_id()] = processor;
 
 		nb_components_++;
-		return component;
 	}
 
 	component_relation& processor_orchestrator::add_relation(json relation_definition)

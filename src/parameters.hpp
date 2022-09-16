@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Parameter.hpp"
+#include "parameter.hpp"
 
 #include <memory>
 #include <string>

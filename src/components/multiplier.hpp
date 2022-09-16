@@ -23,6 +23,8 @@ namespace live::tritone::vie::processor::component
 
 		uint16_t get_id() override;
 
+		std::string get_name() override;
+
 		processor_component_type get_type() override;
 
 		void set_sample_rate(double sample_rate) override;

@@ -22,6 +22,11 @@ namespace live::tritone::vie::processor::component
 		return id_;
 	}
 
+	std::string multiplier::get_name()
+	{
+		return name_;
+	}
+
 	processor_component_type multiplier::get_type()
 	{
 		return processor_component_type::middle;

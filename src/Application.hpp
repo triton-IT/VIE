@@ -3,6 +3,7 @@
 #include <string>
 #include "logger.hpp"
 #include "parameters.hpp"
+#include "processor_components.hpp"
 
 using namespace live::tritone::vie;
 
@@ -28,7 +29,11 @@ public:
 	static parameters& get_parameters() {
 		return parameters_;
 	}
+	static processor_components& get_processor_components() {
+		return processor_components::get_instance();
+	}
 
 private:
+	//FIXME: Make a singleton or transform processor_components to static too.
 	static parameters parameters_;
 };

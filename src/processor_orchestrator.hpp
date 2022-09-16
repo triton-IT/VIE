@@ -33,7 +33,7 @@ namespace live::tritone::vie {
 	public:
 		processor_orchestrator();
 
-		processor_component* add_processor_component(nlohmann::json processor_definition);
+		void add_processor_component(processor_component* processor);
 
 		component_relation& add_relation(nlohmann::json relation_definition);
 

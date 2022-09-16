@@ -26,6 +26,11 @@ namespace live::tritone::vie::processor::component
 		return id_;
 	}
 
+	std::string midi::get_name()
+	{
+		return name_;
+	}
+
 	processor_component_type midi::get_type()
 	{
 		return processor_component_type::event_input;

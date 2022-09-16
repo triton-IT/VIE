@@ -9,6 +9,7 @@
 #include <sstream>
 
 #include "../application.hpp"
+#include "../processor_component.hpp"
 
 using namespace std;
 using json = nlohmann::json;
@@ -68,8 +69,13 @@ namespace live::tritone::vie
 												nlohmann::json json_message = nlohmann::json::parse(json_message_char_ptr);
 
 												//get parameter values from json message.
-	 											const uint16_t parameter_component_id = json_message["id"];
-												const uint16_t parameter_slot_id = json_message["slot"];	
+	 											//const uint16_t parameter_component_id = json_message["component"];
+												const std::string parameter_component_name = json_message["component"];
+												processor_component& processor_component = application::get_processor_components().get_by_name(parameter_component_name);
+												uint16_t parameter_component_id = processor_component.get_id();
+												//const uint16_t parameter_slot_id = json_message["slot"];
+												const std::string parameter_slot_name = json_message["slot"];
+												uint16_t parameter_slot_id = processor_component.get_slot_id(parameter_slot_name);
 												const double parameter_value = json_message["value"];
 
 												//Compute component and its parameter ids to one single id.

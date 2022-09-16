@@ -152,23 +152,26 @@ namespace live::tritone::vie {
 	}
 
 	void vie_processor::parse_processors(json processors_definition) {
-		for (auto& [index, processor] : processors_definition.items()) {
-			switch (processor_component* component = orchestrator_.add_processor_component(processor); component->get_type()) {
+		processor_components& processors = processor_components::get_instance();
+		for (auto& [index, processor_definition] : processors_definition.items()) {
+			auto processor = processors.create(processor_definition);
+			orchestrator_.add_processor_component(processor);
+			switch (processor->get_type()) {
 			case processor_component_type::event_input: {
-				auto event_input_bus = new bus(std::wstring(L"Event input"), bus_type::main, component);
+				auto event_input_bus = new bus(std::wstring(L"Event input"), bus_type::main, processor);
 				event_input_buses_.push_back(event_input_bus);
 				break;
 			}
 			case processor_component_type::audio_input: {
-				auto audio_input_bus = new bus(std::wstring(L"Audio input"), bus_type::main, component);
+				auto audio_input_bus = new bus(std::wstring(L"Audio input"), bus_type::main, processor);
 				audio_input_buses_.push_back(audio_input_bus);
 				break;
 			}
 			case processor_component_type::output: {
 				//TODO: Create another bus type if this one do not need a component as parameter.
-				auto audio_output_bus = new bus(std::wstring(L"Audio output"), bus_type::main, component);
+				auto audio_output_bus = new bus(std::wstring(L"Audio output"), bus_type::main, processor);
 				audio_output_buses_.push_back(audio_output_bus);
-				dynamic_cast<output*>(component)->set_output_bus_id(static_cast<uint_fast16_t>(audio_output_buses_.size()) - 1);
+				dynamic_cast<output*>(processor)->set_output_bus_id(static_cast<uint_fast16_t>(audio_output_buses_.size()) - 1);
 				break;
 			}
 			case processor_component_type::middle:
