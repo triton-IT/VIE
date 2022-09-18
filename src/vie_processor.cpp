@@ -30,25 +30,25 @@ namespace live::tritone::vie {
 		orchestrator_.terminate();
 
 		//Release processor audio input buses.
-		for each (auto bus in audio_input_buses_) {
+        for (auto bus: audio_input_buses_) {
 			delete bus;
 		}
 		audio_input_buses_.clear();
 
 		//Release audio output buses.
-		for each (auto bus in audio_output_buses_) {
+		for (auto bus : audio_output_buses_) {
 			delete bus;
 		}
 		audio_output_buses_.clear();
 
 		//Release event input buses.
-		for each (auto bus in event_input_buses_) {
+		for (auto bus : event_input_buses_) {
 			delete bus;
 		}
 		event_input_buses_.clear();
 
 		//Release event output buses.
-		for each (auto bus in event_output_buses_) {
+		for (auto bus : event_output_buses_) {
 			delete bus;
 		}
 		event_output_buses_.clear();
@@ -66,7 +66,7 @@ namespace live::tritone::vie {
 			bus_info.media_type = media_type;
 			bus_info.direction = bus_direction;
 			bus_info.channel_count = bus->get_channel_count();
-			wcscpy_s(bus_info.name, bus->get_name().c_str());
+            wcscpy_s(bus_info.name, bus->get_name().c_str());
 			switch (bus->get_type()) {
 			case bus_type::main:
 				bus_info.bus_type = bus_type::main;
