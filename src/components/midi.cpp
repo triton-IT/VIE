@@ -40,7 +40,7 @@ namespace live::tritone::vie::processor::component
 	{
 	}
 
-	uint_fast32_t midi::get_slot_id(const std::string& slot_name)
+    uint_fast16_t midi::get_slot_id(const std::string& slot_name)
 	{
 		if (slot_name == frequencies_output_name)
 		{

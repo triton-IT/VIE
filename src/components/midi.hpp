@@ -24,7 +24,7 @@ namespace live::tritone::vie::processor::component
 
 		void set_sample_rate(double sample_rate) override;
 
-		uint_fast32_t get_slot_id(const std::string& slot_name) override;
+        uint_fast16_t get_slot_id(const std::string& slot_name) override;
 
 		void set_input_values(uint_fast16_t slot_id, void* values, uint_fast32_t nb_values) override;
 

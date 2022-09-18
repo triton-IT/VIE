@@ -151,7 +151,7 @@ namespace live::tritone::vie::processor::component
 		return -1;
 	}
 
-	void oscillator::set_input_values(const uint_fast16_t slot_id, void* values, const uint_fast16_t nb_values)
+	void oscillator::set_input_values(const uint_fast16_t slot_id, void* values, const uint_fast32_t nb_values)
 	{
 		if (slot_id == frequency_input_id)
 		{
@@ -183,7 +183,7 @@ namespace live::tritone::vie::processor::component
 			}
 
 			//Switching between current and next phases is done to simplify the deletion of phases no more used.
-			std::unordered_map<uint_fast32_t, phase_descriptor>* tmp_phases_descriptors = current_phases_descriptors_;
+			std::unordered_map<uint_fast16_t, phase_descriptor>* tmp_phases_descriptors = current_phases_descriptors_;
 			current_phases_descriptors_ = next_phases_descriptors_;
 			next_phases_descriptors_ = tmp_phases_descriptors;
 

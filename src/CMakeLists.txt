@@ -98,7 +98,7 @@ message(STATUS "VIE> Setting-up dependencies")
 add_dependencies(${PROJECT_NAME}
         vst_interfaces
         cycfi_q
-        webview_static
+        webview2
         wil
         )
 
@@ -112,7 +112,7 @@ message(STATUS "VIE> Linking-up cycfi Q")
 target_link_libraries(${PROJECT_NAME} cycfi_q)
 
 message(STATUS "VIE> Linking-up webview2")
-target_link_libraries(${PROJECT_NAME} webview_static)
+target_link_libraries(${PROJECT_NAME} webview2)
 
 message(STATUS "VIE> Linking-up wil")
 target_link_libraries(${PROJECT_NAME} wil)

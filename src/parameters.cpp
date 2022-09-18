@@ -22,8 +22,8 @@ parameter parameters::add_parameter(unsigned long id, parameter parameter)
 parameter parameters::add_parameter(unsigned long id, std::string name, std::string short_name, std::string type, std::string unit, float value) {
 	if (type == "boolean") {
 		//FIXME: use wstring in parameters and fund a way to parse wstring with json.
-		boolean_parameter parameter(id, 
-			std::wstring(name.begin(), name.end()).c_str(), 
+		boolean_parameter parameter(id,
+			std::wstring(name.begin(), name.end()).c_str(),
 			std::wstring(short_name.begin(), short_name.end()).c_str(),
 			std::wstring(unit.begin(), unit.end()).c_str(),
 			value);

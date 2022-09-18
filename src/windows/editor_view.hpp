@@ -1,9 +1,5 @@
 #pragma once
 
-#ifndef UNICODE
-#define UNICODE
-#endif // !UNICODE
-
 #include <wrl.h>
 #include <pluginterfaces/vst/ivsteditcontroller.h>
 
