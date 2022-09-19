@@ -1,16 +1,15 @@
 #pragma once
 
-#ifndef UNICODE
-#define UNICODE
-#endif // !UNICODE
+#include <wrl.h>
+#include <pluginterfaces/vst/ivsteditcontroller.h>
 
-
-#include <Windows.h>
+#include "WebView2.h"
+#include "wil/com.h"
 
 namespace live::tritone::vie {
 	class editor_view {
 	public:
-		explicit editor_view(void* parent);
+		explicit editor_view();
 
 		editor_view(const editor_view&) = default;
 
@@ -22,13 +21,19 @@ namespace live::tritone::vie {
 
 		~editor_view();
 
-		[[nodiscard]] void* get_handle() const;
+		void attached(void* parent);
+
+		void removed();
+
+		void set_component_handler(Steinberg::Vst::IComponentHandler* handler);
 
 	private:
-		static LONG_PTR WINAPI message_proc(HWND window_handle, UINT message, WPARAM wide_parameter, LPARAM low_parameter);
+		wchar_t appdata_path[4096];
 
-		static LONG_PTR WINAPI handle_win32_message(HWND window_handle, UINT message, WPARAM wide_param, LPARAM low_param);
+		ICoreWebView2Controller* ptr_web_view_controller_;
+		ICoreWebView2* ptr_web_view_window_;
+		EventRegistrationToken web_message_received_token_;
 
-		HWND h_wnd_;
+		Steinberg::Vst::IComponentHandler* handler_;
 	};
 }

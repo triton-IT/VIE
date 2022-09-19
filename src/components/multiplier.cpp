@@ -4,7 +4,7 @@
 
 namespace live::tritone::vie::processor::component
 {
-	multiplier::multiplier(nlohmann::json multiplier_definition) :
+	multiplier::multiplier(nlohmann::json multiplier_definition) : processor_component(),
 		id_(multiplier_definition["id"]),
 		name_(multiplier_definition["name"]),
 		nb_inputs_multipliers_(0),
@@ -20,6 +20,11 @@ namespace live::tritone::vie::processor::component
 	uint16_t multiplier::get_id()
 	{
 		return id_;
+	}
+
+	std::string multiplier::get_name()
+	{
+		return name_;
 	}
 
 	processor_component_type multiplier::get_type()
@@ -161,5 +166,10 @@ namespace live::tritone::vie::processor::component
 		}
 
 		return -1;
+	}
+
+	void multiplier::set_parameter(parameter parameter)
+	{
+
 	}
 } // namespace

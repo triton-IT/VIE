@@ -37,6 +37,11 @@ namespace live::tritone::vie::processor::component
 		return id_;
 	}
 
+	std::string noise::get_name()
+	{
+		return name_;
+	}
+
 	processor_component_type noise::get_type()
 	{
 		return processor_component_type::middle;
@@ -170,7 +175,7 @@ namespace live::tritone::vie::processor::component
 			}
 
 			//Switching between current and next synth is done to simplify the deletion of synths no more used.
-			std::unordered_map<uint_fast32_t, noise_descriptor<void>>* tmp_noises_descriptors = current_noises_descriptors_;
+			std::unordered_map<uint_fast16_t, noise_descriptor<void>>* tmp_noises_descriptors = current_noises_descriptors_;
 			current_noises_descriptors_ = next_noises_descriptors_;
 			next_noises_descriptors_ = tmp_noises_descriptors;
 

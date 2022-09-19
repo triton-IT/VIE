@@ -28,6 +28,8 @@ namespace live::tritone::vie::processor::component
 
 		uint16_t get_id() override;
 
+		std::string get_name() override;
+
 		processor_component_type get_type() override;
 
 		void set_sample_rate(double sample_rate) override;
@@ -46,13 +48,18 @@ namespace live::tritone::vie::processor::component
 
 		uint_fast16_t get_slot_id(const std::string& slot_name) override;
 
-		void set_input_values(uint_fast16_t slot_id, void* values, uint_fast16_t nb_values) override;
+		void set_input_values(uint_fast16_t slot_id, void* values, uint_fast32_t nb_values) override;
 
 		uint_fast32_t get_max_nb_input_values(uint_fast16_t slot_id) override;
+
+		void set_parameter(parameter parameter) override;
 
 	private:
 		constexpr static const char* frequency_input_name = "frequencies input";
 		constexpr static int frequency_input_id = 0;
+
+		constexpr static const char* signal_type_input_name = "signal type input";
+		constexpr static int signal_type_input_id = 2;
 
 		constexpr static const char* amplitudes_output_name = "amplitudes output";
 		constexpr static int amplitudes_output_id = 1;

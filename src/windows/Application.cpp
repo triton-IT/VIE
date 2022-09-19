@@ -15,7 +15,7 @@ extern "C" {
 	std::wstring content_path;
 
 #ifdef VIE_DEBUG
-	live::tritone::vie::utils::Logger debugLogger;
+	live::tritone::vie::utils::logger debugLogger;
 #endif //VIE_DEBUG
 } // extern "C"
 
@@ -46,3 +46,5 @@ BOOL WINAPI DllMain(HINSTANCE /*h_instance*/, DWORD /*dw_reason*/, LPVOID /*lpv_
 
 	return TRUE;
 }
+
+parameters application::parameters_;

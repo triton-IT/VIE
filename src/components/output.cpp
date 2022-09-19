@@ -4,7 +4,7 @@
 
 namespace live::tritone::vie::processor::component
 {
-	output::output(nlohmann::json output_definition) :
+	output::output(nlohmann::json output_definition) : processor_component(),
 		id_(output_definition["id"]),
 		name_(output_definition["name"]),
 		amplitudes_(nullptr),
@@ -18,6 +18,11 @@ namespace live::tritone::vie::processor::component
 	uint16_t output::get_id()
 	{
 		return id_;
+	}
+
+	std::string output::get_name()
+	{
+		return name_;
 	}
 
 	processor_component_type output::get_type()
@@ -123,6 +128,11 @@ namespace live::tritone::vie::processor::component
 
 		//FIXME: Do not return -1 on a uint
 		return -1;
+	}
+
+	void output::set_parameter(parameter parameter)
+	{
+
 	}
 
 	void output::set_output_bus_id(const uint_fast16_t bus_id)

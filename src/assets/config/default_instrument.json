@@ -3,15 +3,43 @@
     {
       "id": 0,
       "name": "Midi",
-      "type": "midi"
+      "type": "midi",
+      "parameters": [
+        {
+          "id": 0,
+          "name": "on",
+          "short_name": "on",
+          "type": "boolean",
+          "unit": "",
+          "value": 1
+        }
+      ]
     },
     {
       "id": 1,
-      "name": "Noise generator",
-      "type": "noise",
+      "name": "Sin generator",
+      "type": "oscillator",
       "bindings": {
-        "type": "white"
-      }
+        "type": "sin"
+      },
+      "parameters": [
+        {
+          "id": 1,
+          "name": "on",
+          "short_name": "on",
+          "type": "boolean",
+          "unit": "",
+          "value": 1
+        },
+        {
+          "id": 2,
+          "name": "frequency",
+          "short_name": "freq",
+          "type": "float",
+          "unit": "Hz",
+          "value": 440
+        }
+      ]
     },
     {
       "id": 2,

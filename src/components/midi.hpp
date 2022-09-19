@@ -18,11 +18,13 @@ namespace live::tritone::vie::processor::component
 
 		uint16_t get_id() override;
 
+		std::string get_name() override;
+
 		processor_component_type get_type() override;
 
 		void set_sample_rate(double sample_rate) override;
 
-		uint_fast32_t get_slot_id(const std::string& slot_name) override;
+        uint_fast16_t get_slot_id(const std::string& slot_name) override;
 
 		void set_input_values(uint_fast16_t slot_id, void* values, uint_fast32_t nb_values) override;
 
@@ -39,6 +41,8 @@ namespace live::tritone::vie::processor::component
 		void get_zombie_notes_ids(std::unordered_set<uint32_t>& zombie_notes_ids) override;
 
 		void set_zombie_notes_ids(const std::unordered_set<uint32_t>& zombie_notes_ids) override;
+
+		void set_parameter(parameter parameter) override;
 
 		/* Receive a note on event from host and set its id.*/
 		void note_on(note_event& note_on_event);
@@ -73,5 +77,7 @@ namespace live::tritone::vie::processor::component
 		std::unordered_set<uint32_t> notes_ids_to_delete_;
 
 		void handle_processing_(uint32_t note_id, note_mode note_mode, const note_event& note_on_event);
+
+		bool is_on = true;
 	};
 } // namespace
