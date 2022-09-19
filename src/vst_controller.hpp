@@ -11,15 +11,13 @@
 #include <vector>
 
 #include "vie_view.hpp"
-#include "i_parameter_listener.hpp"
 #include "parameter.hpp"
 
 namespace live::tritone::vie {
 	class vst_controller final :
 		public Steinberg::Vst::IEditController,
 		public Steinberg::Vst::IConnectionPoint,
-		public Steinberg::IDependent,
-		public i_parameter_listener {
+		public Steinberg::IDependent {
 	public:
 		static FUnknown* createInstance(void* /*context*/) {
 			return static_cast<IEditController*>(new vst_controller);
@@ -27,7 +25,7 @@ namespace live::tritone::vie {
 
 		vst_controller();
 
-		~vst_controller() override;
+		~vst_controller();
 
 		//Inheritance from IEditController
 		Steinberg::tresult __stdcall queryInterface(const Steinberg::TUID iid, void** obj) override;
@@ -56,16 +54,11 @@ namespace live::tritone::vie {
 
 		//Inheritance from IDependent
 		void __stdcall update(Steinberg::FUnknown* changed_unknown, Steinberg::int32 message) override;
-		void parameter_value_changed(Steinberg::Vst::ParamID parameterId, Steinberg::Vst::ParamValue normalizedValue) override;
 
 	private:
 		Steinberg::IPtr <Steinberg::FUnknown> host_context_;
 		Steinberg::uint32 nb_ref_;
 		vie_view* view_;
 		Steinberg::Vst::IComponentHandler* component_handler_;
-
-		std::vector<parameter*> parameters_list_;
-		//VST needs to access parameters by index but also by identifier. So map the parameter id with the index of the parameter in the vector.
-		std::unordered_map<unsigned long, uint_fast16_t> parameters_map_;
 	};
 } // namespace

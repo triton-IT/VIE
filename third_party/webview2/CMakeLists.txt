@@ -22,13 +22,13 @@ else()
 endif()
 message(STATUS "VIE> webview2> webview-architecture=${ARCH}")
 
-add_library(webview_static INTERFACE)
+add_library(webview2 INTERFACE)
 
 message(STATUS "VIE> webview2> Include directories: ${webview2_SOURCE_DIR}/include/")
-target_include_directories(webview_static INTERFACE ${webview2_SOURCE_DIR}/include/)
+target_include_directories(webview2 INTERFACE ${webview2_SOURCE_DIR}/include/)
 
 message(STATUS "VIE> webview2> Link directories: ${webview2_SOURCE_DIR}/${ARCH}/")
-target_link_directories(webview_static INTERFACE ${webview2_SOURCE_DIR}/${ARCH}/)
+target_link_directories(webview2 INTERFACE ${webview2_SOURCE_DIR}/${ARCH}/)
 
 message(STATUS "VIE> webview2> Link libraries: WebView2LoaderStatic")
-target_link_libraries(webview_static INTERFACE WebView2LoaderStatic)
+target_link_libraries(webview2 INTERFACE WebView2LoaderStatic)

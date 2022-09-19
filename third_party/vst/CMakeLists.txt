@@ -4,7 +4,7 @@ include(FetchContent)
 
 FetchContent_Declare(
     vst_interfaces
-    GIT_REPOSITORY https://github.com/steinbergmedia/vst3_pluginterfaces.git
+    GIT_REPOSITORY https://github.com/steinbergmedia/vst3_pluginterfaces
     GIT_TAG        v3.7.4_build_25
 )
 

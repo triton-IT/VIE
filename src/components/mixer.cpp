@@ -4,14 +4,23 @@
 
 namespace live::tritone::vie::processor::component
 {
-	mixer::mixer(nlohmann::json mixer_definition) : id_(mixer_definition["id"]), name_(mixer_definition["name"]),
-	                                                nb_generics_(0), generics_(nullptr), can_process_(true)
+	mixer::mixer(nlohmann::json mixer_definition) : processor_component(),
+		id_(mixer_definition["id"]),
+		name_(mixer_definition["name"]),
+		nb_generics_(0),
+		generics_(nullptr),
+		can_process_(true)
 	{
 	}
 
 	uint16_t mixer::get_id()
 	{
 		return id_;
+	}
+
+	std::string mixer::get_name()
+	{
+		return name_;
 	}
 
 	processor_component_type mixer::get_type()
@@ -132,5 +141,10 @@ namespace live::tritone::vie::processor::component
 		}
 
 		return -1;
+	}
+
+	void mixer::set_parameter(parameter parameter)
+	{
+
 	}
 } // namespace

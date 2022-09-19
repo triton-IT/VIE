@@ -5,20 +5,14 @@
 #include "vst_controller.hpp"
 #include "application.hpp"
 
-#include "frequency_parameter.hpp"
-#include "wave_form_parameter.hpp"
-
 using namespace Steinberg;
 using namespace Vst;
 
 namespace live::tritone::vie {
-	vst_controller::vst_controller() : i_parameter_listener(),
-	                                   nb_ref_(0),
+	vst_controller::vst_controller() : nb_ref_(0),
 	                                   view_(nullptr),
 	                                   component_handler_(nullptr)
 	{
-		//Notify this controller when parameter change. By design, we want the controller to communicate with VST host. Not the view or any parameter.
-		//frequencyParameter_->setListener(this);
 	}
 
 	vst_controller::~vst_controller() {
@@ -66,21 +60,6 @@ namespace live::tritone::vie {
 	tresult __stdcall vst_controller::initialize(FUnknown * context) {
 		host_context_ = context;
 
-		//FIXME: Do not call new here or delete variables on terminate.
-		auto* bypass = new parameter(bypass_id, L"Bypass", L"bp", L"", 1, .0, 
-			kRootUnitId, ParameterInfo::kCanAutomate | ParameterInfo::kIsBypass);
-		parameters_list_. push_back(bypass);
-		parameters_map_[bypass_id] = static_cast<uint_fast16_t>(parameters_list_.size()) - 1;
-
-		const auto frequency = new frequency_parameter();
-		parameters_list_.push_back(frequency);
-		parameters_map_[frequency->get_id()] =static_cast<uint_fast16_t>(parameters_list_.size()) - 1;
-
-		auto* wave_form = new wave_form_parameter();
-		wave_form->set_listener(this);
-		parameters_list_.push_back(wave_form);
-		parameters_map_[wave_form->get_id()] = static_cast<uint_fast16_t>(parameters_list_.size())- 1;
-
 		return
 			kResultOk;
 	}
@@ -107,31 +86,32 @@ namespace live::tritone::vie {
 
 	int32 __stdcall vst_controller::getParameterCount()
 	{
-		return parameters_list_.size();
+		return application::get_parameters().count();
 	}
 
-	tresult __stdcall vst_controller::getParameterInfo(int32 paramIndex, ParameterInfo& info /*out*/)
+	tresult __stdcall vst_controller::getParameterInfo(int32 param_index, ParameterInfo& info /*out*/)
 	{
-		const parameter* parameter = parameters_list_[paramIndex];
+		parameter parameter = application::get_parameters().get_parameter_by_index(param_index);
 
 		ParameterInfo param_info{};
-		param_info.id = parameter->get_id();
-		parameter->get_title(param_info.title);
-		parameter->get_short_title(param_info.shortTitle);
-		parameter->get_units(param_info.units);
-		param_info.stepCount = parameter->get_step_count();
-		param_info.defaultNormalizedValue = parameter->get_default_normalized_value();
-		param_info.unitId = parameter->get_unit_id();
-		param_info.flags = parameter->get_flags();
+		param_info.id = parameter.get_id();
+		parameter.get_title(param_info.title);
+		parameter.get_short_title(param_info.shortTitle);
+		parameter.get_units(param_info.units);
+		param_info.stepCount = parameter.get_step_count();
+		param_info.defaultNormalizedValue = parameter.get_default_normalized_value();
+		param_info.unitId = parameter.get_unit_id();
+		param_info.flags = parameter.get_flags();
 
 		info = param_info;
-		return
-			kResultOk;
+
+		return kResultOk;
 	}
 
 	tresult __stdcall vst_controller::getParamStringByValue(ParamID id, ParamValue valueNormalized /*in*/, Steinberg::Vst::String128 string /*out*/)
 	{
-		if (const parameter* parameter = parameters_list_[parameters_map_[id]]; parameter->get_step_count()== 1) {
+		//Print "on" or "off" if value is a boolean or print float value otherwise.
+		if (parameter parameter = application::get_parameters().get_parameter(id); parameter.get_step_count() == 1) {
 			if (valueNormalized > 0.5) {
 				UString(string, str16BufferSize(String128)).assign(USTRING("On"));
 			}
@@ -143,13 +123,13 @@ namespace live::tritone::vie {
 			UString(string, str16BufferSize(String128)).printFloat(valueNormalized, 2);
 		}
 
-		return
-			kResultOk;
+		return kResultOk;
 	}
 
 	tresult __stdcall vst_controller::getParamValueByString(ParamID id, TChar* string /*in*/, Steinberg::Vst::ParamValue & valueNormalized /*out*/)
 	{
-		if (const parameter* parameter = parameters_list_[parameters_map_[id]]; parameter->get_step_count() == 1) {
+		// Set 0 or 1 if value is "on" or "off" or set value as float otherwise.
+		if (parameter parameter = application::get_parameters().get_parameter(id); parameter.get_step_count() == 1) {
 			if (wcscmp(string, L"On") == 0) {
 				valueNormalized = 0.0;
 			}
@@ -161,33 +141,31 @@ namespace live::tritone::vie {
 			const UString wrapper((TChar*)string, 128);
 			wrapper.scanFloat(valueNormalized);
 		}
-		return
-			kResultOk;
+		return kResultOk;
 	}
 
-	ParamValue __stdcall vst_controller::normalizedParamToPlain(ParamID id, ParamValue valueNormalized )
+	ParamValue __stdcall vst_controller::normalizedParamToPlain(ParamID id, ParamValue valueNormalized)
 	{
-		parameter* parameter = parameters_list_[parameters_map_[id]];
-		return parameter->to_plain_value(valueNormalized);
+		parameter parameter  = application::get_parameters().get_parameter(id);
+		return parameter.to_plain_value(valueNormalized);
 	}
 
 	ParamValue __stdcall vst_controller::plainParamToNormalized(ParamID id, ParamValue plainValue)
 	{
-		parameter* parameter = parameters_list_[parameters_map_[id]];
-		return parameter-> to_normalized_value(plainValue);
+		parameter parameter = application::get_parameters().get_parameter(id);
+		return parameter.to_normalized_value(plainValue);
 	}
 
 	ParamValue __stdcall vst_controller::getParamNormalized(ParamID id)
 	{
-		const parameter* parameter = parameters_list_[parameters_map_[id]];
-		return parameter->get_normalized_value();
+		parameter parameter = application::get_parameters().get_parameter(id);
+		return parameter.get_normalized_value();
 
 	}
 
 	tresult __stdcall vst_controller::setParamNormalized(ParamID id, ParamValue value)
 	{
-		if (parameter* parameter = parameters_list_[parameters_map_[id]]; parameter->
-			set_normalized_value(value)
+		if (parameter parameter = application::get_parameters().get_parameter(id); parameter.set_normalized_value(value)
 			) {
 			//TODO: Update GUI with new value.
 			return kResultOk;
@@ -208,7 +186,6 @@ namespace live::tritone::vie {
 		if (component_handler_ != nullptr)
 		{
 			component_handler_->release();
-
 		}
 
 		component_handler_ = handler;
@@ -217,7 +194,11 @@ namespace live::tritone::vie {
 		if (component_handler_ != nullptr)
 		{
 			component_handler_->addRef();
+		}
 
+		if (view_ != nullptr)
+		{
+			view_->set_component_handler(component_handler_);
 		}
 
 		return kResultTrue;
@@ -225,7 +206,7 @@ namespace live::tritone::vie {
 
 	IPlugView* __stdcall vst_controller::createView(FIDString /*name*/)
 	{
-		view_ = new vie_view(parameters_list_);
+		view_ = new vie_view(component_handler_);
 
 		return view_;
 	}
@@ -258,16 +239,6 @@ namespace live::tritone::vie {
 	}
 
 	void __stdcall vst_controller::update(Steinberg::FUnknown* changed_unknown, int32 message) {
-	}
-
-	void vst_controller::parameter_value_changed(Steinberg::Vst::ParamID parameterId, Steinberg::Vst::ParamValue /*normalizedValue*/) {
-		parameter* parameter = parameters_list_[parameterId];
-
-		if (component_handler_ != nullptr) {
-			component_handler_->beginEdit(parameterId);
-			component_handler_->performEdit(parameterId, parameter->get_normalized_value());
-			component_handler_->endEdit(parameterId);
-		}
 	}
 
 } // namespace

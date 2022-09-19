@@ -3,7 +3,17 @@
     {
       "id": 0,
       "name": "Midi",
-      "type": "midi"
+      "type": "midi",
+      "parameters": [
+        {
+          "id": 0,
+          "name": "on",
+          "short_name": "on",
+          "type": "boolean",
+          "unit": "",
+          "value": 1
+        }
+      ]
     },
     {
       "id": 1,
@@ -11,7 +21,25 @@
       "type": "oscillator",
       "bindings": {
         "type": "sin"
+      },
+      "parameters": [
+        {
+          "id": 1,
+          "name": "on",
+          "short_name": "on",
+          "type": "boolean",
+          "unit": "",
+          "value": 1
+        },
+        {
+          "id": 2,
+          "name": "frequency",
+          "short_name": "freq",
+          "type": "float",
+          "unit": "Hz",
+          "value": 440
       }
+      ]
     },
     {
       "id": 2,
@@ -23,7 +51,17 @@
         "sustain_level": -6,
         "sustain_rate": 50000.0,
         "release_rate": 100
+      },
+      "parameters": [
+        {
+          "id": 3,
+          "name": "on",
+          "short_name": "on",
+          "type": "boolean",
+          "unit": "",
+          "value": 1
       }
+      ]
     },
     {
       "id": 3,

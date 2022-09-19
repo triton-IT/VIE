@@ -13,6 +13,8 @@ namespace live::tritone::vie::processor::component
 
 		uint16_t get_id() override;
 
+		std::string get_name() override;
+
 		processor_component_type get_type() override;
 
 		void set_sample_rate(double sample_rate) override;
@@ -37,6 +39,8 @@ namespace live::tritone::vie::processor::component
 		void set_input_values(uint_fast16_t slot_id, void* values, uint_fast32_t nb_values) override;
 
 		uint_fast32_t get_max_nb_input_values(uint_fast16_t slot_id) override;
+
+		void set_parameter(parameter parameter) override;
 
 	private:
 		constexpr static const char* generics_input_name = "generics input";

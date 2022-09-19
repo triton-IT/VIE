@@ -1,6 +1,6 @@
 #pragma once
 
-#include "i_parameter_listener.hpp"
+#include <string>
 
 namespace live::tritone::vie {
 	class parameter {
@@ -24,6 +24,8 @@ namespace live::tritone::vie {
 		virtual ~parameter() = default;
 
 		[[nodiscard]] unsigned long get_id() const;
+
+		std::wstring get_title();
 
 		void get_title(wchar_t out[128]) const;
 
@@ -51,8 +53,6 @@ namespace live::tritone::vie {
 
 		virtual bool from_string(const wchar_t* string, double& normalized_value);
 
-		virtual void set_listener(i_parameter_listener* listener);
-
 	private:
 		unsigned long id_;
 		wchar_t title_[128]{};
@@ -64,7 +64,5 @@ namespace live::tritone::vie {
 		long flags_;            //DAW dependent parameters
 
 		double normalized_value_;
-
-		i_parameter_listener* listener_;
 	};
 }

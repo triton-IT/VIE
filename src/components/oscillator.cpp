@@ -9,7 +9,7 @@ using namespace cycfi;
 
 namespace live::tritone::vie::processor::component
 {
-	oscillator::oscillator(nlohmann::json oscillator_definition) :
+	oscillator::oscillator(nlohmann::json oscillator_definition) : processor_component(),
 		id_(oscillator_definition["id"]),
 		name_(oscillator_definition["name"]),
 		sample_rate_(.0),
@@ -48,6 +48,11 @@ namespace live::tritone::vie::processor::component
 	uint16_t oscillator::get_id()
 	{
 		return id_;
+	}
+
+	std::string oscillator::get_name()
+	{
+		return name_;
 	}
 
 	processor_component_type oscillator::get_type()
@@ -133,6 +138,10 @@ namespace live::tritone::vie::processor::component
 		{
 			return frequency_input_id;
 		}
+		if (slot_name == signal_type_input_name)
+		{
+			return signal_type_input_id;
+		}
 		if (slot_name == amplitudes_output_name)
 		{
 			return amplitudes_output_id;
@@ -142,7 +151,7 @@ namespace live::tritone::vie::processor::component
 		return -1;
 	}
 
-	void oscillator::set_input_values(const uint_fast16_t slot_id, void* values, const uint_fast16_t nb_values)
+	void oscillator::set_input_values(const uint_fast16_t slot_id, void* values, const uint_fast32_t nb_values)
 	{
 		if (slot_id == frequency_input_id)
 		{
@@ -174,7 +183,7 @@ namespace live::tritone::vie::processor::component
 			}
 
 			//Switching between current and next phases is done to simplify the deletion of phases no more used.
-			std::unordered_map<uint_fast32_t, phase_descriptor>* tmp_phases_descriptors = current_phases_descriptors_;
+			std::unordered_map<uint_fast16_t, phase_descriptor>* tmp_phases_descriptors = current_phases_descriptors_;
 			current_phases_descriptors_ = next_phases_descriptors_;
 			next_phases_descriptors_ = tmp_phases_descriptors;
 
@@ -182,6 +191,17 @@ namespace live::tritone::vie::processor::component
 			next_phases_descriptors_->clear();
 
 			can_process_ = true;
+		}
+		else if (slot_id == signal_type_input_id) {
+			const auto value = static_cast<float*>(values)[0];
+			if (value < 0.5f)
+			{
+				signal_type_ = signal_type::saw;
+			}
+			else
+			{
+				signal_type_ = signal_type::sin;
+			}
 		}
 	}
 
@@ -193,5 +213,10 @@ namespace live::tritone::vie::processor::component
 		}
 
 		return -1;
+	}
+
+	void oscillator::set_parameter(parameter parameter)
+	{
+
 	}
 } // namespace
