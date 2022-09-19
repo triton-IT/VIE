@@ -10,6 +10,9 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 project(VIE)
 
+#FIXME: Make cycfi Q compile properly on Windows + intel with clang.
+#add_compile_definitions(__INTEL_COMPILER)
+
 message(STATUS "VIE> Adding VST interfaces")
 add_subdirectory(third_party/vst)
 

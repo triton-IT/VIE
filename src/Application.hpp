@@ -8,7 +8,7 @@
 using namespace live::tritone::vie;
 
 extern void* module_handle;
-extern std::wstring content_path;
+extern "C" std::wstring content_path;
 
 #ifdef VIE_DEBUG
 extern live::tritone::vie::utils::logger debugLogger;
