@@ -341,6 +341,7 @@ ASALocalRun/
 healthchecksdb
 
 *.ds_store
+**.ds_store
 *.DS_Store
 **.DS_Store
 src/Platforms/apple/.DS_Store
