@@ -1,8 +1,8 @@
 class AnimationHelper {
-    constructor() {
-        $.getScript("js/third_parties/animation/popmotion.global.min.js", function () {
-        });
-    }
+    // constructor() {
+    //     $.getScript("js/third_parties/animation/popmotion.global.min.js", function () {
+    //     });
+    // }
 }
 
 animator = {
