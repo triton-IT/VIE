@@ -25,5 +25,8 @@ add_subdirectory(third_party/webview2)
 message(STATUS "VIE> Adding wil")
 add_subdirectory(third_party/wil)
 
+message(STATUS "VIE> Adding libsndfile")
+add_subdirectory(third_party/libsndfile)
+
 message(STATUS "VIE> Adding main application")
 add_subdirectory(src)

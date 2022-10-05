@@ -21,14 +21,12 @@ namespace live::tritone::vie::processor::component
 		auto& bindings_definition = oscillator_definition["bindings"];
 
 		type_ = bindings_definition["type"];
-		if (type_ == "sin")
-		{
-			signal_type_ = signal_type::sin;
-		}
 		if (type_ == "saw")
 		{
 			signal_type_ = signal_type::saw;
-		}
+		} else {
+            signal_type_ = signal_type::sin;
+        }
 	}
 
 	oscillator::~oscillator()

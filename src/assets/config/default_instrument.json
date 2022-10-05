@@ -17,27 +17,16 @@
     },
     {
       "id": 1,
-      "name": "Sin generator",
-      "type": "oscillator",
-      "bindings": {
-        "type": "sin"
-      },
+      "name": "Sample",
+      "type": "sample",
       "parameters": [
         {
           "id": 1,
-          "name": "on",
-          "short_name": "on",
-          "type": "boolean",
+          "name": "file_path",
+          "short_name": "file",
+          "type": "string",
           "unit": "",
-          "value": 1
-        },
-        {
-          "id": 2,
-          "name": "frequency",
-          "short_name": "freq",
-          "type": "float",
-          "unit": "Hz",
-          "value": 440
+          "value": ""
         }
       ]
     },

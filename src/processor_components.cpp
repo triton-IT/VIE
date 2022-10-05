@@ -6,6 +6,7 @@
 #include "components/multiplier.hpp"
 #include "components/mixer.hpp"
 #include "components/output.hpp"
+#include "components/sample.hpp"
 
 using namespace live::tritone::vie;
 using namespace live::tritone::vie::processor::component;
@@ -43,10 +44,18 @@ processor_component* processor_components::create(nlohmann::json processor_defin
 	{
 		processor = new mixer(processor_definition);
 	}
-	else if (type == "output")
-	{
-		processor = new output(processor_definition);
-	}
+    else if (type == "sample")
+    {
+        processor = new sample(processor_definition);
+    }
+    else if (type == "sample")
+    {
+        processor = new sample(processor_definition);
+    }
+    else if (type == "output")
+    {
+        processor = new output(processor_definition);
+    }
 
 	processor->initialize(processor_definition);
 
