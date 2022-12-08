@@ -1,24 +1,25 @@
-#include "application.hpp"
+#include "Application.h"
 
 #include <iostream>
 #include <fstream>
 #include <string>
 
 namespace live::tritone::vie::utils {
-	void logger::open(const std::string& file_name, const bool auto_flush) {
+	void Logger::open(std::string fileName, bool autoFlush) {
 		//TODO: Don't have right to write to VST folder. So choose the right log solution
-		log_file_.open(std::string("D:\\") + file_name, std::ios::out);
-		auto_flush_ = auto_flush;
+		logFile_.open(std::string("D:\\") + fileName, std::ios::out);
+		autoFlush_ = autoFlush;
+		write("File opened");
 	}
 
-	void logger::close() {
-		log_file_.close();
+	void Logger::close() {
+		logFile_.close();
 	}
 
-	void logger::write(const std::string& log) {
-		log_file_ << log << std::endl;
-		if (auto_flush_) {
-			log_file_.flush();
+	void Logger::write(std::string log) {
+		logFile_ << log << std::endl;
+		if (autoFlush_) {
+			logFile_.flush();
 		}
 	}
 }

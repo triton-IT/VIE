@@ -8,14 +8,12 @@ if (Test-Path -Path 'build') {
 }
 
 if (Test-Path -Path 'bin') {
-    #Remove-Item -Recurse -Force bin
+    Remove-Item -Recurse -Force bin
 }
 
 mkdir build
 cd build
 
-cmake .. -DDEPLOY_TO_VST_FOLDER=TRUE -DDEBUG=TRUE
+cmake .. -DDEPLOY_TO_VST_FOLDER=TRUE
 
 #cmake --build .
-
-#../VST_SDK/build/bin/Debug/validator.exe "../../../../../VIE/build/src/VIE.vst3"

@@ -1,0 +1,52 @@
+[
+  {
+    "name": "sin",
+    "inputs": [
+      {
+        "name": "frequency (Hz)",
+        "type": "float",
+        "min": "0.0",
+        "default": "3500.0"
+      },
+      {
+        "name": "amplitude (V)",
+        "type": "float",
+        "min": "0.0"
+      },
+      {
+        "name": "phase (ms)",
+        "type": "float"
+      }
+    ],
+    "outputs": [
+      {
+        "id": "out",
+        "type": "float",
+        "min": "0.0",
+        "max": "1.0"
+      }
+    ]
+  },
+  {
+    "name": "square",
+    "outputs": [
+      {
+        "id": "out",
+        "type": "float",
+        "min": "0.0",
+        "max": "1.0"
+      }
+    ]
+  },
+  {
+    "name": "triangle",
+    "outputs": [
+      {
+        "id": "out",
+        "type": "float",
+        "min": "0.0",
+        "max": "1.0"
+      }
+    ]
+  }
+]

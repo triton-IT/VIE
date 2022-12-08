@@ -10,17 +10,23 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 project(VIE)
 
-message("cmake compiler id: ${CMAKE_CXX_COMPILER_ID}")
-message("cmake compiler version: ${CMAKE_CXX_COMPILER_VERSION}")
-
 message(STATUS "VIE> Adding VST interfaces")
 add_subdirectory(third_party/vst)
 
+message(STATUS "VIE> Adding Tinyobjloader")
+add_subdirectory(third_party/tinyobjloader)
+
+message(STATUS "VIE> Adding STB")
+add_subdirectory(third_party/stb)
+
+#message(STATUS "VIE> Adding nuklear")
+#add_subdirectory(third_party/nuklear)
+
+message(STATUS "VIE> Adding Diligent engine core")
+add_subdirectory(third_party/diligent_core)
+
 message(STATUS "VIE> Adding cycfi Q")
 add_subdirectory(third_party/cycfi_q)
-
-message(STATUS "VIE> Adding webView 2")
-add_subdirectory(third_party/webview2)
 
 message(STATUS "VIE> Adding main application")
 add_subdirectory(src)

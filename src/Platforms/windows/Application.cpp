@@ -1,48 +1,52 @@
 #include <Windows.h>
 
-#include "../application.hpp"
-#include "../logger.hpp"
+#include "../Application.h"
+#include "../Logger.h"
 
 extern "C" {
-	bool InitDll() {
+	bool InitDll()
+	{		
 		return true;
 	}
 
-	bool ExitDll() {
+	bool ExitDll()
+	{
 		return true;
 	}
 
-	std::wstring content_path;
+	std::string contentPath;
 
 #ifdef VIE_DEBUG
 	live::tritone::vie::utils::Logger debugLogger;
 #endif //VIE_DEBUG
 } // extern "C"
 
-void get_content_path(wchar_t(&local_content_path)[1024]) {
-	HMODULE h_plugin;
-	GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
-		reinterpret_cast<LPCWSTR>(&get_content_path),
-		&h_plugin);
+void GetContentPath(CHAR (&_contentPath)[1024])
+{
+	HMODULE hPlugin;
+	GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
+		(LPCSTR)&GetContentPath,
+		&hPlugin);
 
 	//Get full path including dll file.
-	wchar_t dll_path[1024];
-	GetModuleFileNameW(h_plugin, dll_path, sizeof(dll_path) / sizeof(wchar_t));
+	CHAR dllPath[1024];
+	GetModuleFileNameA(hPlugin, dllPath, sizeof(dllPath) / sizeof(wchar_t));
 
 	//Remove the dll file name.
-	const wchar_t* dll_file_name = wcsrchr(dll_path, '\\');
-	wcsncpy_s(local_content_path, dll_path, wcslen(dll_path) - wcslen(dll_file_name));
+	CHAR* dllFileName = strrchr(dllPath, '\\');
+	strncpy_s(_contentPath, dllPath, strlen(dllPath) - strlen(dllFileName));
 }
 
-BOOL WINAPI DllMain(HINSTANCE /*h_instance*/, DWORD /*dw_reason*/, LPVOID /*lpv_reserved*/) {
-	wchar_t local_content_path[1024];
-	get_content_path(local_content_path);
-	local_content_path[1023] = '\0';
-	content_path = std::wstring(local_content_path) + L"\\";
+BOOL WINAPI DllMain(HINSTANCE hInst, DWORD /*dwReason*/, LPVOID /*lpvReserved*/)
+{
+	CHAR localContentPath[1024];
+	GetContentPath(localContentPath);
+	localContentPath[1023] = '\0';
+	contentPath = std::string(localContentPath) + "\\";
 
-#ifdef VIE_DEBUG
+#ifdef DEBUG
 	debugLogger.open("debug.log", true);
-#endif // VIE_DEBUG
-
+#endif // DEBUG
+	
 	return TRUE;
 }
