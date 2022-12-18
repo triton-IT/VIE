@@ -43,6 +43,7 @@ set(RESOURCES
         "assets/config/desktop.ini"
         "assets/config/default_instrument.json"
         "assets/config/vie.ico"
+        "assets/view/"
         )
 source_group("Resources" FILES ${RESOURCES})
 
@@ -104,7 +105,7 @@ add_dependencies(${PROJECT_NAME}
         wil
         libsndfile
         )
-        
+
 message(STATUS "VIE> Set target C++ standard to 17")
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_17)
 
@@ -137,7 +138,7 @@ if (DEPLOY_TO_VST_FOLDER)
                 COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_LIST_DIR}/assets/config/desktop.ini ${CMAKE_CURRENT_BINARY_DIR}/desktop.ini
                 COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_LIST_DIR}/assets/config/default_instrument.json ${CMAKE_CURRENT_BINARY_DIR}/default_instrument.json
                 COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_LIST_DIR}/assets/view ${CMAKE_CURRENT_BINARY_DIR}/view
-                COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.dll ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.vst3
+                COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_BINARY_DIR}/Debug/${PROJECT_NAME}.dll ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.vst3
                 COMMAND attrib +s ${CMAKE_CURRENT_BINARY_DIR}/Vie.ico
                 COMMAND attrib +s ${CMAKE_CURRENT_BINARY_DIR}/desktop.ini
                 COMMAND attrib +s ${CMAKE_CURRENT_BINARY_DIR}/default_instrument.json

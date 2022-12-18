@@ -3,6 +3,7 @@
 #include "../application.hpp"
 
 #include <sndfile.h>
+#include <sndfile.hh>
 
 namespace live::tritone::vie::processor::component
 {
@@ -11,9 +12,7 @@ namespace live::tritone::vie::processor::component
 		name_(sample_definition["name"]),
 		can_process_(false)
 	{
-		auto& parameters_definition = sample_definition["parameters"];
-		auto& file_path_definition = parameters_definition[0];
-		std::string file_path = file_path_definition["value"];
+		std::string file_path = sample_definition["file_path"];
 
 		loadFile(file_path);
 	}
@@ -24,29 +23,19 @@ namespace live::tritone::vie::processor::component
 
     void sample::loadFile(std::string filename)
     {
-        SF_INFO sfInfo;
-        SNDFILE* file = sf_open(filename.c_str(), SFM_READ, &sfInfo);
-        if (file == nullptr)
-        {
-            throw std::runtime_error("Could not open file " + filename);
-        }
-        if (sfInfo.format != SF_FORMAT_FLOAT)
-        {
-            throw std::runtime_error("File " + filename + " is not a float file");
-        }
-        float* buffer = new float[sfInfo.frames];
-        sf_read_float(file, buffer, sfInfo.frames);
+		SndfileHandle sndfileHandle = SndfileHandle(filename);
 
         // Create the sample descriptor
         sample_descriptor sample_descriptor;
-        sample_descriptor.nb_channels = sfInfo.channels;
-        sample_descriptor.nb_samples = sfInfo.frames;
-        sample_descriptor.values = buffer;
+        sample_descriptor.nb_channels = sndfileHandle.channels();
+        sample_descriptor.nb_frames = sndfileHandle.frames();
+		sample_descriptor.rate = sndfileHandle.samplerate();
+		sample_descriptor.format = sndfileHandle.format();
+		sample_descriptor.buffer = new float[sample_descriptor.nb_frames * sample_descriptor.nb_channels];
 
-        sf_close(file);
-
-        // Add the sample descriptor to the current samples descriptors
-        //FIXME: Add sample descriptor to the current samples descriptors*/
+		sndfileHandle.read(sample_descriptor.buffer, sample_descriptor.nb_frames * sample_descriptor.nb_channels);
+		
+		samples_descriptors_[0] = sample_descriptor;
     }
 
 	uint16_t sample::get_id()
@@ -108,10 +97,15 @@ namespace live::tritone::vie::processor::component
 
 	uint_fast16_t sample::get_slot_id(const std::string& slot_name)
 	{
-		if (slot_name == sample_on_input_name)
+		if (slot_name == onoff_input_name)
+		{
+			return onoff_input_id;
+		}
+		else if (slot_name == sample_on_input_name)
 		{
 			return sample_on_input_id;
-		} else if (slot_name == sample_name_input_name)
+		}
+		else if (slot_name == sample_name_input_name)
         {
             return sample_name_input_id;
         }

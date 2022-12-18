@@ -94,7 +94,11 @@ namespace live::tritone::vie::processor::component
 
 	uint_fast16_t output::get_slot_id(const std::string& slot_name)
 	{
-		if (slot_name == amplitudes_input_name)
+		if (slot_name == onoff_input_name)
+		{
+			return onoff_input_id;
+		}
+		else if (slot_name == amplitudes_input_name)
 		{
 			return amplitudes_input_id;
 		}

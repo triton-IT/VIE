@@ -141,19 +141,23 @@ namespace live::tritone::vie::processor::component
 
 	uint_fast16_t envelope::get_slot_id(const std::string& slot_name)
 	{
-		if (slot_name == velocities_input_name)
+		if (slot_name == onoff_input_name)
+		{
+			return onoff_input_id;
+		}
+		else if (slot_name == velocities_input_name)
 		{
 			return velocities_input_id;
 		}
-		if (slot_name == notes_on_input_name)
+		else if (slot_name == notes_on_input_name)
 		{
 			return notes_on_input_id;
 		}
-		if (slot_name == notes_off_input_name)
+		else if (slot_name == notes_off_input_name)
 		{
 			return notes_off_input_id;
 		}
-		if (slot_name == amplitudes_output_name)
+		else if (slot_name == amplitudes_output_name)
 		{
 			return amplitudes_output_id;
 		}

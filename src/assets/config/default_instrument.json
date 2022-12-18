@@ -1,5 +1,5 @@
 {
-  "processors": [
+  "components": [
     {
       "id": 0,
       "name": "Midi",
@@ -19,16 +19,7 @@
       "id": 1,
       "name": "Sample",
       "type": "sample",
-      "parameters": [
-        {
-          "id": 1,
-          "name": "file_path",
-          "short_name": "file",
-          "type": "string",
-          "unit": "",
-          "value": ""
-        }
-      ]
+      "file_path": "C:\\dev\\triton-IT\\VIE\\src\\assets\\samples\\1.wav"
     },
     {
       "id": 2,

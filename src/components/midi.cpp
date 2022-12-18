@@ -42,19 +42,23 @@ namespace live::tritone::vie::processor::component
 
     uint_fast16_t midi::get_slot_id(const std::string& slot_name)
 	{
-		if (slot_name == frequencies_output_name)
+		if (slot_name == onoff_input_name)
+		{
+			return onoff_input_id;
+		}
+		else if (slot_name == frequencies_output_name)
 		{
 			return frequencies_output_id;
 		}
-		if (slot_name == velocities_output_name)
+		else if (slot_name == velocities_output_name)
 		{
 			return velocities_output_id;
 		}
-		if (slot_name == notes_on_output_name)
+		else if (slot_name == notes_on_output_name)
 		{
 			return notes_on_output_id;
 		}
-		if (slot_name == notes_off_output_name)
+		else if (slot_name == notes_off_output_name)
 		{
 			return notes_off_output_id;
 		}

@@ -132,15 +132,19 @@ namespace live::tritone::vie::processor::component
 
 	uint_fast16_t oscillator::get_slot_id(const std::string& slot_name)
 	{
-		if (slot_name == frequency_input_name)
+		if (slot_name == onoff_input_name)
+		{
+			return onoff_input_id;
+		}
+		else if (slot_name == frequency_input_name)
 		{
 			return frequency_input_id;
 		}
-		if (slot_name == signal_type_input_name)
+		else if (slot_name == signal_type_input_name)
 		{
 			return signal_type_input_id;
 		}
-		if (slot_name == amplitudes_output_name)
+		else if (slot_name == amplitudes_output_name)
 		{
 			return amplitudes_output_id;
 		}

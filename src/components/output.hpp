@@ -49,8 +49,11 @@ namespace live::tritone::vie::processor::component
 		void set_output_bus_id(uint_fast16_t bus_id);
 
 	private:
+		static constexpr const char* onoff_input_name = "on/off input";
+		static constexpr int onoff_input_id = 0;
+		
 		static constexpr const char* amplitudes_input_name = "amplitudes input";
-		static constexpr int amplitudes_input_id = 0;
+		static constexpr int amplitudes_input_id = 1;
 
 		uint16_t id_;
 		std::string name_;

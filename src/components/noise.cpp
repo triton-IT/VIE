@@ -138,9 +138,9 @@ namespace live::tritone::vie::processor::component
 
 	uint_fast16_t noise::get_slot_id(const std::string& slot_name)
 	{
-		if (slot_name == noise_on_input_name)
+		if (slot_name == onoff_input_name)
 		{
-			return noise_on_input_id;
+			return onoff_input_id;
 		}
 
 		return -1;
@@ -148,7 +148,7 @@ namespace live::tritone::vie::processor::component
 
 	void noise::set_input_values(const uint_fast16_t slot_id, void* values, const uint_fast32_t nb_values)
 	{
-		if (slot_id == noise_on_input_id)
+		if (slot_id == onoff_input_id)
 		{
 			assert(nb_values <= 32);
 			for (uint_fast16_t i = 0; i < nb_values; i++)
@@ -188,7 +188,7 @@ namespace live::tritone::vie::processor::component
 
 	uint_fast32_t noise::get_max_nb_input_values(const uint_fast16_t slot_id)
 	{
-		if (slot_id == noise_on_input_id)
+		if (slot_id == onoff_input_id)
 		{
 			return 32;
 		}

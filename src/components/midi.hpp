@@ -51,14 +51,16 @@ namespace live::tritone::vie::processor::component
 		void note_off(note_event& note_off_event);
 
 	private:
+		static constexpr const char* onoff_input_name = "on/off input";
+		static constexpr int onoff_input_id = 0;
 		static constexpr const char* notes_on_output_name = "notes on output";
-		static constexpr int notes_on_output_id = 0;
+		static constexpr int notes_on_output_id = 1;
 		static constexpr const char* notes_off_output_name = "notes off output";
-		static constexpr int notes_off_output_id = 1;
+		static constexpr int notes_off_output_id = 2;
 		static constexpr const char* frequencies_output_name = "frequencies output";
-		static constexpr int frequencies_output_id = 2;
+		static constexpr int frequencies_output_id = 3;
 		static constexpr const char* velocities_output_name = "velocities output";
-		static constexpr int velocities_output_id = 3;
+		static constexpr int velocities_output_id = 4;
 
 		uint16_t id_;
 

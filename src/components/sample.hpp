@@ -47,11 +47,14 @@ namespace live::tritone::vie::processor::component
 		void set_parameter(parameter parameter) override;
 
 	private:
+		static constexpr const char* onoff_input_name = "on/off input";
+		static constexpr int onoff_input_id = 0;
+
 		constexpr static const char* sample_on_input_name = "On input";
-		constexpr static int sample_on_input_id = 0;
+		constexpr static int sample_on_input_id = 1;
 
 		static constexpr const char* sample_name_input_name = "Sample name input";
-		static constexpr int sample_name_input_id = 1;
+		static constexpr int sample_name_input_id = 2;
 
 		uint16_t id_;
 		std::string name_;
@@ -61,12 +64,13 @@ namespace live::tritone::vie::processor::component
 
 		struct sample_descriptor {
 			uint32_t nb_channels;
-			uint32_t nb_samples;
-			float* values;
+			uint32_t nb_frames;
+			uint32_t rate;
+			int format;
+			float* buffer;
 		};
 
-		std::unordered_map<std::string, sample_descriptor> current_samples_descriptors_;
-		std::unordered_map<std::string, sample_descriptor> next_samples_descriptors_;
+		std::unordered_map<int, sample_descriptor> samples_descriptors_;
 
 		float_array_component_output* amplitudes_;
 

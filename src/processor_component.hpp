@@ -88,6 +88,9 @@ namespace live::tritone::vie
 	class processor_component
 	{
 	public:
+		/**
+		* throw std::runtime_error when construction fails.
+		*/
 		processor_component() = default;
 		processor_component(const processor_component&) = default;
 		processor_component(processor_component&&) = default;

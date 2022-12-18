@@ -1,3 +1,4 @@
+#include "Application.hpp"
 #include "processor_components.hpp"
 
 #include "components/midi.hpp"
@@ -22,7 +23,7 @@ processor_components::~processor_components() {
 
 processor_component* processor_components::create(nlohmann::json processor_definition) {
 	processor_component* processor = nullptr;
-
+	
 	const std::string type = processor_definition["type"];
 	if (type == "midi")
 	{
@@ -62,6 +63,10 @@ processor_component* processor_components::create(nlohmann::json processor_defin
 	by_id_.emplace(processor->get_id(), processor);
 	by_name_.emplace(processor->get_name(), processor);
 	//list_.push_back(processor);
+
+#ifdef VIE_DEBUG
+	debugLogger.write("Added processor: " + processor->get_name());
+#endif
 
 	return processor;
 }

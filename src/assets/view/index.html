@@ -5,36 +5,35 @@
     <meta charset='UTF-8'/>
     <meta name="format-detection" content="telephone=no">
     <meta name="msapplication-tap-highlight" content="no">
-    <meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover">
-    <link type="text/css" rel="stylesheet" href="css/jquery-ui.css">
-    <link type="text/css" rel="stylesheet" href="css/index.css">
-    <title>Vie</title>
-    <!--    Jquery  -->
-    <script type="text/javascript" src="js/third_parties/jquery/jquery.min.js" defer></script>
-    <script type="text/javascript" src="js/third_parties/jquery/jquery-ui.min.js" defer></script>
-
-    <script type="text/javascript" src="js/third_parties/jquery/jquery-ui.drag-multiple.min.js" defer></script>
-    <script type="text/javascript" src="js/third_parties/fittext.min.js" defer></script>
-    <script type="text/javascript" src="js/third_parties/jquery/font_face_jquery.min.js" defer></script>
-
+    <link type="text/css" rel="stylesheet" href="css/style.css">
+    <script type="text/javascript" src="js/third_parties/interact.min.js"></script>
+    <script type="text/javascript" src="js/third_parties/popmotion.min.js"></script>
+    <script type="text/javascript" src="js/third_parties/sortable.min.js"></script>
+    <script type="text/javascript" src="js/third_parties/wad.min.js"></script>
+<!--    <script type="text/javascript" src="js/third_parties/tone.min.js"></script>-->
+<!--    <script type="text/javascript" src="js/third_parties/xsound.min.js"></script>-->
+    <script type="text/javascript" src="js/third_parties/sha256.min.js"></script>
+    <script type="text/javascript" src="js/third_parties/ping.min.js"></script>
+<!--    <script src='js/third_parties/w3color.js'></script>-->
+    <script src='js/opal/opal.js'></script>
+    <script src='js/opal/opal_browser.js'></script>
+    <!--    TODO: we line below is commented when using stand alone mode and loaded on demand when using server mode-->
+    <!--    <script type="text/javascript" src="js/third_parties/fabric.min.js"></script>-->
+    <!--    <script type="text/javascript" src="js/third_parties/three.min.js"></script>-->
+    <!--    <script src='js/opal/opal_parser.js'></script>-->
+    <script src='js/aui.js'></script>
+    <script src='js/atome/atome_helpers/atome_animate.js' defer></script>
+    <script src='js/atome/atome_helpers/atome_drag.js' defer></script>
+    <script src='js/atome/atome_helpers/atome_file.js' defer></script>
+    <script src='js/atome/atome_helpers/atome_sort.js' defer></script>
+    <script src='js/atome/atome_helpers/atome_time.js' defer></script>
+    <script src='js/atome/atome_helpers/atome_video.js' defer></script>
+    <script src='js/atome/atome.js' defer></script>
+    <script src='js/atome/kernel.js' defer></script>
+    <script src='js/opal/atome_opal_extensions.js'></script>
+    <title>atome</title>
+    <link rel="icon" type="image/x-icon" href="./favicon.ico">
 </head>
-<body id='user_device' oncontextmenu="return false;">
-</body>
-<script type="text/javascript" src="js/atome_libraries/js_extensions.js" defer></script>
-<script type="text/javascript" src="js/dynamic_libraries/opal/opal.js" defer></script>
-<script type="text/javascript" src="js/dynamic_libraries/opal/opal_jquery.js" defer></script>
-
-
-<script type="text/javascript" src="js/third_parties/animation/popmotion.global.min.js" defer></script>
-
-
-<script type="text/javascript" src="js/atome_libraries/animator_helper.js" defer></script>
-
-<script type="text/javascript" src="js/atome_libraries/web_socket_helper.js" defer></script>
-<script type="text/javascript" src="js/atome_libraries/atome_helper.js" defer></script>
-
-<script type="text/javascript" src="js/atome_libraries/index.js" defer></script>
-<script type="text/javascript" src="js/dynamic_libraries/atome_medias.js" defer></script>
-<script type="text/javascript" src="js/dynamic_libraries/atome.js" defer></script>
-<script type="text/javascript" src="js/dynamic_libraries/atome_app.js" defer></script>
+<body id='user_view' class='atome' oncontextmenu="return false;"></body>
+<script src='js/application.js' defer></script>
 </html>

@@ -52,15 +52,17 @@ namespace live::tritone::vie::processor::component
 		void set_parameter(parameter parameter) override;
 
 	private:
+		static constexpr const char* onoff_input_name = "on/off input";
+		static constexpr int onoff_input_id = 0;
 		constexpr static const char* velocities_input_name = "velocities input";
-		constexpr static int velocities_input_id = 0;
+		constexpr static int velocities_input_id = 1;
 		constexpr static const char* notes_on_input_name = "notes on input";
-		constexpr static int notes_on_input_id = 1;
+		constexpr static int notes_on_input_id = 2;
 		constexpr static const char* notes_off_input_name = "notes off input";
-		constexpr static int notes_off_input_id = 2;
+		constexpr static int notes_off_input_id = 3;
 
 		constexpr static const char* amplitudes_output_name = "amplitudes output";
-		constexpr static int amplitudes_output_id = 3;
+		constexpr static int amplitudes_output_id = 4;
 
 		uint16_t id_;
 		std::string name_;

@@ -50,10 +50,14 @@ namespace live::tritone::vie::processor::component
 		void set_parameter(parameter parameter) override;
 
 	private:
+		static constexpr const char* onoff_input_name = "on/off input";
+		static constexpr int onoff_input_id = 0;
+		
 		constexpr static const char* multipliers_input_name = "multipliers input";
-		constexpr static int multipliers_input_id = 0;
+		constexpr static int multipliers_input_id = 1;
+		
 		constexpr static const char* multiplicands_input_name = "multiplicands input";
-		constexpr static int multiplicands_input_id = 1;
+		constexpr static int multiplicands_input_id = 2;
 
 		constexpr static const char* products_output_name = "products output";
 		constexpr static int products_output_id = 2;

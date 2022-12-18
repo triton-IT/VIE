@@ -109,11 +109,15 @@ namespace live::tritone::vie::processor::component
 
 	uint_fast16_t mixer::get_slot_id(const std::string& slot_name)
 	{
-		if (slot_name == generics_input_name)
+		if (slot_name == onoff_input_name)
+		{
+			return onoff_input_id;
+		}
+		else if (slot_name == generics_input_name)
 		{
 			return generics_input_id;
 		}
-		if (slot_name == average_output_name)
+		else if (slot_name == average_output_name)
 		{
 			return average_output_id;
 		}

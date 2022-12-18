@@ -60,19 +60,28 @@ Standard components are listed below:
 Midi is an input component. It has no input signal but generate output ones.
 Midi component mirrors in the processor the midi events sent by host.
 The event sent to midi is enhanced with a unique id.
+#### on
+This signal is a boolean which is true when component is enabled.
+way: input
+type: boolean
 #### frequency
+This signal is a float[32] which contains the frequency of the midi note.
 way: output
 type: float\[32\]
 #### velocity
+This signal is a float[32] which contains the velocity of the midi note.
 way: output
 type: float\[32\]
 #### note active
+This signal is a uint[32] which contains the state of each midi note.
 way: output
 type: uint32\[32\]
 #### note on
+This signal is a note_event[32] which contains the state of each midi note.
 way: output
 type: note_event\[32\]
 #### note off
+This signal is a note_event[32] which contains the state of each midi note.
 way: output
 type: note_event\[32\]
 
@@ -80,6 +89,7 @@ type: note_event\[32\]
 Oscillator is a middle component. It consumes signal bound to is input slots and produces signal to its output ones.
 It generate a simple signal based on the chosen input type.
 #### type
+This signal is a enum[32] which contains the type of the oscillator.
 way: input
 type: enum\[32\] (sin, saw, square)
 Type of signal (wave form) to generate in output slot.
@@ -92,6 +102,8 @@ way: output
 type: float\[32\]\[\<nb frames\>\]
 
 ### Noise
+Noise is a middle component. It consumes signal bound to is input slots and produces signal to its output ones.
+It generates an output noise signal based on the chosen input type.
 #### On
 way: input
 type: bool
@@ -103,7 +115,7 @@ Array of amplitudes representing noise.
 
 ### Envelope 
 Envelope is a middle component. It consumes signal bound to is input slots and produces signal to its output ones.
-It generate an output signal based on time, configured curves and events.
+It generates an output signal based on time, configured curves and events.
 #### note on
 way: input
 type: note_event\[32\]
@@ -150,6 +162,16 @@ type: float\[32\]\[\<nb frames\>\]
 way: output
 type: float\[\<nb frames\>\]
 
+### Sampler
+Sampler is an input component. It has no input signal but generate output ones.
+#### on
+way: input
+type: bool
+#### frequency
+way: output
+type: float\[32\]
+#### 
+
 ## Behavior of the processors components.
 
 ### dictionnary
@@ -168,7 +190,7 @@ Each component is of a given type (input, middle or output).
 
 - Events are propagated
 - Processing method is performed.
-	- Process ùetho is called on each component.
+	- Process method is called on each component.
 	- Each component is requested to find zombie notes.
 	- Each component is called to set zombie notes.
 
