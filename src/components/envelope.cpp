@@ -15,13 +15,18 @@ namespace live::tritone::vie::processor::component
 		envelopes_(new envelope_by_id),
 		sample_rate_(0.0),
 		nb_velocities_inputs_(0),
-		velocities_(nullptr),
 		velocities_filled_(false),
 		notes_on_filled_(false),
 		notes_off_filled_(false),
 		nb_outputs_(0),
-		nb_zombie_notes_(0)
+		outputs_()
 	{
+		for (int i = 0; i < 32; i++) {
+			outputs_[i] = new float_array_component_output();
+		}
+		for (int i = 0; i < 32; i++) {
+			velocities_[i] = new novalue_component_output();
+		}
 	}
 
 	envelope::~envelope()
@@ -34,7 +39,12 @@ namespace live::tritone::vie::processor::component
 
 		delete envelopes_;
 
-		//FIXME: delete outputs_ allocated values.
+		for (int i = 0; i < 32; i++) {
+			delete velocities_[i];
+		}
+		for (int i = 0; i < 32; i++) {
+			delete outputs_[i];
+		}
 	}
 
 	uint16_t envelope::get_id()
@@ -57,6 +67,9 @@ namespace live::tritone::vie::processor::component
 		sample_rate_ = sample_rate;
 	}
 
+	void envelope::preprocess() {
+	}
+
 	//FIXME: Can't know if all inputs are set-up. So, we should check note by note if it can be processed. 
 	bool envelope::can_process()
 	{
@@ -69,42 +82,46 @@ namespace live::tritone::vie::processor::component
 		notes_on_filled_ = false;
 		notes_off_filled_ = false;
 
+		// FIXME: Trigger correctly (only once per note on event). 
+		// Cannot be done in "note on" event because velocity is perhaps not initialized yet.
+		// Cannot be done in "velocity" event because note on is perhaps not initialized yet.
+		//q_envelope->trigger(velocity * 255);
+
 		nb_outputs_ = 0;
 		
 		for (uint_fast32_t velocity_index = 0; velocity_index < nb_velocities_inputs_; velocity_index++)
 		{
-			const uint_fast32_t velocity_input_id = velocities_->output_id;
+			const uint_fast32_t velocity_output_id = velocities_[velocity_index]->note_id;
 			
-			if (auto envelope_iterator = envelopes_->find(velocity_input_id); envelope_iterator != envelopes_->end())
+			if (auto envelope_iterator = envelopes_->find(velocity_output_id); envelope_iterator != envelopes_->end())
 			{
 				uint32_t note_id = envelope_iterator->first;
 				q::envelope* q_envelope = envelope_iterator->second;
 
-				float_array_component_output& output = outputs_[velocity_index];
+				float_array_component_output& output = *(outputs_[velocity_index]);
 
 				//If nb of samples is greater than the ones currently allocated, reallocate.
 				//It means either that this is the first time we pass here or host changed the number of frames to process.
-				if (output_process_data.num_samples > output.nb_samples)
+				if (output_process_data.num_samples > output.values.nb_values)
 				{
-					if (output.nb_samples > 0)
+					if (output.values.nb_values > 0)
 					{
-						delete output.values;
+						delete output.values.values;
 					}
-					output.values = new float[output_process_data.num_samples];
-					output.nb_samples = output_process_data.num_samples;
+					output.values.values = new float[output_process_data.num_samples];
+					output.values.nb_values = output_process_data.num_samples;
 				}
 
-				output.output_id = velocity_input_id;
-				output.nb_samples = 1;
+				output.note_id = velocity_output_id;
+				output.values.nb_values = 1;
 
 				for (uint_fast32_t frame = 0; frame < output_process_data.num_samples; frame++)
 				{
-					output.values[frame] = q_envelope->operator()();
+					output.values.values[frame] = q_envelope->operator()();
 				}
 
 				if(q_envelope->state() == cycfi::q::envelope::note_off_state)
 				{
-					zombie_notes_ids_.erase(note_id);
 					envelopes_->erase(envelope_iterator);
 					delete q_envelope;
 				}
@@ -114,9 +131,13 @@ namespace live::tritone::vie::processor::component
 		}
 	}
 
-	uint_fast32_t envelope::get_output_values(const uint_fast16_t slot_id, void* output_values[])
+	component_output** envelope::get_outputs_pool(uint_fast16_t slot_id) {
+		return (component_output**) outputs_;
+	}
+
+	uint_fast32_t envelope::get_output_values(const uint_fast16_t slot_id, component_output* output_values[32])
 	{
-		*output_values = outputs_;
+		output_values = (component_output**) outputs_;
 
 		return nb_outputs_;
 	}
@@ -124,19 +145,6 @@ namespace live::tritone::vie::processor::component
 	bool envelope::has_finished()
 	{
 		return false;
-	}
-
-	void envelope::get_zombie_notes_ids(std::unordered_set<uint32_t>& zombie_notes_ids)
-	{
-		for(auto zombie_note_id: zombie_notes_ids_)
-		{
-			zombie_notes_ids.insert(zombie_note_id);
-		}
-	}
-
-	void envelope::set_zombie_notes_ids(const std::unordered_set<uint32_t>& zombie_notes_ids)
-	{
-		//Method only useful for inputs, for them to replay zombie note.
 	}
 
 	uint_fast16_t envelope::get_slot_id(const std::string& slot_name)
@@ -165,7 +173,7 @@ namespace live::tritone::vie::processor::component
 		return -1;
 	}
 
-	void envelope::set_input_values(const uint_fast16_t slot_id, void* values, const uint_fast32_t nb_values)
+	void envelope::set_input_values(const uint_fast16_t slot_id, component_output* values[32], const uint_fast32_t nb_values)
 	{		
 		switch (slot_id)
 		{
@@ -173,13 +181,8 @@ namespace live::tritone::vie::processor::component
 			assert(nb_values <= 32);
 			for (uint_fast32_t note_index = 0; note_index < nb_values; note_index++)
 			{
-				note_event_component_output& note_event_component = static_cast<note_event_component_output*>(values)[
-					note_index];
-				const auto& [id, channel, pitch, tuning, velocity] = note_event_component.value;
-				uint32_t note_id = note_event_component.output_id;
-
-				//FIXME: Remove this zombie notes.
-				zombie_notes_ids_.insert(note_id);
+				component_output* note_event_component = values[note_index];
+				uint32_t note_id = note_event_component->note_id;
 
 				q::envelope* q_envelope;
 				if (auto envelope_iterator = envelopes_->find(note_id); envelope_iterator != envelopes_->end())
@@ -193,7 +196,6 @@ namespace live::tritone::vie::processor::component
 					q_envelope = new q::envelope(config, static_cast<uint32_t>(sample_rate_));
 					envelopes_->emplace(note_id, q_envelope);
 				}
-				q_envelope->trigger(velocity * 255);
 			}
 			notes_on_filled_ = true;
 			break;
@@ -201,9 +203,8 @@ namespace live::tritone::vie::processor::component
 			assert(nb_values <= 32);
 			for (uint_fast32_t note_index = 0; note_index < nb_values; note_index++)
 			{
-				const note_event_component_output& note_event_component = static_cast<note_event_component_output*>(values)[
-					note_index];
-				uint32_t note_id = note_event_component.output_id;
+				const component_output* note_event_component = values[note_index];
+				uint32_t note_id = note_event_component->note_id;
 				q::envelope* q_envelope = envelopes_->operator[](note_id);
 				q_envelope->release();
 			}
@@ -215,7 +216,9 @@ namespace live::tritone::vie::processor::component
 			if (nb_values > 0) {
 				nb_velocities_inputs_ = nb_values;
 				if (nb_values > 0) {
-					velocities_ = static_cast<float_component_output*>(values);
+					for (int i = 0; i < 32; i++) {
+						velocities_[i]->note_id = values[i]->note_id;
+					}
 				}
 			}
 			velocities_filled_ = true;

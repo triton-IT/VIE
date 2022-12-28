@@ -6,10 +6,16 @@
 
 namespace live::tritone::vie::processor::component
 {
+	/**
+	* @brief A sample processor component.
+	* 
+	*/
 	class mixer final : public processor_component
 	{
 	public:
 		explicit mixer(nlohmann::json mixer_definition);
+
+		~mixer();
 
 		uint16_t get_id() override;
 
@@ -19,6 +25,10 @@ namespace live::tritone::vie::processor::component
 
 		void set_sample_rate(double sample_rate) override;
 
+		void preprocess() override;
+
+		component_output** get_outputs_pool(uint_fast16_t slot_id) override;
+
 		bool can_process() override;
 
 		void process(output_process_data& output_process_data) override;
@@ -26,17 +36,13 @@ namespace live::tritone::vie::processor::component
 		/**
 		* Set a pair<string, float> where string is the id of this mixer and float is the mixer output value.
 		*/
-		uint_fast32_t get_output_values(uint_fast16_t slot_id, void* output_values[]) override;
+		uint_fast32_t get_output_values(uint_fast16_t slot_id, component_output* output_values[32]) override;
 
 		bool has_finished() override;
 
-		void get_zombie_notes_ids(std::unordered_set<uint32_t>& zombie_notes_ids) override;
-
-		void set_zombie_notes_ids(const std::unordered_set<uint32_t>& zombie_notes_ids) override;
-
 		uint_fast16_t get_slot_id(const std::string& slot_name) override;
 
-		void set_input_values(uint_fast16_t slot_id, void* values, uint_fast32_t nb_values) override;
+		void set_input_values(uint_fast16_t slot_id, component_output* values[32], uint_fast32_t nb_values) override;
 
 		uint_fast32_t get_max_nb_input_values(uint_fast16_t slot_id) override;
 
@@ -56,11 +62,11 @@ namespace live::tritone::vie::processor::component
 		std::string name_;
 		std::string type_;
 
-		uint_fast32_t nb_generics_;
-		float_array_component_output* generics_;
+		uint_fast32_t nb_inputs_;
+		component_output** inputs_;
 
 		bool can_process_;
 
-		float_array_component_output average_;
+		float_array_component_output* average_;
 	};
 } // namespace

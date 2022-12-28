@@ -15,6 +15,15 @@ namespace live::tritone::vie::processor::component
 		multiplicands_filled_(false),
 		nb_products_(0)
 	{
+		for (int i = 0; i < 32; i++) {
+			products_[i] = new float_array_component_output();
+		}
+	}
+	
+	multiplier::~multiplier() {
+		for (int i = 0; i < 32; i++) {
+			delete products_[i];
+		}
 	}
 
 	uint16_t multiplier::get_id()
@@ -36,6 +45,9 @@ namespace live::tritone::vie::processor::component
 	{
 	}
 
+	void multiplier::preprocess() {
+	}
+
 	bool multiplier::can_process()
 	{
 		return multipliers_filled_ && multiplicands_filled_;
@@ -50,41 +62,38 @@ namespace live::tritone::vie::processor::component
 
 		for (uint_fast16_t input_id = 0; (input_id < nb_inputs_multipliers_) && (input_id < nb_inputs_multiplicands_); input_id++)
 		{
-			float_array_component_output& output = products_[input_id];
+			float_array_component_output& output = *products_[input_id];
 
 			//If nb of samples is greater than the ones currently allocated, reallocate.
-			if (output_process_data.num_samples > output.nb_samples)
+			if (output_process_data.num_samples > output.values.nb_values)
 			{
-				if (output.nb_samples > 0)
+				if (output.values.nb_values > 0)
 				{
-					delete output.values;
+					delete output.values.values;
 				}
-				output.values = new float[output_process_data.num_samples];
-				output.nb_samples = output_process_data.num_samples;
+				output.values.values = new float[output_process_data.num_samples];
+				output.values.nb_values = output_process_data.num_samples;
 			}
 
 			for (uint_fast32_t frame = 0; frame < output_process_data.num_samples; frame++)
 			{
-				output.output_id = id_;
+				output.note_id = id_;
 
 				float operand1 = 0;
-				note_mode operand1_node_mode = note_mode::normal;
+				auto multipliers_values = multipliers_[input_id]->to_float_array().values;
 				if (nb_inputs_multipliers_ > input_id) {
-					operand1 = multipliers_[input_id].values[frame];
-					operand1_node_mode = multipliers_[input_id].note_mode;
+					operand1 = multipliers_values[frame];
 				}
 
 				float operand2 = 0;
-				note_mode operand2_node_mode = note_mode::normal;
+				auto multiplicands_values = multiplicands_[input_id]->to_float_array().values;
 				if (nb_inputs_multiplicands_ > input_id) {
-					operand2 = multiplicands_[input_id].values[frame];
-					operand2_node_mode = multipliers_[input_id].note_mode;
+					operand2 = multiplicands_values[frame];
 				}
 
 				const float result = operand1 * operand2;
 
-				output.values[frame] = result;
-				output.note_mode = (operand1_node_mode == note_mode::zombie && operand2_node_mode == note_mode::zombie)?note_mode::zombie:note_mode::normal;
+				output.values.values[frame] = result;
 			}
 
 			nb_products_++;
@@ -94,9 +103,13 @@ namespace live::tritone::vie::processor::component
 		nb_inputs_multiplicands_ = 0;
 	}
 
-	uint_fast32_t multiplier::get_output_values(const uint_fast16_t slot_id, void* output_values[])
+	component_output** multiplier::get_outputs_pool(uint_fast16_t slot_id) {
+		return (component_output**) products_;
+	}
+
+	uint_fast32_t multiplier::get_output_values(const uint_fast16_t slot_id, component_output* output_values[32])
 	{
-		*output_values = products_;
+		output_values = (component_output**) products_;
 
 		return nb_products_;
 	}
@@ -104,14 +117,6 @@ namespace live::tritone::vie::processor::component
 	bool multiplier::has_finished()
 	{
 		return true;
-	}
-
-	void multiplier::get_zombie_notes_ids(std::unordered_set<uint32_t>& zombie_notes_ids)
-	{
-	}
-
-	void multiplier::set_zombie_notes_ids(const std::unordered_set<uint32_t>& zombie_notes_ids)
-	{
 	}
 
 	uint_fast16_t multiplier::get_slot_id(const std::string& slot_name)
@@ -132,21 +137,25 @@ namespace live::tritone::vie::processor::component
 		return -1;
 	}
 
-	void multiplier::set_input_values(const uint_fast16_t slot_id, void* values, const uint_fast32_t nb_values)
+	void multiplier::set_input_values(const uint_fast16_t slot_id, component_output* values[32], const uint_fast32_t nb_values)
 	{
 		switch (slot_id)
 		{
 		case multipliers_input_id:
 			assert(nb_values <= 32);
 			nb_inputs_multipliers_ = nb_values;
-			multipliers_ = static_cast<float_array_component_output*>(values);
+			for (int i = 0; i < 32; i++) {
+				multipliers_[i]->note_id = values[i]->note_id;
+			}
 			multipliers_filled_ = true;
 			break;
 
 		case multiplicands_input_id:	
 			assert(nb_values <= 32);
 			nb_inputs_multiplicands_ = nb_values;
-			multiplicands_ = static_cast<float_array_component_output*>(values);
+			for (int i = 0; i < 32; i++) {
+				multiplicands_[i]->note_id = values[i]->note_id;
+			}
 			multiplicands_filled_ = true;
 			break;
 		default:

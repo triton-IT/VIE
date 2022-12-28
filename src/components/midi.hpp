@@ -16,6 +16,8 @@ namespace live::tritone::vie::processor::component
 		*/
 		explicit midi(nlohmann::json midi_definition);
 
+		~midi();
+
 		uint16_t get_id() override;
 
 		std::string get_name() override;
@@ -26,21 +28,21 @@ namespace live::tritone::vie::processor::component
 
         uint_fast16_t get_slot_id(const std::string& slot_name) override;
 
-		void set_input_values(uint_fast16_t slot_id, void* values, uint_fast32_t nb_values) override;
+		void set_input_values(uint_fast16_t slot_id, component_output* values[32], uint_fast32_t nb_values) override;
 
 		uint_fast32_t get_max_nb_input_values(uint_fast16_t slot_id) override;
+
+		void preprocess() override;
+
+		component_output** get_outputs_pool(uint_fast16_t slot_id) override;
 
 		bool can_process() override;
 
 		void process(output_process_data& output_process_data) override;
 
-		uint_fast32_t get_output_values(uint_fast16_t slot_id, void* output_values[]) override;
+		uint_fast32_t get_output_values(uint_fast16_t slot_id, component_output* output_values[32]) override;
 
 		bool has_finished() override;
-
-		void get_zombie_notes_ids(std::unordered_set<uint32_t>& zombie_notes_ids) override;
-
-		void set_zombie_notes_ids(const std::unordered_set<uint32_t>& zombie_notes_ids) override;
 
 		void set_parameter(parameter parameter) override;
 
@@ -68,17 +70,14 @@ namespace live::tritone::vie::processor::component
 		std::unordered_map<uint32_t, note_event> notes_;
 
 		uint_fast32_t nb_values_;
-		float_component_output frequencies_outputs_[32];
-		float_component_output velocities_outputs_[32];
+		float_component_output* frequencies_outputs_[32];
+		float_component_output* velocities_outputs_[32];
 		uint_fast32_t nb_notes_on_values_;
-		note_event_component_output notes_on_outputs_[32];
+		novalue_component_output* notes_on_outputs_[32];
 		uint_fast32_t nb_notes_off_values_;
-		note_event_component_output notes_off_outputs_[32];
+		novalue_component_output* notes_off_outputs_[32];
 		
-		std::unordered_map<uint32_t, note_event> zombie_notes_;
 		std::unordered_set<uint32_t> notes_ids_to_delete_;
-
-		void handle_processing_(uint32_t note_id, note_mode note_mode, const note_event& note_on_event);
 
 		bool is_on = true;
 	};

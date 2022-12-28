@@ -11,12 +11,6 @@
 
 namespace live::tritone::vie
 {
-	enum class note_mode
-	{
-		normal,
-		zombie
-	};
-
 	struct audio_bus_buffers
 	{
 		long num_channels;
@@ -36,46 +30,114 @@ namespace live::tritone::vie
 		audio_bus_buffers outputs[32];
 	};
 
-	template <typename T>
-	struct simple_component_output
-	{
-		simple_component_output() : output_id(0), note_mode(note_mode::normal), value()
+	typedef struct {
+		uint_fast16_t nb_values;
+		float* values;
+	} float_array;
+	
+	struct component_output
+	{		
+		component_output(uint32_t id) : note_id(id)
 		{
 		}
 
-		uint32_t output_id;
-		note_mode note_mode;
-		T value;
+		uint32_t note_id;
+
+		virtual bool to_boolean() = 0;
+
+		virtual float to_float() = 0;
+
+		virtual float_array to_float_array() = 0;
 	};
 
-	struct novalue_component_output
+	/**
+	* Used to transfer output event from one component to another.
+	* For example, a note on event (that does not contain any additional data).
+	*/
+	struct novalue_component_output : public component_output
 	{
-		novalue_component_output() : output_id(0), note_mode(note_mode::normal)
+		novalue_component_output() : component_output(0)
+		{
+		}
+		
+		novalue_component_output(uint32_t note_id) : component_output(note_id)
 		{
 		}
 
-		uint32_t output_id;
-		note_mode note_mode;
+		bool to_boolean() override
+		{
+			return false;
+		}
+
+		float to_float() override
+		{
+			return 0.0f;
+		}
+
+		float_array to_float_array() override
+		{
+			return { 0, nullptr };
+		}
 	};
 
-	using float_component_output = simple_component_output<float>;
-
-	template <typename T>
-	struct array_component_output
+	struct float_component_output : public component_output
 	{
-		array_component_output() : output_id(0), note_mode(note_mode::normal), nb_samples(0), values(nullptr)
+		float_component_output() : component_output(0), value(.0f)
+		{
+			value = .0f;
+		}
+		
+		float_component_output(uint32_t note_id, float value) : component_output(note_id), value(value)
 		{
 		}
 
-		uint32_t output_id;
-		note_mode note_mode;
-		uint_fast32_t nb_samples;
-		T* values;
+		float value;
+
+		bool to_boolean() override
+		{
+			return value >= 0.5f;
+		}
+
+		float to_float() override
+		{
+			return value;
+		}
+
+		float_array to_float_array() override
+		{
+			return { 1, &value };
+		}
 	};
 
-	using float_array_component_output = array_component_output<float>;
+	struct float_array_component_output : public component_output
+	{
+		float_array_component_output() : component_output(0)
+		{
+			values.nb_values = 0;
+			values.values = nullptr;
+		}
+		
+		float_array_component_output(uint32_t note_id, float_array values) : component_output(note_id), values(values)
+		{
+		}
 
-	using note_event_component_output = simple_component_output<note_event>;
+		float_array values;
+
+		bool to_boolean() override
+		{
+			return values.nb_values > 0;
+		}
+
+		float to_float() override
+		{
+			return values.nb_values;
+		}
+
+		float_array to_float_array() override
+		{
+			return values;
+		}
+	};
 
 	enum class processor_component_type
 	{
@@ -121,6 +183,15 @@ namespace live::tritone::vie
 		virtual void set_sample_rate(double sample_rate) = 0;
 
 		/**
+		* Pre-process the component.
+		* Called only once per process loop.
+		* If the component has multiple inputs relations, 
+		* the "process" method and the "get_output_values" are called once by input relation.
+		* The "preprocess" method is called only once whatever the number of input relations.
+		*/
+		virtual void preprocess() = 0;
+
+		/**
 		* Is this processor be able to process ?
 		* The processor should be able to process when all its input are correctly filled in.
 		*/
@@ -132,10 +203,20 @@ namespace live::tritone::vie
 		virtual void process(output_process_data& output_process_data) = 0;
 
 		/**
+		* Get a pool of output values for the given slot.
+		* The pool must be allocated with the right structure for the slot.
+		* The pool do not need to be reallocated on each request. The less allocation, the better.
+		* This pool will be used to populate output values.
+		* The pool must be allocated with enough objects to contain output values.
+		*/
+		virtual component_output** get_outputs_pool(uint_fast16_t slot_id) = 0;
+		
+		/**
 		* Get result of processing for specific slot.
+		* For a given slot, multiple notes can be played (one value by note).
 		* The output type of the requested slot is unknown by this interface.
 		*/
-		virtual uint_fast32_t get_output_values(uint_fast16_t slot_id, void* output_values[]) = 0;
+		virtual uint_fast32_t get_output_values(uint_fast16_t slot_id, component_output* values[32]) = 0;
 
 		/**
 		 * Has this processor finished the processing ?
@@ -144,29 +225,16 @@ namespace live::tritone::vie
 		virtual bool has_finished() = 0;
 
 		/**
-		 * Get the identifiers of the zombie notes.
-		 * A zombie note is a note that must continue to play even if it as been released (e.g. during the release phase of an envelope).
-		 */
-		virtual void get_zombie_notes_ids(std::unordered_set<uint32_t>& zombie_notes_ids) = 0;
-
-		/**
-		 * Set the identifiers of zombie notes.
-		 * zombie notes must be processed like any other note by middle components.
-		 * If a middle component uses a zombie note to perform processing, then the output must be marked as zombie.
-		 * If a middle component requested a zombie note and do not use zombie notes other than the one requested, then the output must not be marked as zombie.
-		 */
-		virtual void set_zombie_notes_ids(const std::unordered_set<uint32_t>& zombie_notes_ids) = 0;
-
-		/**
 		* Get the input identifier for the given input name.
 		*/
 		virtual uint_fast16_t get_slot_id(const std::string& slot_name) = 0;
 
 		/**
 		* Set the values for the given slot.
+		* For a given slot, multiple notes can be played (one value by note).
 		* The input type of the requested slot is unknown by this interface.
 		*/
-		virtual void set_input_values(uint_fast16_t slot_id, void* values, uint_fast32_t nb_values) = 0;
+		virtual void set_input_values(uint_fast16_t slot_id, component_output* values[32], uint_fast32_t nb_values) = 0;
 
 		/**
 		* Get the maximum number of values accepted for the given input identifier.

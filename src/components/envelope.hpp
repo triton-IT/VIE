@@ -31,21 +31,21 @@ namespace live::tritone::vie::processor::component
 
 		void set_sample_rate(double sample_rate) override;
 
+		void preprocess() override;
+
 		bool can_process() override;
+
+		component_output** get_outputs_pool(uint_fast16_t slot_id) override;
 
 		void process(output_process_data& output_process_data) override;
 
-		uint_fast32_t get_output_values(uint_fast16_t slot_id, void* output_values[]) override;
+		uint_fast32_t get_output_values(uint_fast16_t slot_id, component_output* output_values[32]) override;
 
 		bool has_finished() override;
 
-		void get_zombie_notes_ids(std::unordered_set<uint32_t>& zombie_notes_ids) override;
-
-		void set_zombie_notes_ids(const std::unordered_set<uint32_t>& zombie_notes_ids) override;
-
 		uint_fast16_t get_slot_id(const std::string& slot_name) override;
 
-		void set_input_values(uint_fast16_t slot_id, void* values, uint_fast32_t nb_values) override;
+		void set_input_values(uint_fast16_t slot_id, component_output* values[32], uint_fast32_t nb_values) override;
 
 		uint_fast32_t get_max_nb_input_values(uint_fast16_t slot_id) override;
 
@@ -74,24 +74,13 @@ namespace live::tritone::vie::processor::component
 		double sample_rate_;
 
 		uint_fast16_t nb_velocities_inputs_;
-		float_component_output* velocities_;
+		novalue_component_output* velocities_[32];
 
 		bool velocities_filled_;
 		bool notes_on_filled_;
 		bool notes_off_filled_;
 
 		uint_fast8_t nb_outputs_;
-		float_array_component_output outputs_[32];
-
-		uint_fast8_t nb_zombie_notes_;
-
-		/**
-		 * A given zombie note is a zombie note that is set as input.
-		 */
-		//std::unordered_set<uint32_t> given_zombie_notes_ids_;
-		/**
-		 * A requested zombie note is a zombie note that this component requests to caller.
-		 */
-		std::unordered_set<uint32_t> zombie_notes_ids_;
+		float_array_component_output* outputs_[32];
 	};
 } // namespace

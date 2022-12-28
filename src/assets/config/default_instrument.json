@@ -23,11 +23,21 @@
     },
     {
       "id": 2,
+      "name": "Envelope",
+      "type": "envelope"
+    },
+    {
+      "id": 3,
+      "name": "Multiplier",
+      "type": "multiplier"
+    },
+    {
+      "id": 4,
       "name": "Mixer 1",
       "type": "mixer"
     },
     {
-      "id": 3,
+      "id": 5,
       "name": "output",
       "type": "output"
     }
@@ -35,21 +45,39 @@
   "relations": [
     {
       "sourceComponent": 0,
+      "sourceOutputSlot": 1,
+      "targetComponent": 1,
+      "targetInputSlot": 1
+    },
+    {
+      "sourceComponent": 0,
+      "sourceOutputSlot": 1,
+      "targetComponent": 2,
+      "targetInputSlot": 2
+    },
+    {
+      "sourceComponent": 0,
       "sourceOutputSlot": 2,
       "targetComponent": 1,
-      "targetInputSlot": 0
+      "targetInputSlot": 2
+    },
+    {
+      "sourceComponent": 0,
+      "sourceOutputSlot": 2,
+      "targetComponent": 2,
+      "targetInputSlot": 3
     },
     {
       "sourceComponent": 1,
-      "sourceOutputSlot": 1,
-      "targetComponent": 2,
-      "targetInputSlot": 0
+      "sourceOutputSlot": 4,
+      "targetComponent": 4,
+      "targetInputSlot": 1
     },
     {
-      "sourceComponent": 2,
+      "sourceComponent": 4,
       "sourceOutputSlot": 1,
-      "targetComponent": 3,
-      "targetInputSlot": 0
+      "targetComponent": 5,
+      "targetInputSlot": 1
     }
   ]
 }
