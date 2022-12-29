@@ -170,6 +170,10 @@ namespace live::tritone::vie::processor::component
 		{
 			return name_input_id;
 		}
+		else if (slot_name == play_at_input_name)
+		{
+			return play_at_input_id;
+		}
 		else if (slot_name == amplitude_output_name)
 		{
 			return amplitude_output_id;
@@ -182,11 +186,11 @@ namespace live::tritone::vie::processor::component
 	{
 		//Process if we have an output
 		if (nb_values > 0) {
+			//32 is the maximum number of inputs authorized by design.
+			assert(nb_values <= 32);
 			//Check which input slot is requested
-			if (slot_id == play_input_id)
-			{
-				//32 is the maximum number of inputs authorized by design.
-				assert(nb_values <= 32);
+			switch (slot_id) {
+			case play_input_id:
 				//Iterate over each value to set to input.
 				for (uint_fast16_t i = 0; i < nb_values; i++)
 				{
@@ -220,12 +224,8 @@ namespace live::tritone::vie::processor::component
 						}
 					}*/
 				}
-			}
-			else if (slot_id == stop_input_id)
-			{
-				//32 is the maximum number of inputs authorized by design.
-				assert(nb_values <= 32);
-				
+				break;
+			case stop_input_id:
 				//Iterate over each value to set to input.
 				for (uint_fast16_t i = 0; i < nb_values; i++)
 				{
@@ -235,7 +235,7 @@ namespace live::tritone::vie::processor::component
 					const auto& component_output = values[i];
 
 					uint32_t input_id = component_output->note_id;
-					
+
 					//And mute the ones which are requested.
 					sample_state& sample_state = samples_states_[input_id];
 					if (sample_state.activated)
@@ -245,6 +245,18 @@ namespace live::tritone::vie::processor::component
 						sample_state.position = 0;
 					}
 				}
+				break;
+			case play_at_input_id:
+				//Iterate over each value to set to input.
+				for (uint_fast16_t i = 0; i < nb_values; i++)
+				{
+					const auto& component_output = values[i];
+					uint32_t input_id = component_output->note_id;
+					sample_state& sample_state = samples_states_[input_id];
+					sample_state.position = component_output->to_float();
+					
+				}
+				break;
 			}
 		}
 

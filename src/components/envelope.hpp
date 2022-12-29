@@ -67,14 +67,25 @@ namespace live::tritone::vie::processor::component
 		constexpr static const char* notes_off_output_name = "Note off output";
 		constexpr static int notes_off_output_id = 5;
 
+		constexpr static const char* sustains_starts_output_name = "Sustain start output";
+		constexpr static int sustains_starts_output_id = 6;
+
+		constexpr static const char* sustains_ends_output_name = "Sustain end output";
+		constexpr static int sustains_ends_output_id = 7;
+
+		constexpr static const char* sustains_loops_output_name = "Sustain loop output";
+		constexpr static int sustains_loops_output_id = 8;
+
 		uint16_t id_;
 		std::string name_;
 		std::string type_;
 
 		typedef struct envelope_info {
-			envelope_info() : is_processed(false), envelope(nullptr) {};
+			envelope_info() : is_processed(false), envelope(nullptr), position(0) {};
 			cycfi::q::envelope* envelope;
+			cycfi::q::envelope::config config;
 			bool is_processed;
+			cycfi::q::duration position;
 		} envelope_info;
 		
 		typedef std::unordered_map<uint32_t, envelope_info> envelope_by_id;
@@ -94,5 +105,27 @@ namespace live::tritone::vie::processor::component
 
 		uint_fast8_t nb_outputs_;
 		float_array_component_output* outputs_[32];
+
+		uint_fast16_t nb_sustains_starts_ = 0;
+		/**
+		* Send an event when marker of sustain start is reached.
+		* Value is the offset of the sustain start marker.
+		*/
+		float_component_output* sustains_starts_[32];
+
+		uint_fast16_t nb_sustains_ends_ = 0;
+		/**
+		* Send an event when marker of sustain end is reached.
+		* Value is the offset of the sustain end marker.
+		*/
+		float_component_output* sustains_ends_[32];
+
+		uint_fast8_t nb_sustains_loops_ = 0;
+		/**
+		* Send an event when marker of sustain end is reached.
+		* Value is the offset of the sustain start marker.
+		* This event can be used to move a sample to a start marker when a sustain end marker is reached.
+		*/
+		float_component_output* sustains_loops_[32];
 	};
 } // namespace

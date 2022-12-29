@@ -24,6 +24,9 @@ namespace live::tritone::vie::processor::component
 			outputs_[i] = new float_array_component_output();
 			velocities_[i] = new float_component_output();
 			notes_off_[i] = new novalue_component_output();
+			sustains_starts_[i] = new float_component_output();
+			sustains_ends_[i] = new float_component_output();
+			sustains_loops_[i] = new float_component_output();
 		}
 	}
 
@@ -79,6 +82,8 @@ namespace live::tritone::vie::processor::component
 
 		nb_outputs_ = 0;
 		nb_notes_off_ = 0;
+		nb_sustains_starts_ = 0;
+		nb_sustains_loops_ = 0;
 		
 		for (uint_fast32_t velocity_index = 0; velocity_index < nb_velocities_inputs_; velocity_index++)
 		{
@@ -88,14 +93,15 @@ namespace live::tritone::vie::processor::component
 			{
 				uint32_t note_id = envelope_iterator->first;
 
-				q::envelope* q_envelope = envelope_iterator->second.envelope;
+				auto& envelope_info = envelope_iterator->second;
+				q::envelope* q_envelope = envelope_info.envelope;
 
 				// Trigger only once per note on event.
 				// Cannot be done in "note on" event because velocity is perhaps not initialized yet.
 				// Cannot be done in "velocity" event because note on is perhaps not initialized yet.
-				if (!envelope_iterator->second.is_processed) {
+				if (!envelope_info.is_processed) {
 					q_envelope->trigger(velocities_[velocity_index]->value * 255);
-					envelope_iterator->second.is_processed = true;
+					envelope_info.is_processed = true;
 				}
 
 				float_array_component_output& output = *(outputs_[velocity_index]);
@@ -113,15 +119,37 @@ namespace live::tritone::vie::processor::component
 				}
 
 				output.note_id = velocity_output_id;
-				//output.values.nb_values = 1;
 
 				for (uint_fast32_t frame = 0; frame < output_process_data.num_samples; frame++)
 				{
 					output.values.values[frame] = q_envelope->operator()();
 				}
 
-				if(q_envelope->state() == cycfi::q::envelope::note_off_state)
-				{
+				//If sustain rate is reached, then loop position to start of sustain and order to process an event.
+				envelope_info.position += q::duration(output_process_data.num_samples / sample_rate_);
+				auto& envelope_config = envelope_info.config;
+				auto sustain_start = envelope_info.config.attack_rate + envelope_info.config.decay_rate;
+				auto sustain_end = sustain_start + envelope_config.sustain_rate;
+				if (envelope_info.position >= sustain_end) {
+					envelope_info.position = sustain_start;
+
+					sustains_ends_[nb_sustains_ends_]->value = float(sustain_end) * sample_rate_;
+					nb_sustains_ends_++;
+
+					sustains_loops_[nb_sustains_loops_]->value = float(sustain_start) * sample_rate_;
+					nb_sustains_loops_++;
+				}
+
+				switch (q_envelope->state()) {
+				case cycfi::q::envelope::sustain_state:
+					//Sustain state is triggered when decay state is finished.
+					sustains_starts_[nb_sustains_starts_]->note_id = note_id;
+					//FIXME: 1 second just for testing.
+					sustains_starts_[nb_sustains_starts_]->value = float(sustain_start) * sample_rate_;
+					nb_sustains_starts_++;
+					break;
+				case cycfi::q::envelope::note_off_state:
+					//Note_off_state is triggered when release state is finished.
 					delete q_envelope;
 					envelopes_.erase(envelope_iterator);
 					notes_off_[nb_notes_off_]->note_id = note_id;
@@ -140,12 +168,22 @@ namespace live::tritone::vie::processor::component
 	uint_fast32_t envelope::get_output_values(const uint_fast16_t slot_id, component_output* output_values[32])
 	{
 		switch (slot_id) {
-		case amplitudes_output_id:
-			output_values = (component_output**)outputs_;
-			return nb_outputs_;
 		case notes_off_output_id:
 			output_values = (component_output**)notes_off_;
 			return nb_notes_off_;
+		case amplitudes_output_id:
+			output_values = (component_output**)outputs_;
+			return nb_outputs_;
+		case sustains_starts_output_id:
+			//output_values = (component_output**)outputs_;
+			//return nb_outputs_;
+		case sustains_ends_output_id:
+			output_values = (component_output**)sustains_ends_;
+			return nb_sustains_ends_;
+		case sustains_loops_output_id:
+			output_values = (component_output**)sustains_loops_;
+			return nb_sustains_loops_;
+			break;
 		}
 
 		return 0;
@@ -170,20 +208,32 @@ namespace live::tritone::vie::processor::component
 		{
 			return notes_on_input_id;
 		}
+		else if (slot_name == amplitudes_output_name)
+		{
+			return amplitudes_output_id;
+		}
 		else if (slot_name == notes_off_input_name)
 		{
 			return notes_off_input_id;
 		}
-		else if (slot_name == amplitudes_output_name)
+		else if (slot_name == sustains_starts_output_name)
 		{
-			return amplitudes_output_id;
+			return sustains_starts_output_id;
+		}
+		else if (slot_name == sustains_ends_output_name)
+		{
+			return sustains_ends_output_id;
+		}
+		else if (slot_name == sustains_loops_output_name)
+		{
+			return sustains_loops_output_id;
 		}
 
 		return -1;
 	}
 
 	void envelope::set_input_values(const uint_fast16_t slot_id, component_output* values[32], const uint_fast32_t nb_values)
-	{		
+	{
 		switch (slot_id)
 		{
 		case notes_on_input_id:
@@ -197,22 +247,20 @@ namespace live::tritone::vie::processor::component
 					if (auto envelope_iterator = envelopes_.find(note_id); envelope_iterator != envelopes_.end())
 					{
 						auto envelope_info = envelope_iterator->second;
-						//envelope_info.is_processed = false;
 						
 						delete envelope_info.envelope;
 					}
-					//else
-					{
-						//If note is a new one, add it to the map and initialize its envelope.
-						q::envelope* q_envelope;
-						q::envelope::config config;
-						config.release_rate = 1_s;
-						q_envelope = new q::envelope(config, static_cast<uint32_t>(sample_rate_));
-						envelope_info info;
-						info.envelope = q_envelope;
-						//envelopes_->emplace(note_id, info);
-						envelopes_[note_id] = info;
-					}
+					
+					//Add envelope to the map and initialize its envelope.
+					q::envelope* q_envelope;
+					q::envelope::config config;
+					config.sustain_rate = 2_s;
+					config.release_rate = 1_s;
+					q_envelope = new q::envelope(config, static_cast<uint32_t>(sample_rate_));
+					envelope_info info;
+					info.envelope = q_envelope;
+					info.config = config;
+					envelopes_[note_id] = info;
 				}
 			}
 			notes_on_filled_ = true;

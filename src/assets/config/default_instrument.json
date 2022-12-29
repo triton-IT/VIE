@@ -69,7 +69,7 @@
     },
     {
       "sourceComponent": 1,
-      "sourceOutputSlot": 4,
+      "sourceOutputSlot": 5,
       "targetComponent": 3,
       "targetInputSlot": 1
     },
@@ -84,6 +84,12 @@
       "sourceOutputSlot": 5,
       "targetComponent": 1,
       "targetInputSlot": 2
+    },
+    {
+      "sourceComponent": 2,
+      "sourceOutputSlot": 8,
+      "targetComponent": 1,
+      "targetInputSlot": 4
     },
     {
       "sourceComponent": 3,

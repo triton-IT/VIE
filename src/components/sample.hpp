@@ -59,8 +59,11 @@ namespace live::tritone::vie::processor::component
 		static constexpr const char* name_input_name = "Sample name input";
 		static constexpr int name_input_id = 3;
 
+		static constexpr const char* play_at_input_name = "Play at output";
+		static constexpr int play_at_input_id = 4;
+
 		static constexpr const char* amplitude_output_name = "Sample amplitude output";
-		static constexpr int amplitude_output_id = 4;
+		static constexpr int amplitude_output_id = 5;
 
 		uint16_t id_;
 		std::string name_;
