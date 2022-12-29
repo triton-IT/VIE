@@ -79,8 +79,8 @@ namespace live::tritone::vie::processor::component
 			uint32_t nb_frames;
 			uint32_t rate;
 			int format;
-			float* buffer;
-		};
+			float* buffers[8]; //8 channels max for now to handle surround 7.1.
+ 		};
 
 		std::unordered_map<int, sample_descriptor> samples_descriptors_;
 

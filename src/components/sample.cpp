@@ -41,9 +41,23 @@ namespace live::tritone::vie::processor::component
         sample_descriptor.nb_frames = sndfileHandle.frames();
 		sample_descriptor.rate = sndfileHandle.samplerate();
 		sample_descriptor.format = sndfileHandle.format();
-		sample_descriptor.buffer = new float[sample_descriptor.nb_frames * sample_descriptor.nb_channels];
 
-		sndfileHandle.read(sample_descriptor.buffer, sample_descriptor.nb_frames * sample_descriptor.nb_channels);
+		for (int i = 0; i < sndfileHandle.channels() && i < 8; i++) {
+			sample_descriptor.buffers[i] = new float[sample_descriptor.nb_frames];
+		}
+
+		//TODO: Optimize: Do not read a first the full buffer to copy it after in each channel
+		uint_fast32_t full_buffer_size = sample_descriptor.nb_frames * sample_descriptor.nb_channels;
+		float* full_buffer = new float[full_buffer_size];
+		sndfileHandle.read(full_buffer, full_buffer_size);
+
+		for (int i = 0; i < full_buffer_size; i++) {
+			int channel = i % sample_descriptor.nb_channels;
+			int frame = i / sample_descriptor.nb_channels;
+			sample_descriptor.buffers[channel][frame] = full_buffer[i];
+		}
+
+		delete[] full_buffer;
 		
 		samples_descriptors_[0] = sample_descriptor;
     }
@@ -105,7 +119,7 @@ namespace live::tritone::vie::processor::component
 					for (uint_fast32_t frame = 0; frame < output_process_data.num_samples; frame++)
 					{
 						//TODO: Copy whole buffer at once instead of iterating.
-						output->values.values[frame] = samples_descriptors_[0].buffer[sample_state.position];
+						output->values.values[frame] = samples_descriptors_[0].buffers[0][sample_state.position];
 						sample_state.position++;
 					}
 
@@ -124,7 +138,8 @@ namespace live::tritone::vie::processor::component
 
 	uint_fast32_t sample::get_output_values(const uint_fast16_t slot_id, component_output* output_values[32])
 	{
-		if (slot_id == amplitude_output_id) {
+		switch (slot_id) {
+		case amplitude_output_id:
 			output_values = (component_output**)outputs_;
 			return nb_outputs_;
 		}
