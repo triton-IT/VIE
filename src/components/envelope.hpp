@@ -64,21 +64,33 @@ namespace live::tritone::vie::processor::component
 		constexpr static const char* amplitudes_output_name = "amplitudes output";
 		constexpr static int amplitudes_output_id = 4;
 
+		constexpr static const char* notes_off_output_name = "Note off output";
+		constexpr static int notes_off_output_id = 5;
+
 		uint16_t id_;
 		std::string name_;
 		std::string type_;
 
-		typedef std::unordered_map<uint32_t, cycfi::q::envelope*> envelope_by_id;
-		envelope_by_id* envelopes_;
+		typedef struct envelope_info {
+			envelope_info() : is_processed(false), envelope(nullptr) {};
+			cycfi::q::envelope* envelope;
+			bool is_processed;
+		} envelope_info;
+		
+		typedef std::unordered_map<uint32_t, envelope_info> envelope_by_id;
+		envelope_by_id envelopes_;
 
 		double sample_rate_;
 
 		uint_fast16_t nb_velocities_inputs_;
-		novalue_component_output* velocities_[32];
+		float_component_output* velocities_[32];
 
 		bool velocities_filled_;
 		bool notes_on_filled_;
 		bool notes_off_filled_;
+
+		uint_fast16_t nb_notes_off_ = 0;
+		novalue_component_output* notes_off_[32];
 
 		uint_fast8_t nb_outputs_;
 		float_array_component_output* outputs_[32];

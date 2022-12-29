@@ -8,20 +8,22 @@ namespace live::tritone::vie::processor::component
 		id_(multiplier_definition["id"]),
 		name_(multiplier_definition["name"]),
 		nb_inputs_multipliers_(0),
-		multipliers_(nullptr),
 		nb_inputs_multiplicands_(0),
-		multiplicands_(nullptr),
 		multipliers_filled_(false),
 		multiplicands_filled_(false),
 		nb_products_(0)
 	{
 		for (int i = 0; i < 32; i++) {
+			multipliers_[i] = new float_array_component_output();
+			multiplicands_[i] = new float_array_component_output();
 			products_[i] = new float_array_component_output();
 		}
 	}
 	
 	multiplier::~multiplier() {
 		for (int i = 0; i < 32; i++) {
+			delete multipliers_[i];
+			delete multiplicands_[i];
 			delete products_[i];
 		}
 	}
@@ -144,8 +146,9 @@ namespace live::tritone::vie::processor::component
 		case multipliers_input_id:
 			assert(nb_values <= 32);
 			nb_inputs_multipliers_ = nb_values;
-			for (int i = 0; i < 32; i++) {
+			for (int i = 0; i < nb_inputs_multipliers_; i++) {
 				multipliers_[i]->note_id = values[i]->note_id;
+				multipliers_[i]->values = values[i]->to_float_array();
 			}
 			multipliers_filled_ = true;
 			break;
@@ -153,8 +156,9 @@ namespace live::tritone::vie::processor::component
 		case multiplicands_input_id:	
 			assert(nb_values <= 32);
 			nb_inputs_multiplicands_ = nb_values;
-			for (int i = 0; i < 32; i++) {
+			for (int i = 0; i < nb_inputs_multiplicands_; i++) {
 				multiplicands_[i]->note_id = values[i]->note_id;
+				multiplicands_[i]->values = values[i]->to_float_array();
 			}
 			multiplicands_filled_ = true;
 			break;

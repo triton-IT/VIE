@@ -58,18 +58,36 @@
     {
       "sourceComponent": 0,
       "sourceOutputSlot": 2,
-      "targetComponent": 1,
-      "targetInputSlot": 2
-    },
-    {
-      "sourceComponent": 0,
-      "sourceOutputSlot": 2,
       "targetComponent": 2,
       "targetInputSlot": 3
     },
     {
+      "sourceComponent": 0,
+      "sourceOutputSlot": 4,
+      "targetComponent": 2,
+      "targetInputSlot": 1
+    },
+    {
       "sourceComponent": 1,
       "sourceOutputSlot": 4,
+      "targetComponent": 3,
+      "targetInputSlot": 1
+    },
+    {
+      "sourceComponent": 2,
+      "sourceOutputSlot": 4,
+      "targetComponent": 3,
+      "targetInputSlot": 2
+    },
+    {
+      "sourceComponent": 2,
+      "sourceOutputSlot": 5,
+      "targetComponent": 1,
+      "targetInputSlot": 2
+    },
+    {
+      "sourceComponent": 3,
+      "sourceOutputSlot": 3,
       "targetComponent": 4,
       "targetInputSlot": 1
     },

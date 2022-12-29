@@ -80,5 +80,8 @@ namespace live::tritone::vie::processor::component
 		std::unordered_set<uint32_t> notes_ids_to_delete_;
 
 		bool is_on = true;
+
+		bool note_on_processed = false;
+		bool note_off_processed = false;
 	};
 } // namespace

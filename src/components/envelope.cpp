@@ -12,7 +12,6 @@ namespace live::tritone::vie::processor::component
 	envelope::envelope(nlohmann::json envelope_definition) : processor_component(),
 		id_(envelope_definition["id"]),
 		name_(envelope_definition["name"]),
-		envelopes_(new envelope_by_id),
 		sample_rate_(0.0),
 		nb_velocities_inputs_(0),
 		velocities_filled_(false),
@@ -23,21 +22,17 @@ namespace live::tritone::vie::processor::component
 	{
 		for (int i = 0; i < 32; i++) {
 			outputs_[i] = new float_array_component_output();
-		}
-		for (int i = 0; i < 32; i++) {
-			velocities_[i] = new novalue_component_output();
+			velocities_[i] = new float_component_output();
+			notes_off_[i] = new novalue_component_output();
 		}
 	}
 
 	envelope::~envelope()
 	{
-		//FIXME: map can grow unexpectedly. Clear it from time to time instead of only in destructor.
-		for (const auto& [note_id, envelope] : *envelopes_)
+		for (const auto& [note_id, envelope] : envelopes_)
 		{
-			delete envelope;
+			delete envelope.envelope;
 		}
-
-		delete envelopes_;
 
 		for (int i = 0; i < 32; i++) {
 			delete velocities_[i];
@@ -82,21 +77,26 @@ namespace live::tritone::vie::processor::component
 		notes_on_filled_ = false;
 		notes_off_filled_ = false;
 
-		// FIXME: Trigger correctly (only once per note on event). 
-		// Cannot be done in "note on" event because velocity is perhaps not initialized yet.
-		// Cannot be done in "velocity" event because note on is perhaps not initialized yet.
-		//q_envelope->trigger(velocity * 255);
-
 		nb_outputs_ = 0;
+		nb_notes_off_ = 0;
 		
 		for (uint_fast32_t velocity_index = 0; velocity_index < nb_velocities_inputs_; velocity_index++)
 		{
 			const uint_fast32_t velocity_output_id = velocities_[velocity_index]->note_id;
 			
-			if (auto envelope_iterator = envelopes_->find(velocity_output_id); envelope_iterator != envelopes_->end())
+			if (auto envelope_iterator = envelopes_.find(velocity_output_id); envelope_iterator != envelopes_.end())
 			{
 				uint32_t note_id = envelope_iterator->first;
-				q::envelope* q_envelope = envelope_iterator->second;
+
+				q::envelope* q_envelope = envelope_iterator->second.envelope;
+
+				// Trigger only once per note on event.
+				// Cannot be done in "note on" event because velocity is perhaps not initialized yet.
+				// Cannot be done in "velocity" event because note on is perhaps not initialized yet.
+				if (!envelope_iterator->second.is_processed) {
+					q_envelope->trigger(velocities_[velocity_index]->value * 255);
+					envelope_iterator->second.is_processed = true;
+				}
 
 				float_array_component_output& output = *(outputs_[velocity_index]);
 
@@ -113,7 +113,7 @@ namespace live::tritone::vie::processor::component
 				}
 
 				output.note_id = velocity_output_id;
-				output.values.nb_values = 1;
+				//output.values.nb_values = 1;
 
 				for (uint_fast32_t frame = 0; frame < output_process_data.num_samples; frame++)
 				{
@@ -122,8 +122,10 @@ namespace live::tritone::vie::processor::component
 
 				if(q_envelope->state() == cycfi::q::envelope::note_off_state)
 				{
-					envelopes_->erase(envelope_iterator);
 					delete q_envelope;
+					envelopes_.erase(envelope_iterator);
+					notes_off_[nb_notes_off_]->note_id = note_id;
+					nb_notes_off_++;
 				}
 			}
 
@@ -137,9 +139,16 @@ namespace live::tritone::vie::processor::component
 
 	uint_fast32_t envelope::get_output_values(const uint_fast16_t slot_id, component_output* output_values[32])
 	{
-		output_values = (component_output**) outputs_;
+		switch (slot_id) {
+		case amplitudes_output_id:
+			output_values = (component_output**)outputs_;
+			return nb_outputs_;
+		case notes_off_output_id:
+			output_values = (component_output**)notes_off_;
+			return nb_notes_off_;
+		}
 
-		return nb_outputs_;
+		return 0;
 	}
 
 	bool envelope::has_finished()
@@ -179,46 +188,56 @@ namespace live::tritone::vie::processor::component
 		{
 		case notes_on_input_id:
 			assert(nb_values <= 32);
-			for (uint_fast32_t note_index = 0; note_index < nb_values; note_index++)
-			{
-				component_output* note_event_component = values[note_index];
-				uint32_t note_id = note_event_component->note_id;
+			if (nb_values > 0) {
+				for (uint_fast32_t note_index = 0; note_index < nb_values; note_index++)
+				{
+					component_output* note_event_component = values[note_index];
+					uint32_t note_id = note_event_component->note_id;
 
-				q::envelope* q_envelope;
-				if (auto envelope_iterator = envelopes_->find(note_id); envelope_iterator != envelopes_->end())
-				{
-					q_envelope = envelope_iterator->second;
-				}
-				else
-				{
-					q::envelope::config config;
-					config.release_rate = 1_s;
-					q_envelope = new q::envelope(config, static_cast<uint32_t>(sample_rate_));
-					envelopes_->emplace(note_id, q_envelope);
+					if (auto envelope_iterator = envelopes_.find(note_id); envelope_iterator != envelopes_.end())
+					{
+						auto envelope_info = envelope_iterator->second;
+						//envelope_info.is_processed = false;
+						
+						delete envelope_info.envelope;
+					}
+					//else
+					{
+						//If note is a new one, add it to the map and initialize its envelope.
+						q::envelope* q_envelope;
+						q::envelope::config config;
+						config.release_rate = 1_s;
+						q_envelope = new q::envelope(config, static_cast<uint32_t>(sample_rate_));
+						envelope_info info;
+						info.envelope = q_envelope;
+						//envelopes_->emplace(note_id, info);
+						envelopes_[note_id] = info;
+					}
 				}
 			}
 			notes_on_filled_ = true;
 			break;
 		case notes_off_input_id:
 			assert(nb_values <= 32);
-			for (uint_fast32_t note_index = 0; note_index < nb_values; note_index++)
-			{
-				const component_output* note_event_component = values[note_index];
-				uint32_t note_id = note_event_component->note_id;
-				q::envelope* q_envelope = envelopes_->operator[](note_id);
-				q_envelope->release();
+			if (nb_values > 0) {
+				for (uint_fast32_t note_index = 0; note_index < nb_values; note_index++)
+				{
+					const component_output* note_event_component = values[note_index];
+					uint32_t note_id = note_event_component->note_id;
+					q::envelope* q_envelope = envelopes_[note_id].envelope;
+					q_envelope->release();
+				}
 			}
 			notes_off_filled_ = true;
 			break;
 		case velocities_input_id:
 			assert(nb_values <= 32);
-			// If nb of velocity is positive, set it. Otherwise, let it as-is, it will serve for the note off.
+			// If nb of velocity is positive, set it. Otherwise, let it as-is, it will serve until note off.
 			if (nb_values > 0) {
 				nb_velocities_inputs_ = nb_values;
-				if (nb_values > 0) {
-					for (int i = 0; i < 32; i++) {
-						velocities_[i]->note_id = values[i]->note_id;
-					}
+				for (int i = 0; i < 32; i++) {
+					velocities_[i]->note_id = values[i]->note_id;
+					velocities_[i]->value = values[i]->to_float();
 				}
 			}
 			velocities_filled_ = true;

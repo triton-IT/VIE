@@ -60,16 +60,16 @@ namespace live::tritone::vie::processor::component
 		constexpr static int multiplicands_input_id = 2;
 
 		constexpr static const char* products_output_name = "products output";
-		constexpr static int products_output_id = 2;
+		constexpr static int products_output_id = 3;
 
 		uint16_t id_;
 		std::string name_;
 		std::string type_;
 
 		uint_fast16_t nb_inputs_multipliers_;
-		novalue_component_output** multipliers_;
+		float_array_component_output* multipliers_[32];
 		uint_fast16_t nb_inputs_multiplicands_;
-		novalue_component_output** multiplicands_;
+		float_array_component_output* multiplicands_[32];
 
 		bool multipliers_filled_;
 		bool multiplicands_filled_;

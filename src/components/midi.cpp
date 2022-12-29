@@ -106,6 +106,16 @@ namespace live::tritone::vie::processor::component
 	}
 
 	void midi::preprocess() {
+		nb_values_ = 0;
+		
+		//We need to be sure that event has been consumed and is not swallowed by preprocess.
+		//Swallowing can happen if event is produced and preprocess is called just after it.
+		if (note_on_processed) {
+			nb_notes_on_values_ = 0;
+		}
+		if (note_off_processed) {
+			nb_notes_off_values_ = 0;
+		}
 	}
 
 	bool midi::can_process()
@@ -115,9 +125,9 @@ namespace live::tritone::vie::processor::component
 
 	void midi::process(output_process_data& output_process_data)
 	{
-		if (is_on) {
+		//If component is on and has not already been processed.
+		if (is_on && nb_values_ == 0) {
 			//Get all outputs information from midi event.
-			nb_values_ = 0;
 			for (auto& [note_id, note_on_event] : notes_)
 			{
 				float_component_output* frequencies_output = frequencies_outputs_[nb_values_];
@@ -166,12 +176,12 @@ namespace live::tritone::vie::processor::component
 		case notes_on_output_id:
 			output_values = (component_output**) notes_on_outputs_;
 			nb_values = nb_notes_on_values_;
-			nb_notes_on_values_ = 0;
+			note_on_processed = true;
 			break;
 		case notes_off_output_id:
 			output_values = (component_output**) notes_off_outputs_;
 			nb_values = nb_notes_off_values_;
-			nb_notes_off_values_ = 0;
+			note_off_processed = true;
 			break;
 		default:
 			break;
@@ -189,6 +199,8 @@ namespace live::tritone::vie::processor::component
 #ifdef VIE_DEBUG
 		debugLogger.write("Midi: Note on emitted" + note_on_event.id);
 #endif
+		note_on_processed = false;
+		
 		const uint32_t midi_note_id = (get_id() << sizeof(uint16_t)) + note_on_event.pitch;
 		note_on_event.id = midi_note_id;
 		notes_.emplace(midi_note_id, note_on_event);
@@ -201,6 +213,8 @@ namespace live::tritone::vie::processor::component
 #ifdef VIE_DEBUG
 		debugLogger.write("Midi: Note off emitted" + note_off_event.id);
 #endif
+		note_off_processed = false;
+		
 		const uint32_t midi_note_id = (get_id() << sizeof(uint16_t)) + note_off_event.pitch;
 		note_off_event.id = midi_note_id;
 		
