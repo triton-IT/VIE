@@ -2,6 +2,7 @@
 
 #include <unordered_set>
 
+#include "../application.hpp"
 #include "../constants.hpp"
 
 using namespace std;
@@ -19,6 +20,35 @@ namespace live::tritone::vie::processor::component
 		nb_notes_off_values_(0),
 		notes_off_outputs_()
 	{
+		for (int i = 0; i < 32; i++)
+			frequencies_outputs_[i] = new float_component_output();
+		
+		for (int i = 0; i < 32; i++)
+			velocities_outputs_[i] = new float_component_output();
+		
+		for(int i = 0; i < 32; i++)
+			notes_on_outputs_[i] = new novalue_component_output();
+		
+		for (int i = 0; i < 32; i++)
+			notes_off_outputs_[i] = new novalue_component_output();
+	}
+
+	midi::~midi() {
+		for (int i = 0; i < 32; i++) {
+			delete frequencies_outputs_[i];
+		}
+
+		for (int i = 0; i < 32; i++) {
+			delete velocities_outputs_[i];
+		}
+
+		for (int i = 0; i < 32; i++) {
+			delete notes_on_outputs_[i];
+		}
+
+		for (int i = 0; i < 32; i++) {
+			delete notes_off_outputs_[i];
+		}
 	}
 
 	std::uint16_t midi::get_id()
@@ -42,19 +72,23 @@ namespace live::tritone::vie::processor::component
 
     uint_fast16_t midi::get_slot_id(const std::string& slot_name)
 	{
-		if (slot_name == frequencies_output_name)
+		if (slot_name == onoff_input_name)
+		{
+			return onoff_input_id;
+		}
+		else if (slot_name == frequencies_output_name)
 		{
 			return frequencies_output_id;
 		}
-		if (slot_name == velocities_output_name)
+		else if (slot_name == velocities_output_name)
 		{
 			return velocities_output_id;
 		}
-		if (slot_name == notes_on_output_name)
+		else if (slot_name == notes_on_output_name)
 		{
 			return notes_on_output_id;
 		}
-		if (slot_name == notes_off_output_name)
+		else if (slot_name == notes_off_output_name)
 		{
 			return notes_off_output_id;
 		}
@@ -62,13 +96,26 @@ namespace live::tritone::vie::processor::component
 		return -1;
 	}
 
-	void midi::set_input_values(uint_fast16_t slot_id, void* values, uint_fast32_t nb_values)
+	void midi::set_input_values(uint_fast16_t slot_id, component_output* values[32], uint_fast32_t nb_values)
 	{
 	}
 
 	uint_fast32_t midi::get_max_nb_input_values(uint_fast16_t slot_id)
 	{
 		return 0;
+	}
+
+	void midi::preprocess() {
+		nb_values_ = 0;
+		
+		//We need to be sure that event has been consumed and is not swallowed by preprocess.
+		//Swallowing can happen if event is produced and preprocess is called just after it.
+		if (note_on_processed) {
+			nb_notes_on_values_ = 0;
+		}
+		if (note_off_processed) {
+			nb_notes_off_values_ = 0;
+		}
 	}
 
 	bool midi::can_process()
@@ -78,62 +125,63 @@ namespace live::tritone::vie::processor::component
 
 	void midi::process(output_process_data& output_process_data)
 	{
-		if (is_on) {
+		//If component is on and has not already been processed.
+		if (is_on && nb_values_ == 0) {
 			//Get all outputs information from midi event.
-			nb_values_ = 0;
 			for (auto& [note_id, note_on_event] : notes_)
 			{
-				//If element is found as 'note on' it's not a zombie anymore.
-				zombie_notes_.erase(note_id);
+				float_component_output* frequencies_output = frequencies_outputs_[nb_values_];
+				frequencies_output->note_id = note_id;
+				const float frequency = midi_notes_frequencies[note_on_event.id];
+				frequencies_output->value = frequency;
 
-				handle_processing_(note_id, note_mode::normal, note_on_event);
-			}
+				float_component_output* velocities_output = velocities_outputs_[nb_values_];
+				velocities_output->note_id = note_id;
+				velocities_output->value = note_on_event.velocity;
 
-			for (auto& [note_id, note_on_event] : zombie_notes_)
-			{
-				handle_processing_(note_id, note_mode::zombie, note_on_event);
+				nb_values_++;
 			}
 		}
 	}
 
-	void midi::handle_processing_(uint32_t note_id, note_mode note_mode, const note_event& note_event)
-	{
-		float_component_output& frequencies_output = frequencies_outputs_[nb_values_];
-		frequencies_output.output_id = note_id;
-		frequencies_output.note_mode = note_mode;
-		const float frequency = midi_notes_frequencies[note_event.id];
-		frequencies_output.value = frequency;
-
-		float_component_output& velocities_output = velocities_outputs_[nb_values_];
-		velocities_output.output_id = note_id;
-		velocities_output.note_mode = note_mode;
-		velocities_output.value = note_event.velocity;
-
-		nb_values_++;
+	component_output** midi::get_outputs_pool(uint_fast16_t slot_id) {
+		switch (slot_id)
+		{
+		case frequencies_output_id:
+			return (component_output**) frequencies_outputs_;
+		case velocities_output_id:
+			return (component_output**) velocities_outputs_;
+		case notes_on_output_id:
+			return (component_output**) notes_on_outputs_;
+		case notes_off_output_id:
+			return (component_output**) notes_off_outputs_;
+		default:
+			break;
+		}
 	}
 
-	uint_fast32_t midi::get_output_values(const uint_fast16_t slot_id, void* output_values[])
+	uint_fast32_t midi::get_output_values(const uint_fast16_t slot_id, component_output* output_values[32])
 	{
 		uint_fast32_t nb_values = -1;
 		switch (slot_id)
 		{
 		case frequencies_output_id:
-			*output_values = frequencies_outputs_;
+			output_values = (component_output**) frequencies_outputs_;
 			nb_values = nb_values_;
 			break;
 		case velocities_output_id:
-			*output_values = velocities_outputs_;
+			output_values = (component_output**) velocities_outputs_;
 			nb_values = nb_values_;
 			break;
 		case notes_on_output_id:
-			*output_values = notes_on_outputs_;
+			output_values = (component_output**) notes_on_outputs_;
 			nb_values = nb_notes_on_values_;
-			nb_notes_on_values_ = 0;
+			note_on_processed = true;
 			break;
 		case notes_off_output_id:
-			*output_values = notes_off_outputs_;
+			output_values = (component_output**) notes_off_outputs_;
 			nb_values = nb_notes_off_values_;
-			nb_notes_off_values_ = 0;
+			note_off_processed = true;
 			break;
 		default:
 			break;
@@ -146,60 +194,35 @@ namespace live::tritone::vie::processor::component
 		return true;
 	}
 
-	void midi::get_zombie_notes_ids(std::unordered_set<uint32_t>& zombie_notes_ids)
-	{
-	}
-
-	void midi::set_zombie_notes_ids(const std::unordered_set<uint32_t>& zombie_notes_ids)
-	{
-		zombie_notes_.clear();
-
-		for (auto note_id : zombie_notes_ids) {
-			auto note_iterator = notes_.find(note_id);
-			if (note_iterator != notes_.end()) {
-				zombie_notes_.emplace(note_id, note_iterator->second);
-			}
-		}
-
-		// Delete all notes that are off and not zombie.
-		for (auto iterator = notes_ids_to_delete_.begin(), end = notes_ids_to_delete_.end(); iterator != end;) {
-			auto& note_id_to_delete = *iterator;
-			if (zombie_notes_ids.find(note_id_to_delete) == zombie_notes_ids.end()) {
-				notes_.erase(note_id_to_delete);
-				iterator = notes_ids_to_delete_.erase(iterator);
-			}
-			else {
-				iterator++;
-			}
-		}
-	}
-
 	void midi::note_on(note_event& note_on_event)
 	{
+#ifdef VIE_DEBUG
+		debugLogger.write("Midi: Note on emitted" + note_on_event.id);
+#endif
+		note_on_processed = false;
+		
 		const uint32_t midi_note_id = (get_id() << sizeof(uint16_t)) + note_on_event.pitch;
 		note_on_event.id = midi_note_id;
 		notes_.emplace(midi_note_id, note_on_event);
-		note_event_component_output note_on_event_output;
-		note_on_event_output.output_id = midi_note_id;
-		note_on_event_output.value = note_on_event;
-		notes_on_outputs_[nb_notes_on_values_] = note_on_event_output;
+		notes_on_outputs_[nb_notes_on_values_]->note_id = midi_note_id;
 		nb_notes_on_values_++;
 	}
 
 	void midi::note_off(note_event& note_off_event)
 	{
+#ifdef VIE_DEBUG
+		debugLogger.write("Midi: Note off emitted" + note_off_event.id);
+#endif
+		note_off_processed = false;
+		
 		const uint32_t midi_note_id = (get_id() << sizeof(uint16_t)) + note_off_event.pitch;
 		note_off_event.id = midi_note_id;
 		
-		note_event_component_output note_off_event_output;
-		note_off_event_output.output_id = midi_note_id;
-		note_off_event_output.value = note_off_event;
-		notes_off_outputs_[nb_notes_off_values_] = note_off_event_output;
+		notes_off_outputs_[nb_notes_off_values_]->note_id = midi_note_id;
 		nb_notes_off_values_++;
-
-		// We cannot erase note from notes_ because a zombie note could still need its definition.
-		// So mark it as deleted and delete if not required by a zombie note.
-		notes_ids_to_delete_.emplace(midi_note_id);
+		
+		//Erase note from notes on.
+		notes_.erase(midi_note_id);
 	}
 
 	void midi::set_parameter(parameter parameter)

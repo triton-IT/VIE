@@ -22,7 +22,7 @@ namespace live::tritone::vie {
 		json defaultInstrument;
 		defaultInstrumentStream >> defaultInstrument;
 
-		parse_processors(defaultInstrument["processors"]);
+		parse_processors(defaultInstrument["components"]);
 		parse_relations(defaultInstrument["relations"]);
 	}
 

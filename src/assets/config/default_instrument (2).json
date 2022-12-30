@@ -19,9 +19,6 @@
       "id": 1,
       "name": "Sin generator",
       "type": "oscillator",
-      "bindings": {
-        "type": "sin"
-      },
       "parameters": [
         {
           "id": 1,
@@ -45,13 +42,6 @@
       "id": 2,
       "name": "Envelope 1",
       "type": "envelope",
-      "bindings": {
-        "attack_rate": 30,
-        "decay_rate": 70,
-        "sustain_level": -6,
-        "sustain_rate": 50000.0,
-        "release_rate": 100
-      },
       "parameters": [
         {
           "id": 3,

@@ -15,7 +15,7 @@ extern "C" {
 	std::wstring content_path;
 
 #ifdef VIE_DEBUG
-	live::tritone::vie::utils::logger debugLogger;
+	live::tritone::vie::debug::logger debugLogger;
 #endif //VIE_DEBUG
 } // extern "C"
 

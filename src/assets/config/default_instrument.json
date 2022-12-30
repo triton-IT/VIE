@@ -1,5 +1,5 @@
 {
-  "processors": [
+  "components": [
     {
       "id": 0,
       "name": "Midi",
@@ -17,37 +17,27 @@
     },
     {
       "id": 1,
-      "name": "Sin generator",
-      "type": "oscillator",
-      "bindings": {
-        "type": "sin"
-      },
-      "parameters": [
-        {
-          "id": 1,
-          "name": "on",
-          "short_name": "on",
-          "type": "boolean",
-          "unit": "",
-          "value": 1
-        },
-        {
-          "id": 2,
-          "name": "frequency",
-          "short_name": "freq",
-          "type": "float",
-          "unit": "Hz",
-          "value": 440
-        }
-      ]
+      "name": "Sample",
+      "type": "sample",
+      "file_path": "C:\\dev\\triton-IT\\VIE\\src\\assets\\samples\\1.wav"
     },
     {
       "id": 2,
+      "name": "Envelope",
+      "type": "envelope"
+    },
+    {
+      "id": 3,
+      "name": "Multiplier",
+      "type": "multiplier"
+    },
+    {
+      "id": 4,
       "name": "Mixer 1",
       "type": "mixer"
     },
     {
-      "id": 3,
+      "id": 5,
       "name": "output",
       "type": "output"
     }
@@ -55,21 +45,63 @@
   "relations": [
     {
       "sourceComponent": 0,
-      "sourceOutputSlot": 2,
+      "sourceOutputSlot": 1,
       "targetComponent": 1,
-      "targetInputSlot": 0
+      "targetInputSlot": 1
+    },
+    {
+      "sourceComponent": 0,
+      "sourceOutputSlot": 1,
+      "targetComponent": 2,
+      "targetInputSlot": 2
+    },
+    {
+      "sourceComponent": 0,
+      "sourceOutputSlot": 2,
+      "targetComponent": 2,
+      "targetInputSlot": 3
+    },
+    {
+      "sourceComponent": 0,
+      "sourceOutputSlot": 4,
+      "targetComponent": 2,
+      "targetInputSlot": 1
     },
     {
       "sourceComponent": 1,
-      "sourceOutputSlot": 1,
-      "targetComponent": 2,
-      "targetInputSlot": 0
+      "sourceOutputSlot": 5,
+      "targetComponent": 3,
+      "targetInputSlot": 1
     },
     {
       "sourceComponent": 2,
-      "sourceOutputSlot": 1,
+      "sourceOutputSlot": 4,
       "targetComponent": 3,
-      "targetInputSlot": 0
+      "targetInputSlot": 2
+    },
+    {
+      "sourceComponent": 2,
+      "sourceOutputSlot": 5,
+      "targetComponent": 1,
+      "targetInputSlot": 2
+    },
+    {
+      "sourceComponent": 2,
+      "sourceOutputSlot": 8,
+      "targetComponent": 1,
+      "targetInputSlot": 4
+    },
+    {
+      "sourceComponent": 3,
+      "sourceOutputSlot": 3,
+      "targetComponent": 4,
+      "targetInputSlot": 1
+    },
+    {
+      "sourceComponent": 4,
+      "sourceOutputSlot": 1,
+      "targetComponent": 5,
+      "targetInputSlot": 1
     }
   ]
 }

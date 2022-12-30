@@ -93,9 +93,14 @@ namespace live::tritone::vie
 	{
 		host_context_ = context;
 
-		vie_processor_.initialize();
+		try {
+			vie_processor_.initialize();
+		}
+		catch (const std::runtime_error exception) {
+			return Steinberg::kResultFalse;
+		}
 
-		return Steinberg::kResultOk;
+		return Steinberg::kResultTrue;
 	}
 
 	Steinberg::tresult __stdcall vst_processor::terminate()

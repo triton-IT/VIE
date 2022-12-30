@@ -67,11 +67,7 @@ namespace live::tritone::vie {
 		component_relation relations_[128][32];
 
 		void process(processor_component* source_component, output_process_data& output_process_data);
-		void get_zombie_notes_ids(processor_component* source_component, std::unordered_set<uint32_t>& notes_ids_set) const;
-		void set_zombie_notes_ids(processor_component* source_component, std::unordered_set<uint32_t>& notes_ids_set) const;
 		[[nodiscard]] processor::component::midi* get_midi_component_for_event(const event& event) const;
-
-		std::unordered_set<uint32_t> zombie_notes_ids_;
 
 		bool bypass_;
 	};
