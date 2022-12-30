@@ -13,8 +13,9 @@ if(NOT vst_interfaces_POPULATED)
 	FetchContent_Populate(vst_interfaces)
 endif()
 
-#Because VST SDK as "pluginterfaces" hardcoded, we need to move sources a folder named "pluginterfaces"...
 set(VST_H_PATH ${PROJECT_BINARY_DIR}/vst_interfaces)
+
+#Because VST SDK as "pluginterfaces" hardcoded, we need to move sources to a folder named "pluginterfaces"...
 file(MAKE_DIRECTORY ${VST_H_PATH}/pluginterfaces)
 file(COPY ${vst_interfaces_SOURCE_DIR}/ DESTINATION ${VST_H_PATH}/pluginterfaces)
 

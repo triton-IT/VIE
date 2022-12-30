@@ -31,6 +31,7 @@ set(HEADER_FILES
         "components/noise.hpp"
         "components/oscillator.hpp"
         "components/output.hpp"
+		"components/sample.hpp"
         )
 source_group("Header Files" FILES ${HEADER_FILES})
 
@@ -42,6 +43,7 @@ set(RESOURCES
         "assets/config/desktop.ini"
         "assets/config/default_instrument.json"
         "assets/config/vie.ico"
+        "assets/view/"
         )
 source_group("Resources" FILES ${RESOURCES})
 
@@ -68,6 +70,7 @@ set(SOURCE_FILES
         "components/noise.cpp"
         "components/oscillator.cpp"
         "components/output.cpp"
+		"components/sample.cpp"
         )
 source_group("Source Files" FILES ${SOURCE_FILES})
 
@@ -100,8 +103,9 @@ add_dependencies(${PROJECT_NAME}
         cycfi_q
         webview2
         wil
+        libsndfile
         )
-        
+
 message(STATUS "VIE> Set target C++ standard to 17")
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_17)
 
@@ -119,6 +123,9 @@ target_link_libraries(${PROJECT_NAME} webview2)
 
 message(STATUS "VIE> Linking-up wil")
 target_link_libraries(${PROJECT_NAME} wil)
+
+message(STATUS "VIE> Linking-up libsndfile")
+target_link_libraries(${PROJECT_NAME} sndfile)
 
 # Copy built VST to VST3 system folder
 if (DEPLOY_TO_VST_FOLDER)
