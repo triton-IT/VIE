@@ -200,29 +200,14 @@ namespace live::tritone::vie::processor::component
 
 					uint32_t input_id = component_output->note_id;
 
-					//Do not reinit position but deactivate all sample by default.
-					/*for each (auto & sample_state_item in samples_states_)
-					{
-						sample_state_item.second.activated = false;
-					}*/
-
 					//And unmute the ones which are requested.
 					sample_state& sample_state = samples_states_[input_id];
 					if (!sample_state.activated)
 					{
 						//If sample is a new one, activate it.
 						sample_state.activated = true;
-						sample_state.position = 0;
 					}
-
-					//Reinit position of all samples that are not used.
-					/*for (auto& sample_state : samples_states_)
-					{
-						if (sample_state.activated == false)
-						{
-							sample_state.position = 0;
-						}
-					}*/
+					sample_state.position = 0;
 				}
 				break;
 			case stop_input_id:

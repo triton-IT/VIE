@@ -8,6 +8,7 @@
 #include "components/mixer.hpp"
 #include "components/output.hpp"
 #include "components/sample.hpp"
+#include "components/python_scripter.hpp"
 
 using namespace live::tritone::vie;
 using namespace live::tritone::vie::processor::component;
@@ -57,6 +58,10 @@ processor_component* processor_components::create(nlohmann::json processor_defin
     {
         processor = new output(processor_definition);
     }
+	else if (type == "python_scripter")
+	{
+		processor = new python_scripter(processor_definition);
+	}
 
 	processor->initialize(processor_definition);
 

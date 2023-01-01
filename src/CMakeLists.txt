@@ -32,6 +32,7 @@ set(HEADER_FILES
         "components/oscillator.hpp"
         "components/output.hpp"
 		"components/sample.hpp"
+		"components/python_scripter.hpp"
         )
 source_group("Header Files" FILES ${HEADER_FILES})
 
@@ -71,6 +72,7 @@ set(SOURCE_FILES
         "components/oscillator.cpp"
         "components/output.cpp"
 		"components/sample.cpp"
+		"components/python_scripter.cpp"
         )
 source_group("Source Files" FILES ${SOURCE_FILES})
 
@@ -104,6 +106,7 @@ add_dependencies(${PROJECT_NAME}
         webview2
         wil
         libsndfile
+        python3
         )
 
 message(STATUS "VIE> Set target C++ standard to 17")
@@ -127,6 +130,9 @@ target_link_libraries(${PROJECT_NAME} wil)
 message(STATUS "VIE> Linking-up libsndfile")
 target_link_libraries(${PROJECT_NAME} sndfile)
 
+message(STATUS "VIE> Linking-up python3")
+target_link_libraries(${PROJECT_NAME} python3)
+
 # Copy built VST to VST3 system folder
 if (DEPLOY_TO_VST_FOLDER)
     message(STATUS "VIE> Deploying to VST standard folder")
@@ -138,7 +144,7 @@ if (DEPLOY_TO_VST_FOLDER)
                 COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_LIST_DIR}/assets/config/desktop.ini ${CMAKE_CURRENT_BINARY_DIR}/desktop.ini
                 COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_LIST_DIR}/assets/config/default_instrument.json ${CMAKE_CURRENT_BINARY_DIR}/default_instrument.json
                 COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_LIST_DIR}/assets/view ${CMAKE_CURRENT_BINARY_DIR}/view
-                COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_BINARY_DIR}/Debug/${PROJECT_NAME}.dll ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.vst3
+                COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.dll ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.vst3
                 COMMAND attrib +s ${CMAKE_CURRENT_BINARY_DIR}/Vie.ico
                 COMMAND attrib +s ${CMAKE_CURRENT_BINARY_DIR}/desktop.ini
                 COMMAND attrib +s ${CMAKE_CURRENT_BINARY_DIR}/default_instrument.json

@@ -28,5 +28,8 @@ add_subdirectory(third_party/wil)
 message(STATUS "VIE> Adding libsndfile")
 add_subdirectory(third_party/libsndfile)
 
+message(STATUS "VIE> Adding python3")
+add_subdirectory(third_party/python3)
+
 message(STATUS "VIE> Adding main application")
 add_subdirectory(src)

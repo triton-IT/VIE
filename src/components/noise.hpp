@@ -61,7 +61,6 @@ namespace live::tritone::vie::processor::component
 
 		uint16_t id_;
 		std::string name_;
-		std::string type_;
 		double sample_rate_;
 
 		template <typename Synth>

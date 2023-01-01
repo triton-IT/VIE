@@ -40,6 +40,11 @@
       "id": 5,
       "name": "output",
       "type": "output"
+    },
+    {
+      "id": 6,
+      "name": "python_scripter",
+      "type": "python_scripter"
     }
   ],
   "relations": [
@@ -101,6 +106,12 @@
       "sourceComponent": 4,
       "sourceOutputSlot": 1,
       "targetComponent": 5,
+      "targetInputSlot": 1
+    },
+    {
+      "sourceComponent": 4,
+      "sourceOutputSlot": 1,
+      "targetComponent": 6,
       "targetInputSlot": 1
     }
   ]
