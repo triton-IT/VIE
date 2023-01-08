@@ -64,7 +64,7 @@ namespace live::tritone::vie::processor::component
 
 		for (uint_fast16_t input_id = 0; (input_id < nb_inputs_multipliers_) && (input_id < nb_inputs_multiplicands_); input_id++)
 		{
-			float_array_component_output& output = *products_[input_id];
+			auto& output = *products_[input_id];
 
 			//If nb of samples is greater than the ones currently allocated, reallocate.
 			if (output_process_data.num_samples > output.values.nb_values)
