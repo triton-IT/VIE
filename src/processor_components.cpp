@@ -4,6 +4,8 @@
 #include "components/midi.hpp"
 #include "components/oscillator.hpp"
 #include "components/envelope.hpp"
+#include "components/low_pass.hpp"
+#include "components/high_pass.hpp"
 #include "components/multiplier.hpp"
 #include "components/mixer.hpp"
 #include "components/output.hpp"
@@ -57,6 +59,14 @@ processor_component* processor_components::create(nlohmann::json processor_defin
     {
         processor = new output(processor_definition);
     }
+	else if (type == "low-pass filter")
+	{
+		processor = new low_pass(processor_definition);
+	}
+	else if (type == "high-pass filter")
+	{
+		processor = new high_pass(processor_definition);
+	}
 
 	processor->initialize(processor_definition);
 
