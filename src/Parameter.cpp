@@ -18,8 +18,7 @@ namespace live::tritone::vie {
 		  default_normalized_value_(default_normalized_value),
 		  unit_id_(unit_id),
 		  flags_(flags),
-		  normalized_value_(0),
-		  listener_(nullptr)
+		  normalized_value_(default_normalized_value)
 	{
 		wcscpy(title_, title);
 		wcscpy(short_title_, short_title);
@@ -29,6 +28,10 @@ namespace live::tritone::vie {
 	unsigned long parameter::get_id() const
 	{
 		return id_;
+	}
+
+	std::wstring parameter::get_title() {
+		return std::wstring(title_);
 	}
 
 	void parameter::get_title(wchar_t out[128]) const
@@ -77,10 +80,6 @@ namespace live::tritone::vie {
 		if (std::abs(normalized_value_ - normalized_value) <= std::numeric_limits<double>::epsilon()) {
 			normalized_value_ = normalized_value;
 
-			if (listener_ != nullptr) {
-				listener_->parameter_value_changed(id_, normalized_value_);
-			}
-
 			modified = true;
 		}
 
@@ -102,9 +101,5 @@ namespace live::tritone::vie {
 	bool parameter::from_string(const wchar_t* string, double& normalized_value) {
 		const int nb_items = swscanf(string, L"%.4f", &normalized_value);
 		return nb_items > 0;
-	}
-
-	void parameter::set_listener(i_parameter_listener* listener) {
-		listener_ = listener;
 	}
 }

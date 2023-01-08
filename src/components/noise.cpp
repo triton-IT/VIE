@@ -19,22 +19,34 @@ namespace live::tritone::vie::processor::component
 		can_process_(false),
 		nb_outputs_(0)
 	{
+		for (int i = 0; i < 32; i++) {
+			outputs_[i] = new float_array_component_output();
+		}
 	}
 
 	noise::~noise()
 	{
 		for (uint_fast32_t i = 0; i < nb_outputs_; i++)
 		{
-			if (const float_array_component_output output = outputs_[nb_outputs_]; output.nb_samples > 0)
+			if (const float_array_component_output* output = outputs_[nb_outputs_]; output->values.nb_values > 0)
 			{
-				delete output.values;
+				delete output->values.values;
 			}
+		}
+		
+		for (int i = 0; i < 32; i++) {
+			delete outputs_[i];
 		}
 	}
 
 	uint16_t noise::get_id()
 	{
 		return id_;
+	}
+
+	std::string noise::get_name()
+	{
+		return name_;
 	}
 
 	processor_component_type noise::get_type()
@@ -45,6 +57,9 @@ namespace live::tritone::vie::processor::component
 	void noise::set_sample_rate(const double sample_rate)
 	{
 		sample_rate_ = sample_rate;
+	}
+
+	void noise::preprocess() {
 	}
 
 	//FIXME: Can't know if all inputs are set-up. So, we should check note by note if it can be processed. 
@@ -60,21 +75,20 @@ namespace live::tritone::vie::processor::component
 		nb_outputs_ = 0;
 		for (auto& [note_id, noise_descriptor] : *current_noises_descriptors_)
 		{
-			float_array_component_output& output = outputs_[nb_outputs_];
+			float_array_component_output* output = outputs_[nb_outputs_];
 
 			//If nb of samples is greater than the ones currently allocated, reallocate.
-			if (output_process_data.num_samples > output.nb_samples)
+			if (output_process_data.num_samples > output->values.nb_values)
 			{
-				if (output.nb_samples > 0)
+				if (output->values.nb_values > 0)
 				{
-					delete output.values;
+					delete output->values.values;
 				}
-				output.values = new float[output_process_data.num_samples];
-				output.nb_samples = output_process_data.num_samples;
+				output->values.values = new float[output_process_data.num_samples];
+				output->values.nb_values = output_process_data.num_samples;
 			}
 
-			output.output_id = note_id;
-			output.note_mode = noise_descriptor.note_mode;
+			output->note_id = note_id;
 
 			void* synth = noise_descriptor.noise_synth;
 			switch (noise_type_)
@@ -84,7 +98,7 @@ namespace live::tritone::vie::processor::component
 				auto white_noise_synth = static_cast<cycfi::q::white_noise_synth*>(synth);
 				for (uint_fast32_t frame = 0; frame < output_process_data.num_samples; frame++)
 				{
-					output.values[frame] = white_noise_synth->operator()();
+					output->values.values[frame] = white_noise_synth->operator()();
 				}
 			}
 				break;
@@ -93,7 +107,7 @@ namespace live::tritone::vie::processor::component
 				auto pink_noise_synth = static_cast<cycfi::q::pink_noise_synth*>(synth);
 				for (uint_fast32_t frame = 0; frame < output_process_data.num_samples; frame++)
 				{
-					output.values[frame] = pink_noise_synth->operator()();
+					output->values.values[frame] = pink_noise_synth->operator()();
 				}
 			}
 				break;
@@ -102,7 +116,7 @@ namespace live::tritone::vie::processor::component
 				auto brown_noise_synth = static_cast<cycfi::q::brown_noise_synth*>(synth);
 				for (uint_fast32_t frame = 0; frame < output_process_data.num_samples; frame++)
 				{
-					output.values[frame] = brown_noise_synth->operator()();
+					output->values.values[frame] = brown_noise_synth->operator()();
 				}
 			}
 				break;
@@ -111,9 +125,13 @@ namespace live::tritone::vie::processor::component
 		}
 	}
 
-	uint_fast32_t noise::get_output_values(const uint_fast16_t slot_id, void* output_values[])
+	component_output** noise::get_outputs_pool(uint_fast16_t slot_id) {
+		return (component_output**) outputs_;
+	}
+
+	uint_fast32_t noise::get_output_values(const uint_fast16_t slot_id, component_output* output_values[32])
 	{
-		*output_values = outputs_;
+		output_values = (component_output**) outputs_;
 
 		return nb_outputs_;
 	}
@@ -123,54 +141,44 @@ namespace live::tritone::vie::processor::component
 		return false;
 	}
 
-	void noise::get_zombie_notes_ids(std::unordered_set<uint32_t>& zombie_notes_ids)
-	{
-	}
-
-	void noise::set_zombie_notes_ids(const std::unordered_set<uint32_t>& zombie_notes_ids)
-	{
-	}
-
 	uint_fast16_t noise::get_slot_id(const std::string& slot_name)
 	{
-		if (slot_name == noise_on_input_name)
+		if (slot_name == onoff_input_name)
 		{
-			return noise_on_input_id;
+			return onoff_input_id;
 		}
 
 		return -1;
 	}
 
-	void noise::set_input_values(const uint_fast16_t slot_id, void* values, const uint_fast32_t nb_values)
+	void noise::set_input_values(const uint_fast16_t slot_id, component_output* values[32], const uint_fast32_t nb_values)
 	{
-		if (slot_id == noise_on_input_id)
+		if (slot_id == onoff_input_id)
 		{
 			assert(nb_values <= 32);
 			for (uint_fast16_t i = 0; i < nb_values; i++)
 			{
-				const auto& component_output = static_cast<novalue_component_output*>(values)[i];
+				const auto component_output = values[i];
 
-				uint32_t input_id = component_output.output_id;
+				uint32_t input_id = component_output->note_id;
 
 				if (const auto current_noise_descriptor = current_noises_descriptors_->find(input_id); current_noise_descriptor != current_noises_descriptors_->end())
 				{
 					//If synth was already set before, we don't want to erase it.
 					//So, keep the old one.
 					noise_descriptor<void>& noise_descriptor = next_noises_descriptors_->operator[](input_id);
-					noise_descriptor.note_mode = component_output.note_mode;
 					noise_descriptor.noise_synth = current_noise_descriptor->second.noise_synth;
 				}
 				else
 				{
 					//If synth is a new one, create it.
 					noise_descriptor<void>& noise_descriptor = next_noises_descriptors_->operator[](input_id);
-					noise_descriptor.note_mode = component_output.note_mode;
 					noise_descriptor.noise_synth = new q::white_noise_synth{};
 				}
 			}
 
 			//Switching between current and next synth is done to simplify the deletion of synths no more used.
-			std::unordered_map<uint_fast32_t, noise_descriptor<void>>* tmp_noises_descriptors = current_noises_descriptors_;
+			std::unordered_map<uint_fast16_t, noise_descriptor<void>>* tmp_noises_descriptors = current_noises_descriptors_;
 			current_noises_descriptors_ = next_noises_descriptors_;
 			next_noises_descriptors_ = tmp_noises_descriptors;
 
@@ -183,7 +191,7 @@ namespace live::tritone::vie::processor::component
 
 	uint_fast32_t noise::get_max_nb_input_values(const uint_fast16_t slot_id)
 	{
-		if (slot_id == noise_on_input_id)
+		if (slot_id == onoff_input_id)
 		{
 			return 32;
 		}

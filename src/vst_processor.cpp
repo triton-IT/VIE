@@ -16,7 +16,7 @@ using namespace cycfi;
 using namespace q;
 using namespace q::literals;
 using namespace std;
-using json = nlohmann::json;
+using json = nlohmann::basic_json<std::map, std::vector, std::wstring>;
 
 namespace live::tritone::vie
 {
@@ -93,9 +93,14 @@ namespace live::tritone::vie
 	{
 		host_context_ = context;
 
-		vie_processor_.initialize();
+		try {
+			vie_processor_.initialize();
+		}
+		catch (const std::runtime_error exception) {
+			return Steinberg::kResultFalse;
+		}
 
-		return Steinberg::kResultOk;
+		return Steinberg::kResultTrue;
 	}
 
 	Steinberg::tresult __stdcall vst_processor::terminate()
@@ -180,20 +185,20 @@ namespace live::tritone::vie
 		return result ? Steinberg::kResultTrue : Steinberg::kResultFalse;
 	}
 
-	Steinberg::tresult __stdcall vst_processor::setActive(const Steinberg::TBool state)
+	Steinberg::tresult __stdcall vst_processor::setActive(const Steinberg::TBool active)
 	{
-		const bool result = vie_processor_.set_active(state);
+		const bool result = vie_processor_.set_active(active);
 		return result ? Steinberg::kResultTrue : Steinberg::kResultFalse;
 	}
 
 	Steinberg::tresult __stdcall vst_processor::setState(Steinberg::IBStream* /*state*/)
 	{
-		return Steinberg::kNotImplemented;
+		return Steinberg::kResultOk;
 	}
 
 	Steinberg::tresult __stdcall vst_processor::getState(Steinberg::IBStream* /*state*/)
 	{
-		return Steinberg::kNotImplemented;
+			return Steinberg::kResultOk;
 	}
 
 	Steinberg::tresult __stdcall vst_processor::setBusArrangements(
