@@ -22,23 +22,24 @@ namespace live::tritone::vie
 	                                                   processor_components_{}, nb_midi_components_(0),
 	                                                   sources_components_{}, processing_setup_(),
 	                                                   relations_{},
-													   bypass_(false)
+	                                                   zombie_notes_ids_{}
 	{
 		memset(nb_component_relations_, 0, 128);
 	}
 
-	void processor_orchestrator::add_processor_component(processor_component* processor)
+	processor_component* processor_orchestrator::add_processor_component(json processor_definition)
 	{
-		if (processor->get_type() == processor_component_type::event_input)
+		processor_component* component = processor_component::create(processor_definition);
+
+		if (component->get_type() == processor_component_type::event_input)
 		{
-			sources_components_[nb_midi_components_] = static_cast<midi*>(processor);
+			sources_components_[nb_midi_components_] = static_cast<midi*>(component);
 			nb_midi_components_++;
 		}
 
-		processor_components_[nb_components_] = processor;
-		processor_components_map_[processor->get_id()] = processor;
-
+		processor_components_[nb_components_] = component;
 		nb_components_++;
+		return component;
 	}
 
 	component_relation& processor_orchestrator::add_relation(json relation_definition)
@@ -118,18 +119,26 @@ namespace live::tritone::vie
 
 	void processor_orchestrator::process(output_process_data& output_process_data)
 	{
-		if (!bypass_) {
-			for (int i = 0; i < nb_components_; i++)
-			{
-				auto* component = processor_components_[i];
-				component->preprocess();
-			}
-			for (int i = 0; i < nb_midi_components_; i++)
-			{
-				auto* source_component = sources_components_[i];
-				//TODO: Multi-thread call to this method.
-				process(source_component, output_process_data);
-			}
+		for (int i = 0; i < nb_midi_components_; i++)
+		{
+			auto* source_component = sources_components_[i];
+			//TODO: Multi-thread call to this method.
+			process(source_component, output_process_data);
+		}
+
+		//Now that process has been called with previous zombie notes, we can clean them and start again collecting them.
+		zombie_notes_ids_.clear();
+
+		for (int i = 0; i < nb_midi_components_; i++)
+		{
+			auto* source_component = sources_components_[i];
+			get_zombie_notes_ids(source_component, zombie_notes_ids_);
+		}
+
+		for (int i = 0; i < nb_midi_components_; i++)
+		{
+			auto* source_component = sources_components_[i];
+			set_zombie_notes_ids(source_component, zombie_notes_ids_);
 		}
 	}
 
@@ -153,12 +162,10 @@ namespace live::tritone::vie
 			{
 				const auto [relation_component, source_slot_id, target_component, target_slot_id] = component_relations[i];
 
-				component_output** source_output_values = source_component->get_outputs_pool(source_slot_id);
-				
+				void* source_output_values;
 				//Because component has been processed, we can get its output values.
 				const uint_fast32_t nb_output_values = source_component->get_output_values(
-					source_slot_id,
-					source_output_values);
+					source_slot_id, &source_output_values);
 
 				//And then pass output values to input values of next component.
 				target_component->set_input_values(target_slot_id, source_output_values, nb_output_values);
@@ -169,16 +176,50 @@ namespace live::tritone::vie
 		}
 	}
 
-	void processor_orchestrator::parameter_changed(const unsigned long parameter_id, long sample_offset, double parameter_value) {
-		unsigned int component_id = parameter_id >> 16;
-		unsigned int component_parameter_id = parameter_id & 0xffff;
-		float_component_output input(0, parameter_value);
+	void processor_orchestrator::get_zombie_notes_ids(processor_component* source_component,
+		unordered_set<uint32_t>& notes_ids_set) const
+	{
+		//Get all children of source components
+		const component_relation* component_relations = relations_[source_component->get_id()];
 
-		//TODO: Get component by id
-		/*processor_components_map_[component_id]->set_input_values(component_parameter_id,
-			&input,
-			1
-		);*/
+		//Process all children.
+		const int nb_relations = nb_component_relations_[source_component->get_id()];
+		for (int i = 0; i < nb_relations; i++)
+		{
+			const auto [relation_component, source_slot_id, target_component, target_slot_id] = component_relations[
+				i];
+
+			//If current samples processing of source component is finished but component needs more sampless to fully finish its processing.s
+			if (!source_component->has_finished())
+			{
+				//Get and store zombie notes identifiers of component.
+				source_component->get_zombie_notes_ids(notes_ids_set);
+			}
+
+			// Get zombie notes identifiers of next component.
+			get_zombie_notes_ids(target_component, notes_ids_set);
+		}
+	}
+
+	void processor_orchestrator::set_zombie_notes_ids(processor_component* source_component,
+		unordered_set<uint32_t>& notes_ids_set) const
+	{
+		//Get all children of source components
+		const component_relation* component_relations = relations_[source_component->get_id()];
+
+		//Process all children.
+		const int nb_relations = nb_component_relations_[source_component->get_id()];
+		for (int i = 0; i < nb_relations; i++)
+		{
+			const auto [relation_component, source_slot_id, target_component, target_slot_id] = component_relations[
+				i];
+
+			//Tell component what notes should be played as zombie.
+			source_component->set_zombie_notes_ids(notes_ids_set);
+
+			// Get zombie notes identifiers of next component.
+			set_zombie_notes_ids(target_component, notes_ids_set);
+		}
 	}
 
 	midi* processor_orchestrator::get_midi_component_for_event(const event& event) const

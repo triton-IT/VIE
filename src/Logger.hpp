@@ -3,7 +3,7 @@
 #include <fstream>
 #include <string>
 
-namespace live::tritone::vie::debug {
+namespace live::tritone::vie::utils {
 	class logger {
 	public:
 		void open(const std::string& file_name, bool auto_flush);

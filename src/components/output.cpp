@@ -4,9 +4,10 @@
 
 namespace live::tritone::vie::processor::component
 {
-	output::output(nlohmann::json output_definition) : processor_component(),
+	output::output(nlohmann::json output_definition) :
 		id_(output_definition["id"]),
 		name_(output_definition["name"]),
+		amplitudes_(nullptr),
 		can_process_(false),
 		output_bus_id_(0)
 	{
@@ -19,11 +20,6 @@ namespace live::tritone::vie::processor::component
 		return id_;
 	}
 
-	std::string output::get_name()
-	{
-		return name_;
-	}
-
 	processor_component_type output::get_type()
 	{
 		return processor_component_type::output;
@@ -31,9 +27,6 @@ namespace live::tritone::vie::processor::component
 
 	void output::set_sample_rate(double sample_rate)
 	{
-	}
-
-	void output::preprocess() {
 	}
 
 	bool output::can_process()
@@ -49,25 +42,34 @@ namespace live::tritone::vie::processor::component
 		const auto left = static_cast<float*>(bus_buffer->channels_buffer[0]);
 		const auto right = static_cast<float*>(bus_buffer->channels_buffer[1]);
 
-		const float* amplitudes = amplitudes_.to_float_array().values;
+		if (amplitudes_->note_mode == note_mode::normal) {
+			const float* amplitudes = amplitudes_->values;
 
-		if (amplitudes_.to_float_array().nb_values == output_process_data.num_samples)
-		{
-			memcpy(left, amplitudes, output_process_data.num_samples * sizeof(amplitudes));
-			memcpy(right, amplitudes, output_process_data.num_samples * sizeof(amplitudes));
+			if (amplitudes_->nb_samples == output_process_data.num_samples)
+			{
+				memcpy(left, amplitudes, output_process_data.num_samples * sizeof(amplitudes));
+				memcpy(right, amplitudes, output_process_data.num_samples * sizeof(amplitudes));
+			}
+			else
+			{
+				memset(left, 0, output_process_data.num_samples * sizeof(amplitudes));
+				memset(right, 0, output_process_data.num_samples * sizeof(amplitudes));
+			}
 		}
-		else
-		{
-			memset(left, 0, output_process_data.num_samples * sizeof(amplitudes));
-			memset(right, 0, output_process_data.num_samples * sizeof(amplitudes));
+		else {
+			//Set output to 0 because we received a ghost note.
+			if (output_process_data.outputs->sample_size == sample_size::sample_size32) {
+				memset(left, 0, output_process_data.num_samples * sizeof(uint32_t));
+				memset(right, 0, output_process_data.num_samples * sizeof(uint32_t));
+			}
+			else {
+				memset(left, 0, output_process_data.num_samples * sizeof(uint64_t));
+				memset(right, 0, output_process_data.num_samples * sizeof(uint64_t));
+			}
 		}
 	}
 
-	component_output** output::get_outputs_pool(uint_fast16_t slot_id) {
-		return nullptr;
-	}
-
-	uint_fast32_t output::get_output_values(uint_fast16_t slot_id, component_output* output_values[32])
+	uint_fast32_t output::get_output_values(uint_fast16_t slot_id, void* output_values[])
 	{
 		return 0;
 	}
@@ -77,13 +79,17 @@ namespace live::tritone::vie::processor::component
 		return true;
 	}
 
+	void output::get_zombie_notes_ids(std::unordered_set<uint32_t>& zombie_notes_ids)
+	{
+	}
+
+	void output::set_zombie_notes_ids(const std::unordered_set<uint32_t>& zombie_notes_ids)
+	{
+	}
+
 	uint_fast16_t output::get_slot_id(const std::string& slot_name)
 	{
-		if (slot_name == onoff_input_name)
-		{
-			return onoff_input_id;
-		}
-		else if (slot_name == amplitudes_input_name)
+		if (slot_name == amplitudes_input_name)
 		{
 			return amplitudes_input_id;
 		}
@@ -91,11 +97,7 @@ namespace live::tritone::vie::processor::component
 		return -1;
 	}
 
-	/**
-	* An output accepts only one channel.
-	* The first channel is picked, the other ones are ignored.
-	*/
-	void output::set_input_values(const uint_fast16_t slot_id, component_output* values[32], const uint_fast32_t nb_values)
+	void output::set_input_values(const uint_fast16_t slot_id, void* values, const uint_fast32_t nb_values)
 	{
 		can_process_ = true;
 
@@ -103,14 +105,12 @@ namespace live::tritone::vie::processor::component
 		{
 			if (slot_id == amplitudes_input_id)
 			{
-				amplitudes_.note_id = ((component_output*)values[0])->note_id;
-				amplitudes_.values = ((component_output*)values[0])->to_float_array();
+				amplitudes_ = static_cast<float_array_component_output*>(values);
 			}
 		}
 		else
 		{
-			amplitudes_.note_id = 0;
-			amplitudes_.values.nb_values = 0;
+			amplitudes_ = &empty_array_component_;
 		}
 	}
 
@@ -123,11 +123,6 @@ namespace live::tritone::vie::processor::component
 
 		//FIXME: Do not return -1 on a uint
 		return -1;
-	}
-
-	void output::set_parameter(parameter parameter)
-	{
-
 	}
 
 	void output::set_output_bus_id(const uint_fast16_t bus_id)

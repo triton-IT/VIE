@@ -2,7 +2,6 @@
 
 #include <pluginterfaces/gui/iplugview.h>
 #include <pluginterfaces/base/ibstream.h>
-#include <pluginterfaces/vst/ivsteditcontroller.h>
 
 #include <thread>
 #include <string>
@@ -13,6 +12,7 @@
 #ifdef _WIN32
 
 #include "windows/editor_view.hpp"
+#include "WebView2.h"
 
 #endif
 
@@ -21,7 +21,7 @@ namespace live::tritone::vie
 	class vie_view final : public Steinberg::IPlugView
 	{
 	public:
-		explicit vie_view(Steinberg::Vst::IComponentHandler* handler);
+		explicit vie_view(std::vector<parameter*>& parameters);
 
 		virtual ~vie_view() = default;
 
@@ -44,19 +44,18 @@ namespace live::tritone::vie
 		Steinberg::tresult set_state(Steinberg::IBStream* state);
 		Steinberg::tresult get_state(Steinberg::IBStream* state);
 
-		void set_component_handler(Steinberg::Vst::IComponentHandler* handler);
-
 		void render();
 
 	private:
-		Steinberg::uint32 nb_ref_;
-		Steinberg::IPlugFrame* ptr_frame_;
+		std::vector<parameter*>& parameters_;
 
-		editor_view editor_view;
+		Steinberg::uint32 nb_ref_;
+		Steinberg::IPlugFrame* frame_;
 
 		int width_;
 		int height_;
 
-		Steinberg::Vst::IComponentHandler* handler_;
+		ICoreWebView2Controller* web_view_controller;
+		ICoreWebView2* web_view_window;
 	};
 }

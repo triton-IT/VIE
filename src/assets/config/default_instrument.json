@@ -1,48 +1,25 @@
 {
-  "components": [
+  "processors": [
     {
       "id": 0,
       "name": "Midi",
-      "type": "midi",
-      "parameters": [
-        {
-          "id": 0,
-          "name": "on",
-          "short_name": "on",
-          "type": "boolean",
-          "unit": "",
-          "value": 1
-        }
-      ]
+      "type": "midi"
     },
     {
       "id": 1,
-      "name": "Sample",
-      "type": "sample",
-      "file_path": "C:\\dev\\triton-IT\\VIE\\src\\assets\\samples\\1.wav"
+      "name": "Noise generator",
+      "type": "noise",
+      "bindings": {
+        "type": "white"
+      }
     },
     {
       "id": 2,
-      "name": "Envelope",
-      "type": "envelope"
-    },
-    {
-      "id": 3,
-      "name": "Multiplier",
-      "type": "multiplier"
-    },
-    {
-      "id": 4,
       "name": "Mixer 1",
       "type": "mixer"
     },
     {
-      "id": 5,
-      "name": "High-pass filter",
-      "type": "high-pass filter"
-    },
-    {
-      "id": 6,
+      "id": 3,
       "name": "output",
       "type": "output"
     }
@@ -50,69 +27,21 @@
   "relations": [
     {
       "sourceComponent": 0,
-      "sourceOutputSlot": 1,
-      "targetComponent": 1,
-      "targetInputSlot": 1
-    },
-    {
-      "sourceComponent": 0,
-      "sourceOutputSlot": 1,
-      "targetComponent": 2,
-      "targetInputSlot": 2
-    },
-    {
-      "sourceComponent": 0,
       "sourceOutputSlot": 2,
-      "targetComponent": 2,
-      "targetInputSlot": 3
-    },
-    {
-      "sourceComponent": 0,
-      "sourceOutputSlot": 4,
-      "targetComponent": 2,
-      "targetInputSlot": 1
+      "targetComponent": 1,
+      "targetInputSlot": 0
     },
     {
       "sourceComponent": 1,
-      "sourceOutputSlot": 5,
-      "targetComponent": 3,
-      "targetInputSlot": 1
-    },
-    {
-      "sourceComponent": 2,
-      "sourceOutputSlot": 4,
-      "targetComponent": 3,
-      "targetInputSlot": 2
-    },
-    {
-      "sourceComponent": 2,
-      "sourceOutputSlot": 5,
-      "targetComponent": 1,
-      "targetInputSlot": 2
-    },
-    {
-      "sourceComponent": 2,
-      "sourceOutputSlot": 8,
-      "targetComponent": 1,
-      "targetInputSlot": 4
-    },
-    {
-      "sourceComponent": 3,
-      "sourceOutputSlot": 3,
-      "targetComponent": 4,
-      "targetInputSlot": 1
-    },
-    {
-      "sourceComponent": 4,
       "sourceOutputSlot": 1,
-      "targetComponent": 5,
-      "targetInputSlot": 1
+      "targetComponent": 2,
+      "targetInputSlot": 0
     },
     {
-      "sourceComponent": 5,
-      "sourceOutputSlot": 4,
-      "targetComponent": 6,
-      "targetInputSlot": 1
+      "sourceComponent": 2,
+      "sourceOutputSlot": 1,
+      "targetComponent": 3,
+      "targetInputSlot": 0
     }
   ]
 }

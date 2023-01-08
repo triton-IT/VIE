@@ -3,55 +3,27 @@
     {
       "id": 0,
       "name": "Midi",
-      "type": "midi",
-      "parameters": [
-        {
-          "id": 0,
-          "name": "on",
-          "short_name": "on",
-          "type": "boolean",
-          "unit": "",
-          "value": 1
-        }
-      ]
+      "type": "midi"
     },
     {
       "id": 1,
       "name": "Sin generator",
       "type": "oscillator",
-      "parameters": [
-        {
-          "id": 1,
-          "name": "on",
-          "short_name": "on",
-          "type": "boolean",
-          "unit": "",
-          "value": 1
-        },
-        {
-          "id": 2,
-          "name": "frequency",
-          "short_name": "freq",
-          "type": "float",
-          "unit": "Hz",
-          "value": 440
+      "bindings": {
+        "type": "sin"
       }
-      ]
     },
     {
       "id": 2,
       "name": "Envelope 1",
       "type": "envelope",
-      "parameters": [
-        {
-          "id": 3,
-          "name": "on",
-          "short_name": "on",
-          "type": "boolean",
-          "unit": "",
-          "value": 1
+      "bindings": {
+        "attack_rate": 30,
+        "decay_rate": 70,
+        "sustain_level": -6,
+        "sustain_rate": 50000.0,
+        "release_rate": 100
       }
-      ]
     },
     {
       "id": 3,

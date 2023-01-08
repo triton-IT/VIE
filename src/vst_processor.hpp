@@ -45,7 +45,7 @@ namespace live::tritone::vie {
 		Steinberg::tresult __stdcall getBusInfo(Steinberg::Vst::MediaType type,Steinberg::Vst::BusDirection dir, Steinberg::int32 index,Steinberg::Vst::BusInfo& bus_info /*out*/) override;
 		Steinberg::tresult __stdcall  getRoutingInfo(Steinberg::Vst::RoutingInfo& in_info,Steinberg::Vst::RoutingInfo& out_info /*out*/) override;
 		Steinberg::tresult __stdcall activateBus(Steinberg::Vst::MediaType type,Steinberg::Vst::BusDirection dir, Steinberg::int32 index,Steinberg::TBool state) override;
-		Steinberg::tresult __stdcall setActive(Steinberg::TBool active) override;
+		Steinberg::tresult __stdcall setActive(Steinberg::TBool state) override;
 		Steinberg::tresult __stdcall setState(Steinberg::IBStream* state) override;
 		Steinberg::tresult __stdcall getState(Steinberg::IBStream* state) override;
 
