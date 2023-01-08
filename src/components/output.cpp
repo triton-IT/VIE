@@ -103,8 +103,8 @@ namespace live::tritone::vie::processor::component
 		{
 			if (slot_id == amplitudes_input_id)
 			{
-				amplitudes_.note_id = ((float_array_component_output*)values[0])->note_id;
-				amplitudes_.values = ((float_array_component_output*)values[0])->to_float_array();
+				amplitudes_.note_id = ((component_output*)values[0])->note_id;
+				amplitudes_.values = ((component_output*)values[0])->to_float_array();
 			}
 		}
 		else

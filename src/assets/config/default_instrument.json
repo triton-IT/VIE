@@ -38,6 +38,11 @@
     },
     {
       "id": 5,
+      "name": "High-pass filter",
+      "type": "high-pass filter"
+    },
+    {
+      "id": 6,
       "name": "output",
       "type": "output"
     }
@@ -101,6 +106,12 @@
       "sourceComponent": 4,
       "sourceOutputSlot": 1,
       "targetComponent": 5,
+      "targetInputSlot": 1
+    },
+    {
+      "sourceComponent": 5,
+      "sourceOutputSlot": 4,
+      "targetComponent": 6,
       "targetInputSlot": 1
     }
   ]
