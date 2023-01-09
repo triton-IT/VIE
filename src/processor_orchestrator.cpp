@@ -36,7 +36,6 @@ namespace live::tritone::vie
 		}
 
 		processor_components_[nb_components_] = processor;
-		processor_components_map_[processor->get_id()] = processor;
 
 		nb_components_++;
 	}
@@ -173,12 +172,6 @@ namespace live::tritone::vie
 		unsigned int component_id = parameter_id >> 16;
 		unsigned int component_parameter_id = parameter_id & 0xffff;
 		float_component_output input(0, parameter_value);
-
-		//TODO: Get component by id
-		/*processor_components_map_[component_id]->set_input_values(component_parameter_id,
-			&input,
-			1
-		);*/
 	}
 
 	midi* processor_orchestrator::get_midi_component_for_event(const event& event) const

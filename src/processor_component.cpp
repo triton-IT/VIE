@@ -15,8 +15,7 @@ namespace live::tritone::vie
 			const std::string unit = parameter_definition["unit"];
 			const float value = parameter_definition["value"];
 
-			parameters& parameters = application::get_parameters();
-			parameter parameter = parameters.add_parameter(id, name, short_name, type, unit, value);
+			parameter parameter = application::add_parameter(id, name, short_name, type, unit, value);
 
 			set_parameter(parameter);
 		}

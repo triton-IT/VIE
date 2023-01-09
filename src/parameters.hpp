@@ -23,14 +23,13 @@ namespace live::tritone::vie {
 		parameter add_parameter(unsigned long id, std::string name, std::string short_name, std::string type, std::string unit, float value);
 
 		parameter get_parameter(unsigned long id);
-		parameter get_parameter_by_index(long index);
 
 		long count();
 
 	private:
 
 	protected:
-		std::map<unsigned long, parameter*> parameters_map;
-		std::vector<parameter*> parameters_list;
+		parameter* parameters_[255] = { nullptr };
+		uint_fast8_t nb_parameters_ = 0;
 	};
 }

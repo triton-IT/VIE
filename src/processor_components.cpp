@@ -20,6 +20,9 @@ processor_components& processor_components::get_instance() {
 	return instance;
 }
 
+processor_components::processor_components() : components_{} {
+}
+
 processor_components::~processor_components() {
 
 }
@@ -75,9 +78,8 @@ processor_component* processor_components::create(nlohmann::json processor_defin
 
 	processor->initialize(processor_definition);
 
-	by_id_.emplace(processor->get_id(), processor);
-	by_name_.emplace(processor->get_name(), processor);
-	//list_.push_back(processor);
+	components_[nb_components_] = processor;
+	nb_components_++;
 
 #ifdef VIE_DEBUG
 	debugLogger.write("Added processor: " + processor->get_name());
@@ -86,21 +88,7 @@ processor_component* processor_components::create(nlohmann::json processor_defin
 	return processor;
 }
 
-processor_component& processor_components::get_by_id(unsigned long id)
+processor_component& processor_components::get_by_id(uint_fast8_t id)
 {
-	return *by_id_[id];
-}
-
-processor_component& processor_components::get_by_name(std::string name)
-{
-	return *by_name_[name];
-}
-
-processor_component& processor_components::get_by_index(long index) {
-	return *list_[index];
-}
-
-long processor_components::count()
-{
-	return by_id_.size();
+	return *components_[nb_components_];
 }

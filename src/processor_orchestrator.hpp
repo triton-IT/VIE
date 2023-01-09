@@ -52,7 +52,6 @@ namespace live::tritone::vie {
 		int nb_components_;
 		//TODO: compute nb of components when parsing config file instead of using constant.
 		processor_component* processor_components_[128];
-		std::unordered_map<int, processor_component*> processor_components_map_;
 
 		int nb_midi_components_;
 		//TODO: compute nb of midi components when parsing config file instead of using constant.

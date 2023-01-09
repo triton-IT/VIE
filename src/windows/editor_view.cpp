@@ -72,12 +72,12 @@ namespace live::tritone::vie
                                                 const std::string action_name = json_message["action"];
                                                 if(action_name.compare("set_module_parameter_value") == 0) {
                                                     nlohmann::json parameters = json_message["parameters"];
-                                                    string module_id;
+                                                    uint_fast8_t module_id;
                                                     string parameter_id;
                                                     string parameter_value;
 
 													for (auto& it : parameters.items()) {
-														const std::string parameter_name = it.value()["name"];
+														const std::string parameter_name = it.value()["id"];
 														if (parameter_name.compare("module_id") == 0) {
 															module_id = it.value().at("value");
 														}
@@ -89,7 +89,7 @@ namespace live::tritone::vie
 														}
 													}
 													
-                                                    processor_component& processor_component = application::get_processor_components().get_by_name(module_id);
+                                                    processor_component& processor_component = application::get_processor_components().get_by_id(module_id);
 												    uint16_t parameter_component_id = processor_component.get_id();
 												    uint16_t parameter_slot_id = processor_component.get_slot_id(parameter_id);
 													
@@ -100,22 +100,6 @@ namespace live::tritone::vie
                                                     handler_->performEdit(component_parameter_id, std::stof(parameter_value));
                                                     handler_->endEdit(component_parameter_id);
                                                 }
-
-//												const std::string parameter_component_name = json_message["component"];
-//												processor_component& processor_component = application::get_processor_components().get_by_name(parameter_component_name);
-//												uint16_t parameter_component_id = processor_component.get_id();
-//												//const uint16_t parameter_slot_id = json_message["slot"];
-//												const std::string parameter_slot_name = json_message["slot"];
-//												uint16_t parameter_slot_id = processor_component.get_slot_id(parameter_slot_name);
-//												const double parameter_value = json_message["value"];
-//
-//												//Compute component and its parameter ids to one single id.
-//												unsigned long parameter_id = (parameter_component_id << 16) | parameter_slot_id;
-//
-//												//Transmit parameter to host.
-//												handler_->beginEdit(parameter_id);
-//												handler_->performEdit(parameter_id, parameter_value);
-//												handler_->endEdit(parameter_id);
 											}
 											return S_OK;
 										}).Get(), &web_message_received_token_);

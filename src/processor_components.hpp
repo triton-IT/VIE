@@ -27,17 +27,13 @@ namespace live::tritone::vie {
 		processor_components& operator=(const processor_components&) = default;
 		processor_components& operator=(processor_components&&) = default;
 
-		processor_component& get_by_id(unsigned long id);
-		processor_component& get_by_name(std::string name);
-		processor_component& get_by_index(long index);
-
-		long count();
+		processor_component& get_by_id(uint_fast8_t id);
 
 	private:
-		processor_components() = default;
+		processor_components();
 
-		std::map<unsigned long, processor_component*> by_id_;
-		std::map<std::string, processor_component*> by_name_;
-		std::vector<processor_component*> list_;
+		processor_component* components_[512];
+		
+		uint_fast8_t nb_components_ = 0;
 	};
 }

@@ -3,6 +3,9 @@
 #include "../application.hpp"
 #include "../logger.hpp"
 
+#include "../boolean_parameter.hpp"
+#include "../float_parameter.hpp"
+
 extern "C" {
 	bool InitDll() {
 		return true;
@@ -47,4 +50,45 @@ BOOL WINAPI DllMain(HINSTANCE /*h_instance*/, DWORD /*dw_reason*/, LPVOID /*lpv_
 	return TRUE;
 }
 
-parameters application::parameters_;
+parameter application::add_parameter(uint_fast8_t id, parameter parameter)
+{
+	auto parameter_ptr = new live::tritone::vie::parameter(parameter);
+
+	parameters_[nb_parameters_] = parameter_ptr;
+	nb_parameters_++;
+
+	return *parameter_ptr;
+}
+
+parameter application::add_parameter(uint_fast8_t id, std::string name, std::string short_name, std::string type, std::string unit, float value) {
+	if (type == "boolean") {
+		//FIXME: use wstring in parameters and fund a way to parse wstring with json.
+		boolean_parameter parameter(id,
+			std::wstring(name.begin(), name.end()).c_str(),
+			std::wstring(short_name.begin(), short_name.end()).c_str(),
+			std::wstring(unit.begin(), unit.end()).c_str(),
+			value);
+		return add_parameter(id, parameter);
+	}
+	else {
+		float_parameter parameter(id,
+			std::wstring(name.begin(), name.end()).c_str(),
+			std::wstring(short_name.begin(), short_name.end()).c_str(),
+			std::wstring(unit.begin(), unit.end()).c_str(),
+			value);
+		return add_parameter(id, parameter);
+	}
+}
+
+parameter application::get_parameter(uint_fast8_t id)
+{
+	return *parameters_[id];
+}
+
+uint_fast8_t application::get_parameters_count()
+{
+	return nb_parameters_;
+}
+
+parameter* application::parameters_[255] = { nullptr };
+uint_fast8_t application::nb_parameters_ = 0;

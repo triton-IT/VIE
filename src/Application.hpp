@@ -26,14 +26,18 @@ enum {
 
 class application {
 public:
-	static parameters& get_parameters() {
-		return parameters_;
-	}
 	static processor_components& get_processor_components() {
 		return processor_components::get_instance();
 	}
 
+	static parameter add_parameter(uint_fast8_t id, parameter parameter);
+	static parameter add_parameter(uint_fast8_t id, std::string name, std::string short_name, std::string type, std::string unit, float value);
+
+	static parameter get_parameter(uint_fast8_t id);
+
+	static uint_fast8_t get_parameters_count();
+
 private:
-	//FIXME: Make a singleton or transform processor_components to static too.
-	static parameters parameters_;
+	static parameter* parameters_[255];
+	static uint_fast8_t nb_parameters_;
 };

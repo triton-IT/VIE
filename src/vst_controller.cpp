@@ -86,12 +86,12 @@ namespace live::tritone::vie {
 
 	int32 __stdcall vst_controller::getParameterCount()
 	{
-		return application::get_parameters().count();
+		return application::get_parameters_count();
 	}
 
 	tresult __stdcall vst_controller::getParameterInfo(int32 param_index, ParameterInfo& info /*out*/)
 	{
-		parameter parameter = application::get_parameters().get_parameter_by_index(param_index);
+		parameter parameter = application::get_parameter(param_index);
 
 		ParameterInfo param_info{};
 		param_info.id = parameter.get_id();
@@ -111,7 +111,7 @@ namespace live::tritone::vie {
 	tresult __stdcall vst_controller::getParamStringByValue(ParamID id, ParamValue valueNormalized /*in*/, Steinberg::Vst::String128 string /*out*/)
 	{
 		//Print "on" or "off" if value is a boolean or print float value otherwise.
-		if (parameter parameter = application::get_parameters().get_parameter(id); parameter.get_step_count() == 1) {
+		if (parameter parameter = application::get_parameter(id); parameter.get_step_count() == 1) {
 			if (valueNormalized > 0.5) {
 				UString(string, str16BufferSize(String128)).assign(USTRING("On"));
 			}
@@ -129,7 +129,7 @@ namespace live::tritone::vie {
 	tresult __stdcall vst_controller::getParamValueByString(ParamID id, TChar* string /*in*/, Steinberg::Vst::ParamValue & valueNormalized /*out*/)
 	{
 		// Set 0 or 1 if value is "on" or "off" or set value as float otherwise.
-		if (parameter parameter = application::get_parameters().get_parameter(id); parameter.get_step_count() == 1) {
+		if (parameter parameter = application::get_parameter(id); parameter.get_step_count() == 1) {
 			if (wcscmp(string, L"On") == 0) {
 				valueNormalized = 0.0;
 			}
@@ -146,26 +146,26 @@ namespace live::tritone::vie {
 
 	ParamValue __stdcall vst_controller::normalizedParamToPlain(ParamID id, ParamValue valueNormalized)
 	{
-		parameter parameter  = application::get_parameters().get_parameter(id);
+		parameter parameter  = application::get_parameter(id);
 		return parameter.to_plain_value(valueNormalized);
 	}
 
 	ParamValue __stdcall vst_controller::plainParamToNormalized(ParamID id, ParamValue plainValue)
 	{
-		parameter parameter = application::get_parameters().get_parameter(id);
+		parameter parameter = application::get_parameter(id);
 		return parameter.to_normalized_value(plainValue);
 	}
 
 	ParamValue __stdcall vst_controller::getParamNormalized(ParamID id)
 	{
-		parameter parameter = application::get_parameters().get_parameter(id);
+		parameter parameter = application::get_parameter(id);
 		return parameter.get_normalized_value();
 
 	}
 
 	tresult __stdcall vst_controller::setParamNormalized(ParamID id, ParamValue value)
 	{
-		if (parameter parameter = application::get_parameters().get_parameter(id); parameter.set_normalized_value(value)
+		if (parameter parameter = application::get_parameter(id); parameter.set_normalized_value(value)
 			) {
 			//TODO: Update GUI with new value.
 			return kResultOk;
