@@ -219,6 +219,5 @@ namespace live::tritone::vie::processor::component
 
 	void low_pass::set_parameter(parameter parameter)
 	{
-
 	}
 } // namespace

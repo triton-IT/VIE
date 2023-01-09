@@ -38,8 +38,8 @@
     },
     {
       "id": 5,
-      "name": "High-pass filter",
-      "type": "high-pass filter"
+      "name": "Gain",
+      "type": "gain"
     },
     {
       "id": 6,
