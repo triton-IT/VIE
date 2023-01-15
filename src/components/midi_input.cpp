@@ -1,4 +1,4 @@
-#include "midi.hpp"
+#include "midi_input.hpp"
 
 #include <unordered_set>
 
@@ -9,7 +9,7 @@ using namespace std;
 
 namespace live::tritone::vie::processor::component
 {
-	midi::midi(nlohmann::json midi_definition) : processor_component(),
+	midi_input::midi_input(nlohmann::json midi_definition) : processor_component(),
 		id_(midi_definition["id"]),
 		name_(midi_definition["name"]),
 		nb_values_(0),
@@ -33,7 +33,7 @@ namespace live::tritone::vie::processor::component
 			notes_off_outputs_[i] = new novalue_component_output();
 	}
 
-	midi::~midi() {
+	midi_input::~midi_input() {
 		for (int i = 0; i < 32; i++) {
 			delete frequencies_outputs_[i];
 		}
@@ -51,26 +51,26 @@ namespace live::tritone::vie::processor::component
 		}
 	}
 
-	std::uint16_t midi::get_id()
+	std::uint16_t midi_input::get_id()
 	{
 		return id_;
 	}
 
-	std::string midi::get_name()
+	std::string midi_input::get_name()
 	{
 		return name_;
 	}
 
-	processor_component_type midi::get_type()
+	processor_component_type midi_input::get_type()
 	{
 		return processor_component_type::event_input;
 	}
 
-	void midi::set_sample_rate(double sample_rate)
+	void midi_input::set_sample_rate(double sample_rate)
 	{
 	}
 
-    uint_fast16_t midi::get_slot_id(const std::string& slot_name)
+    uint_fast16_t midi_input::get_slot_id(const std::string& slot_name)
 	{
 		if (slot_name == onoff_input_name)
 		{
@@ -96,16 +96,16 @@ namespace live::tritone::vie::processor::component
 		return -1;
 	}
 
-	void midi::set_input_values(uint_fast16_t slot_id, component_output* values[32], uint_fast32_t nb_values)
+	void midi_input::set_input_values(uint_fast16_t slot_id, component_output* values[32], uint_fast32_t nb_values)
 	{
 	}
 
-	uint_fast32_t midi::get_max_nb_input_values(uint_fast16_t slot_id)
+	uint_fast32_t midi_input::get_max_nb_input_values(uint_fast16_t slot_id)
 	{
 		return 0;
 	}
 
-	void midi::preprocess() {
+	void midi_input::preprocess() {
 		nb_values_ = 0;
 		
 		//We need to be sure that event has been consumed and is not swallowed by preprocess.
@@ -118,12 +118,12 @@ namespace live::tritone::vie::processor::component
 		}
 	}
 
-	bool midi::can_process()
+	bool midi_input::can_process()
 	{
 		return true;
 	}
 
-	void midi::process(output_process_data& output_process_data)
+	void midi_input::process(output_process_data& output_process_data)
 	{
 		//If component is on and has not already been processed.
 		if (is_on && nb_values_ == 0) {
@@ -144,7 +144,7 @@ namespace live::tritone::vie::processor::component
 		}
 	}
 
-	component_output** midi::get_outputs_pool(uint_fast16_t slot_id) {
+	component_output** midi_input::get_outputs_pool(uint_fast16_t slot_id) {
 		switch (slot_id)
 		{
 		case frequencies_output_id:
@@ -160,7 +160,7 @@ namespace live::tritone::vie::processor::component
 		}
 	}
 
-	uint_fast32_t midi::get_output_values(const uint_fast16_t slot_id, component_output* output_values[32])
+	uint_fast32_t midi_input::get_output_values(const uint_fast16_t slot_id, component_output* output_values[32])
 	{
 		uint_fast32_t nb_values = -1;
 		switch (slot_id)
@@ -189,15 +189,15 @@ namespace live::tritone::vie::processor::component
 		return nb_values;
 	}
 
-	bool midi::has_finished()
+	bool midi_input::has_finished()
 	{
 		return true;
 	}
 
-	void midi::note_on(note_event& note_on_event)
+	void midi_input::note_on(note_event& note_on_event)
 	{
 #ifdef VIE_DEBUG
-		debugLogger.write("Midi: Note on emitted" + note_on_event.id);
+		debugLogger.write("Midi in: Note on emitted" + note_on_event.id);
 #endif
 		note_on_processed = false;
 		
@@ -208,10 +208,10 @@ namespace live::tritone::vie::processor::component
 		nb_notes_on_values_++;
 	}
 
-	void midi::note_off(note_event& note_off_event)
+	void midi_input::note_off(note_event& note_off_event)
 	{
 #ifdef VIE_DEBUG
-		debugLogger.write("Midi: Note off emitted" + note_off_event.id);
+		debugLogger.write("Midi in: Note off emitted" + note_off_event.id);
 #endif
 		note_off_processed = false;
 		
@@ -225,7 +225,7 @@ namespace live::tritone::vie::processor::component
 		notes_.erase(midi_note_id);
 	}
 
-	void midi::set_parameter(parameter parameter)
+	void midi_input::set_parameter(parameter parameter)
 	{
 		if (parameter.get_title() == L"on") {
 			if (parameter.get_normalized_value() == 0.0f) {

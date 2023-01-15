@@ -142,7 +142,12 @@ namespace live::tritone::vie {
 
 	void vie_processor::process_input_event(event& event) const
 	{
-		orchestrator_.process_event(event);
+		orchestrator_.process_input_event(event);
+	}
+
+	void vie_processor::process_input_audio(audio_bus_buffers* buffer, int32_t buffer_id) const
+	{
+		orchestrator_.process_input_audio(buffer, buffer_id);
 	}
 	
 	bool vie_processor::process_output_data(output_process_data& output_process_data) {

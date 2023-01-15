@@ -40,6 +40,8 @@ namespace live::tritone::vie {
 
 		void process_input_event(event& event) const;
 
+		void process_input_audio(audio_bus_buffers* buffer, int32_t buffer_id) const;
+
 		bool process_output_data(output_process_data& output_process_data);
 
 	private:

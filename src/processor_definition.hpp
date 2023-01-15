@@ -1,6 +1,7 @@
 #pragma once
 
 #include "note_event.hpp"
+#include "data_event.hpp"
 
 namespace live::tritone::vie {
     enum class sample_size {
@@ -25,6 +26,7 @@ namespace live::tritone::vie {
         union core_event {
             note_event note_on;
             note_event note_off;
+            data_event data;
         } core_event;
 
         enum class type {
