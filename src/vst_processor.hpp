@@ -71,17 +71,27 @@ namespace live::tritone::vie {
 		void __stdcall update(Steinberg::FUnknown* changed_unknown,Steinberg::int32 message) override;
 
 	private:
-		static event to_event(const Steinberg::Vst::Event& vst_event);
+		event to_event(Steinberg::Vst::Event& vst_event) const;
 
-		static note_event to_note_event(const Steinberg::Vst::NoteOnEvent& vst_note_on_event);
+		note_event to_note_event(Steinberg::Vst::NoteOnEvent& vst_note_on_event) const;
 
-		static note_event to_note_event(const Steinberg::Vst::NoteOffEvent& vst_note_off_event);
+		note_event to_note_event(Steinberg::Vst::NoteOffEvent& vst_note_off_event) const;
 
-		static audio_bus_buffers to_audio_bus_buffer(const Steinberg::Vst::AudioBusBuffers& vst_audio_bus_buffers, int sample_size);
+		data_event to_data_event(Steinberg::Vst::DataEvent& vst_data_event) const;
+
+		void to_audio_bus_buffer(audio_bus_buffers* source, Steinberg::Vst::AudioBusBuffers& vst_audio_bus_buffers, int sample_size) const;
 
 		void handle_input_parameter_changes(Steinberg::Vst::IParameterChanges* input_parameter_changes);
 
+		/**
+		 * Send events before processing to processor components capable of handling them.
+		*/
 		void process_input_events(Steinberg::Vst::IEventList* events) const;
+
+		/**
+		 * Send data before processing to processor components capable of handling them.
+		*/
+		void process_input_data(audio_bus_buffers* source_buffers, Steinberg::Vst::AudioBusBuffers* buffers, int32_t nb_buffers, int32_t sample_size) const;
 
 		vie_processor vie_processor_;
 

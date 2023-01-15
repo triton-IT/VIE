@@ -8,15 +8,15 @@
 
 namespace live::tritone::vie::processor::component
 {
-	class midi final : public processor_component
+	class midi_input final : public processor_component
 	{
 	public:
 		/**
 		* Initialize class based on given JSON configuration.
 		*/
-		explicit midi(nlohmann::json midi_definition);
+		explicit midi_input(nlohmann::json midi_definition);
 
-		~midi();
+		~midi_input();
 
 		uint16_t get_id() override;
 

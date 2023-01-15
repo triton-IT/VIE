@@ -2,8 +2,8 @@
   "components": [
     {
       "id": 0,
-      "name": "Midi",
-      "type": "midi",
+      "name": "Audio in",
+      "type": "audio in",
       "parameters": [
         {
           "id": 0,
@@ -17,32 +17,11 @@
     },
     {
       "id": 1,
-      "name": "Sample",
-      "type": "sample",
-      "file_path": "C:\\dev\\triton-IT\\VIE\\src\\assets\\samples\\1.wav"
+      "name": "Low-pass",
+      "type": "low-pass"
     },
     {
       "id": 2,
-      "name": "Envelope",
-      "type": "envelope"
-    },
-    {
-      "id": 3,
-      "name": "Multiplier",
-      "type": "multiplier"
-    },
-    {
-      "id": 4,
-      "name": "Mixer 1",
-      "type": "mixer"
-    },
-    {
-      "id": 5,
-      "name": "Gain",
-      "type": "gain"
-    },
-    {
-      "id": 6,
       "name": "output",
       "type": "output"
     }
@@ -55,63 +34,9 @@
       "targetInputSlot": 1
     },
     {
-      "sourceComponent": 0,
-      "sourceOutputSlot": 1,
-      "targetComponent": 2,
-      "targetInputSlot": 2
-    },
-    {
-      "sourceComponent": 0,
-      "sourceOutputSlot": 2,
-      "targetComponent": 2,
-      "targetInputSlot": 3
-    },
-    {
-      "sourceComponent": 0,
-      "sourceOutputSlot": 4,
-      "targetComponent": 2,
-      "targetInputSlot": 1
-    },
-    {
       "sourceComponent": 1,
-      "sourceOutputSlot": 5,
-      "targetComponent": 3,
-      "targetInputSlot": 1
-    },
-    {
-      "sourceComponent": 2,
       "sourceOutputSlot": 4,
-      "targetComponent": 3,
-      "targetInputSlot": 2
-    },
-    {
-      "sourceComponent": 2,
-      "sourceOutputSlot": 5,
-      "targetComponent": 1,
-      "targetInputSlot": 2
-    },
-    {
-      "sourceComponent": 2,
-      "sourceOutputSlot": 8,
-      "targetComponent": 1,
-      "targetInputSlot": 4
-    },
-    {
-      "sourceComponent": 3,
-      "sourceOutputSlot": 3,
-      "targetComponent": 4,
-      "targetInputSlot": 1
-    },
-    {
-      "sourceComponent": 4,
-      "sourceOutputSlot": 1,
-      "targetComponent": 5,
-      "targetInputSlot": 1
-    },
-    {
-      "sourceComponent": 5,
-      "sourceOutputSlot": 4,
-      "targetComponent": 6,
+      "targetComponent": 2,
       "targetInputSlot": 1
     }
   ]

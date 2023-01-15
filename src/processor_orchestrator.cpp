@@ -4,7 +4,6 @@
 
 #include "application.hpp"
 
-#include "components/midi.hpp"
 #include "components/oscillator.hpp"
 #include "components/envelope.hpp"
 #include "components/multiplier.hpp"
@@ -19,8 +18,11 @@ using namespace live::tritone::vie::processor::component;
 namespace live::tritone::vie
 {
 	processor_orchestrator::processor_orchestrator() : nb_components_(0),
-	                                                   processor_components_{}, nb_midi_components_(0),
-	                                                   sources_components_{}, processing_setup_(),
+	                                                   processor_components_{}, nb_midi_input_components_(0),
+													   sources_midi_input_components_{},
+													   nb_audio_input_components_(0),
+													   sources_audio_input_components_{},
+												       processing_setup_(),
 	                                                   relations_{},
 													   bypass_(false)
 	{
@@ -31,8 +33,13 @@ namespace live::tritone::vie
 	{
 		if (processor->get_type() == processor_component_type::event_input)
 		{
-			sources_components_[nb_midi_components_] = static_cast<midi*>(processor);
-			nb_midi_components_++;
+			sources_midi_input_components_[nb_midi_input_components_] = static_cast<midi_input*>(processor);
+			nb_midi_input_components_++;
+		}
+		if (processor->get_type() == processor_component_type::audio_input)
+		{
+			sources_audio_input_components_[nb_audio_input_components_] = static_cast<audio_input*>(processor);
+			nb_audio_input_components_++;
 		}
 
 		processor_components_[nb_components_] = processor;
@@ -87,24 +94,29 @@ namespace live::tritone::vie
 		}
 	}
 
-	void processor_orchestrator::process_event(event& event) const
+	void processor_orchestrator::process_input_event(event& event) const
 	{
-		midi* midi_component = get_midi_component_for_event(event);
+		midi_input* midi_input_component = get_midi_input_component_for_event(event);
 		switch (event.type)
 		{
 		case event::type::note_on:
 			{
 				note_event& note_on_event = event.core_event.note_on;
-				midi_component->note_on(note_on_event);
+				midi_input_component->note_on(note_on_event);
 			}
 			break;
 		case event::type::note_off:
 			{
 				note_event& note_off_event = event.core_event.note_off;
-				midi_component->note_off(note_off_event);
+				midi_input_component->note_off(note_off_event);
 			}
 			break;
 		case event::type::data_event:
+		{
+			note_event& note_off_event = event.core_event.note_off;
+			midi_input_component->note_off(note_off_event);
+		}
+		break;
 		case event::type::poly_pressure_event:
 		case event::type::note_expression_value_event:
 		case event::type::note_expression_text_event:
@@ -113,6 +125,12 @@ namespace live::tritone::vie
 		case event::type::legacy_midi_cc_out_event:
 			break;
 		}
+	}
+	
+	void processor_orchestrator::process_input_audio(audio_bus_buffers* buffer, int32_t buffer_id) const
+	{
+		auto audio_input = get_audio_input_component_for_buffer(buffer_id);
+		audio_input->set_buffer(buffer);
 	}
 
 	void processor_orchestrator::process(output_process_data& output_process_data)
@@ -123,11 +141,17 @@ namespace live::tritone::vie
 				auto* component = processor_components_[i];
 				component->preprocess();
 			}
-			for (int i = 0; i < nb_midi_components_; i++)
+			for (int i = 0; i < nb_midi_input_components_; i++)
 			{
-				auto* source_component = sources_components_[i];
+				auto* midi_input_component = sources_midi_input_components_[i];
 				//TODO: Multi-thread call to this method.
-				process(source_component, output_process_data);
+				process(midi_input_component, output_process_data);
+			}
+			for (int i = 0; i < nb_audio_input_components_; i++)
+			{
+				auto* audio_input_component = sources_audio_input_components_[i];
+				//TODO: Multi-thread call to this method.
+				process(audio_input_component, output_process_data);
 			}
 		}
 	}
@@ -168,14 +192,20 @@ namespace live::tritone::vie
 		}
 	}
 
-	void processor_orchestrator::parameter_changed(const unsigned long parameter_id, long sample_offset, double parameter_value) {
+	void processor_orchestrator::parameter_changed(const unsigned long parameter_id, long sample_offset, double parameter_value)
+	{
 		unsigned int component_id = parameter_id >> 16;
 		unsigned int component_parameter_id = parameter_id & 0xffff;
 		float_component_output input(0, parameter_value);
 	}
 
-	midi* processor_orchestrator::get_midi_component_for_event(const event& event) const
+	midi_input* processor_orchestrator::get_midi_input_component_for_event(const event& event) const
 	{
-		return sources_components_[event.bus_index];
+		return sources_midi_input_components_[event.bus_index];
+	}
+
+	audio_input* processor_orchestrator::get_audio_input_component_for_buffer(int32_t buffer_id) const
+	{
+		return sources_audio_input_components_[buffer_id];
 	}
 } // namespace

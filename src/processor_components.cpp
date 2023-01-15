@@ -1,7 +1,8 @@
 #include "Application.hpp"
 #include "processor_components.hpp"
 
-#include "components/midi.hpp"
+#include "components/midi_input.hpp"
+#include "components/audio_input.hpp"
 #include "components/oscillator.hpp"
 #include "components/envelope.hpp"
 #include "components/low_pass.hpp"
@@ -31,9 +32,13 @@ processor_component* processor_components::create(nlohmann::json processor_defin
 	processor_component* processor = nullptr;
 	
 	const std::string type = processor_definition["type"];
-	if (type == "midi")
+	if (type == "midi in")
 	{
-		processor = new midi(processor_definition);
+		processor = new midi_input(processor_definition);
+	}
+	else if (type == "audio in")
+	{
+		processor = new audio_input(processor_definition);
 	}
 	else if (type == "oscillator")
 	{
@@ -55,19 +60,15 @@ processor_component* processor_components::create(nlohmann::json processor_defin
     {
         processor = new sample(processor_definition);
     }
-    else if (type == "sample")
-    {
-        processor = new sample(processor_definition);
-    }
     else if (type == "output")
     {
         processor = new output(processor_definition);
     }
-	else if (type == "low-pass filter")
+	else if (type == "low-pass")
 	{
 		processor = new low_pass(processor_definition);
 	}
-	else if (type == "high-pass filter")
+	else if (type == "high-pass")
 	{
 		processor = new high_pass(processor_definition);
 	}

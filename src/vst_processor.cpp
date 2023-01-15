@@ -125,8 +125,8 @@ namespace live::tritone::vie
 	}
 
 	Steinberg::int32 __stdcall vst_processor::getBusCount(Steinberg::Vst::MediaType
-	                                                      type,
-	                                                      Steinberg::Vst::BusDirection dir
+		type,
+		Steinberg::Vst::BusDirection dir
 	)
 	{
 		const media_type media_type = (type == Steinberg::Vst::kAudio) ? media_type::audio : media_type::event;
@@ -136,9 +136,9 @@ namespace live::tritone::vie
 	}
 
 	Steinberg::tresult __stdcall vst_processor::getBusInfo(const Steinberg::Vst::MediaType type,
-	                                                       const Steinberg::Vst::BusDirection dir,
-	                                                       const Steinberg::int32 index,
-	                                                       Steinberg::Vst::BusInfo& bus_info /*out*/)
+		const Steinberg::Vst::BusDirection dir,
+		const Steinberg::int32 index,
+		Steinberg::Vst::BusInfo& bus_info /*out*/)
 	{
 		const media_type media_type = (type == Steinberg::Vst::kAudio) ? media_type::audio : media_type::event;
 		const bus_direction direction = (dir == Steinberg::Vst::kInput) ? bus_direction::input : bus_direction::output;
@@ -150,13 +150,13 @@ namespace live::tritone::vie
 			bus_info.busType = (core_bus_info.bus_type == bus_type::main) ? Steinberg::Vst::kMain : Steinberg::Vst::kAux;
 			bus_info.channelCount = core_bus_info.channel_count;
 			bus_info.direction = (core_bus_info.direction == bus_direction::input)
-					            ? Steinberg::Vst::kInput
-					            : Steinberg::Vst::kOutput;
+				? Steinberg::Vst::kInput
+				: Steinberg::Vst::kOutput;
 			bus_info.flags = (core_bus_info.is_default_active ? Steinberg::Vst::BusInfo::kDefaultActive : 0)
 				|| (core_bus_info.is_control_voltage ? Steinberg::Vst::BusInfo::kIsControlVoltage : 0);
 			bus_info.mediaType = (core_bus_info.media_type == media_type::audio)
-					            ? Steinberg::Vst::kAudio
-					            : Steinberg::Vst::kEvent;
+				? Steinberg::Vst::kAudio
+				: Steinberg::Vst::kEvent;
 			wcscpy(bus_info.name, core_bus_info.name);
 
 			return Steinberg::kResultTrue;
@@ -166,16 +166,16 @@ namespace live::tritone::vie
 	}
 
 	Steinberg::tresult __stdcall vst_processor::getRoutingInfo(Steinberg::Vst::RoutingInfo& in_info,
-	                                                           Steinberg::Vst::RoutingInfo& out_info /*out*/)
+		Steinberg::Vst::RoutingInfo& out_info /*out*/)
 	{
 		//TODO: describe how input buses are related to output buses.
 		return Steinberg::kNotImplemented;
 	}
 
 	Steinberg::tresult __stdcall vst_processor::activateBus(const Steinberg::Vst::MediaType type,
-	                                                        const Steinberg::Vst::BusDirection dir,
-	                                                        const Steinberg::int32 index,
-	                                                        const Steinberg::TBool state
+		const Steinberg::Vst::BusDirection dir,
+		const Steinberg::int32 index,
+		const Steinberg::TBool state
 	)
 	{
 		const media_type media_type = (type == Steinberg::Vst::kAudio) ? media_type::audio : media_type::event;
@@ -198,7 +198,7 @@ namespace live::tritone::vie
 
 	Steinberg::tresult __stdcall vst_processor::getState(Steinberg::IBStream* /*state*/)
 	{
-			return Steinberg::kResultOk;
+		return Steinberg::kResultOk;
 	}
 
 	Steinberg::tresult __stdcall vst_processor::setBusArrangements(
@@ -211,8 +211,8 @@ namespace live::tritone::vie
 	}
 
 	Steinberg::tresult __stdcall vst_processor::getBusArrangement(const Steinberg::Vst::BusDirection dir,
-	                                                              const Steinberg::int32 index,
-	                                                              Steinberg::Vst::SpeakerArrangement& arr)
+		const Steinberg::int32 index,
+		Steinberg::Vst::SpeakerArrangement& arr)
 	{
 		const bus_direction direction = (dir == Steinberg::Vst::kInput) ? bus_direction::input : bus_direction::output;
 
@@ -255,8 +255,8 @@ namespace live::tritone::vie
 
 		core_processing_setup.sample_rate = setup.sampleRate;
 		core_processing_setup.sample_size = (setup.symbolicSampleSize == Steinberg::Vst::SymbolicSampleSizes::kSample32)
-			                                    ? sample_size::sample_size32
-			                                    : sample_size::sample_size64;
+			? sample_size::sample_size32
+			: sample_size::sample_size64;
 
 		const bool result = vie_processor_.setup_processing(core_processing_setup);
 
@@ -273,6 +273,8 @@ namespace live::tritone::vie
 	{
 		handle_input_parameter_changes(data.inputParameterChanges);
 		process_input_events(data.inputEvents);
+		audio_bus_buffers* input_buffers = new audio_bus_buffers[data.numInputs];
+		process_input_data(input_buffers, data.inputs, data.numInputs, data.symbolicSampleSize);
 
 		//TODO: handle data.inputs, data.outputParameterChanges and data.outputEvents;
 
@@ -284,10 +286,12 @@ namespace live::tritone::vie
 			output_process_data.num_samples = data.numSamples;
 			for (int i = 0; i < data.numOutputs; i++)
 			{
-				output_process_data.outputs[i] = to_audio_bus_buffer(data.outputs[i], data.symbolicSampleSize);
+				to_audio_bus_buffer(&output_process_data.outputs[i], data.outputs[i], data.symbolicSampleSize);
 			}
 			vie_processor_.process_output_data(output_process_data);
 		}
+
+		delete[] input_buffers;
 
 		return Steinberg::kResultTrue;
 	}
@@ -343,7 +347,7 @@ namespace live::tritone::vie
 	}
 
 	void __stdcall vst_processor::update(FUnknown* changed_unknown,
-	                                     Steinberg::int32 message
+		Steinberg::int32 message
 	)
 	{
 	}
@@ -390,7 +394,16 @@ namespace live::tritone::vie
 		}
 	}
 
-	event vst_processor::to_event(const Steinberg::Vst::Event& vst_event)
+	void vst_processor::process_input_data(audio_bus_buffers* source_buffers, Steinberg::Vst::AudioBusBuffers* buffers, int32_t nb_buffers, int32_t sample_size) const
+	{
+		for (int32_t i = 0; i < nb_buffers; i++)
+		{
+			to_audio_bus_buffer(&source_buffers[i], buffers[i], sample_size);
+			vie_processor_.process_input_audio(&source_buffers[i], i);
+		}
+	}
+
+	event vst_processor::to_event(Steinberg::Vst::Event& vst_event) const
 	{
 		event event{};
 		event.bus_index = vst_event.busIndex;
@@ -401,21 +414,15 @@ namespace live::tritone::vie
 		{
 		case Steinberg::Vst::Event::EventTypes::kNoteOnEvent:
 			event.type = event::type::note_on;
-			break;
-		case Steinberg::Vst::Event::EventTypes::kNoteOffEvent:
-			event.type = event::type::note_off;
-			break;
-		default:
-			break;
-		}
-
-		switch (vst_event.type)
-		{
-		case Steinberg::Vst::Event::EventTypes::kNoteOnEvent:
 			event.core_event.note_on = to_note_event(vst_event.noteOn);
 			break;
 		case Steinberg::Vst::Event::EventTypes::kNoteOffEvent:
+			event.type = event::type::note_off;
 			event.core_event.note_off = to_note_event(vst_event.noteOff);
+			break;
+		case Steinberg::Vst::Event::EventTypes::kDataEvent:
+			event.type = event::type::data_event;
+			event.core_event.data = to_data_event(vst_event.data);
 			break;
 		default:
 			break;
@@ -425,7 +432,7 @@ namespace live::tritone::vie
 		return event;
 	}
 
-	note_event vst_processor::to_note_event(const Steinberg::Vst::NoteOnEvent& vst_note_on_event)
+	note_event vst_processor::to_note_event(Steinberg::Vst::NoteOnEvent& vst_note_on_event) const
 	{
 		return {
 			0,
@@ -436,34 +443,40 @@ namespace live::tritone::vie
 		};
 	}
 
-	note_event vst_processor::to_note_event(const Steinberg::Vst::NoteOffEvent& vst_note_off_event)
+	note_event vst_processor::to_note_event(Steinberg::Vst::NoteOffEvent& vst_note_off_event) const
 	{
 		return {
 			0,
-			vst_note_off_event.channel, vst_note_off_event.pitch,
+			vst_note_off_event.channel, 
+			vst_note_off_event.pitch,
 			vst_note_off_event.tuning,
 			vst_note_off_event.velocity
 		};
 	}
 
-	audio_bus_buffers vst_processor::to_audio_bus_buffer(const Steinberg::Vst::AudioBusBuffers& vst_audio_bus_buffers,
-	                                                     const int sample_size)
+	data_event vst_processor::to_data_event(Steinberg::Vst::DataEvent& vst_data_event) const
 	{
-		audio_bus_buffers audio_bus_buffer;  // NOLINT(cppcoreguidelines-pro-type-member-init) reassigned in all path.
+		return {
+			vst_data_event.size,
+			vst_data_event.type,
+			vst_data_event.bytes
+		};
+	}
 
+	void vst_processor::to_audio_bus_buffer(audio_bus_buffers* source, Steinberg::Vst::AudioBusBuffers& vst_audio_bus_buffers,
+	                                                     int sample_size) const
+	{
 		if (sample_size == Steinberg::Vst::kSample32)
 		{
-			audio_bus_buffer.channels_buffer = reinterpret_cast<void**>(vst_audio_bus_buffers.channelBuffers32);
-			audio_bus_buffer.sample_size = sample_size::sample_size32;
+			source->channels_buffer = reinterpret_cast<void**>(vst_audio_bus_buffers.channelBuffers32);
+			source->sample_size = sample_size::sample_size32;
 		}
 		else
 		{
-			audio_bus_buffer.channels_buffer = reinterpret_cast<void**>(vst_audio_bus_buffers.channelBuffers64);
-			audio_bus_buffer.sample_size = sample_size::sample_size64;
+			source->channels_buffer = reinterpret_cast<void**>(vst_audio_bus_buffers.channelBuffers64);
+			source->sample_size = sample_size::sample_size64;
 		}
-		audio_bus_buffer.num_channels = vst_audio_bus_buffers.numChannels;
-		audio_bus_buffer.silence_flags = vst_audio_bus_buffers.silenceFlags;
-
-		return audio_bus_buffer;
+		source->num_channels = vst_audio_bus_buffers.numChannels;
+		source->silence_flags = vst_audio_bus_buffers.silenceFlags;
 	}
 } // namespace
