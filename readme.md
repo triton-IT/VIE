@@ -1,40 +1,34 @@
+#What is VIE?
+
+VIE stands for Virtual Instrument Engine.
+It means that when other VST are a single virtual instrument, VIE allows you create your own instrument or FX.
+
 # How to use VIE
 
-## Building the application
+VIE is a plugin for any DAW supporting VST or AUV3.
+To use VIE, you just have to download it for your platform/OS and follow the instruction of your DAW to install it.
 
-Create a build folder and get into it.
+Creating an instrument or FX is easy with VIE because of its design.
+VIE interface is based on building blocks. You just have to drag blocks (called components) and link them to have a new instrument or FX ready to play.
 
-> mkdir build
-
-> cd build
-
-Create project structure
-
-Option *-DDEBUG=TRUE* enable the logs.
-
-Option *-DDEPLOY_TO_VST_FOLDER=TRUE* deploys VIE to the standard folder for virtual instruments.
-
-> cmake .. -DDEPLOY_TO_VST_FOLDER=TRUE -DDEBUG=TRUE
-
-Build the project and deploy it if parameter is set.
-
-> cmake --build .
+VIE requires to link at least 2 types of building block, an input one and an output.
+The signal will flow from your DAW to input components, flow through all intermediates ones and finish to flow to the output ones that will send result back to your DAW.
 
 # Understanding VIE
 
-## Input busses
+## Input components
 
-### Event input busses
+### Event input components
 
-Midi processor component is mapped to an event input bus.
-You need to add at list one midi processor component if you need to manage event inputs
-Midi processor component is documented below.
+Midi-in component is mapped to an event input bus of your DAW. It means that if a midi-in component is present in VIE, it will handle the MIDI events of your DAW automatically.
+You need to add at list one midi-in processor component if you need to manage event inputs.
+Midi-in processor component is documented below.
 
-### Audio input busses
+### Audio input components
 
-Sampler processor component is mapped to an audio input bus.
-You need to add at list one audio processor component if you want to manage audio inputs.
-Sampler processor component is documented below.
+Audio-in component is mapped to an audio input bus of your DAW. It means that if a audio-in component is present in VIE, it will handle the AUDIO events of your DAW automatically.
+You need to add at list one audio-in processor component if you want to manage audio inputs.
+Audio-in processor component is documented below.
 
 ## Output busses
 
@@ -44,46 +38,48 @@ No event output bus is available for now.
 
 ### Audio output busses
 
-Speaker processor component is mapped to an audio output bus.
+Audio-out component is mapped to an audio output bus. It means that if a audio-out component is present in VIE, the signals sent to the component will be redirect to your DAW.
 You must have at least one speaker processor component to make VIE output communicates with VST host.
-Speaker processor component is documented below.
+AUdio-out component is documented below.
 
 ## Components
 
 Components goal is to transform input signals to output ones.
-An output signal of an component must be bound to an input signal of another component of the same signal type.
-For instance, the frequency output signal of the midi component is a float[32]. So it can be bound to the envelope 'frenquency' input signal which is also a float[32].
+An output slot of an component must be bound to an input slot of another component.
 
-Standard components are listed below:
+*Standard components are listed below:*
 
-### Midi
-Midi is an input component. It has no input signal but generate output ones.
-Midi component mirrors in the processor the midi events sent by host.
-The event sent to midi is enhanced with a unique id.
-#### on
-This signal is a boolean which is true when component is enabled.
-way: input
-type: boolean
-#### frequency
-This signal is a float[32] which contains the frequency of the midi note.
-way: output
-type: float\[32\]
-#### velocity
-This signal is a float[32] which contains the velocity of the midi note.
-way: output
-type: float\[32\]
-#### note active
-This signal is a uint[32] which contains the state of each midi note.
-way: output
-type: uint32\[32\]
-#### note on
-This signal is a note_event[32] which contains the state of each midi note.
-way: output
-type: note_event\[32\]
-#### note off
-This signal is a note_event[32] which contains the state of each midi note.
-way: output
-type: note_event\[32\]
+### Midi-in
+Midi-in is an input component.
+Midi-in component mirrors the midi events sent by host.
+
+#### Input slots:
+##### on
+Use this slot to enable/disable the component.
+*values:* true means enabled, false means disabled.
+*type:* boolean
+*default:* true
+#### Output slots:
+##### frequency
+This slot contains the frequencies of the midi notes currently played.
+*values:* List of frequencies. One frequency by note currently pressed.
+*type:* array of float.
+*default:* empty
+##### velocity
+This slot contains the velocities of the midi notes currently played.
+*values:* List of velocities. One velocity by note currently pressed.
+*type:* array of float.
+*default:* empty
+##### note on
+This slot contains the identifiers of the midi notes currently played.
+*values:* List of identifiers. One identifier by note currently pressed.
+*type:* No value.
+*default:* empty
+##### note off
+This slot contains the identifiers of the midi notes previously playing but stopped.
+*values:* List of identifiers. One identifier by note that just stop playing.
+*type:* No value.
+*default:* empty
 
 ### Oscillator
 Oscillator is a middle component. It consumes signal bound to is input slots and produces signal to its output ones.
