@@ -143,7 +143,7 @@ namespace live::tritone::vie
 	{
 		event_input,
 		audio_input,
-		output,
+		audio_output,
 		middle
 	};
 

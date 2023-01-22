@@ -8,7 +8,7 @@
 #include "components/envelope.hpp"
 #include "components/multiplier.hpp"
 #include "components/mixer.hpp"
-#include "components/output.hpp"
+#include "components/audio_output.hpp"
 
 using namespace std;
 

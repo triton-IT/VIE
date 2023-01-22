@@ -6,17 +6,17 @@
 
 namespace live::tritone::vie::processor::component
 {
-	class output final : public processor_component
+	class audio_output final : public processor_component
 	{
 	public:
-		explicit output(nlohmann::json output_definition);
-		output(const output&) = default;
-		output(output&&) = default;
+		explicit audio_output(nlohmann::json output_definition);
+		audio_output(const audio_output&) = default;
+		audio_output(audio_output&&) = default;
 
-		~output() override;
+		~audio_output() override;
 
-		output& operator=(const output&) = default;
-		output& operator=(output&&) = default;
+		audio_output& operator=(const audio_output&) = default;
+		audio_output& operator=(audio_output&&) = default;
 
 		uint16_t get_id() override;
 

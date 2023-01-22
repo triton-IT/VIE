@@ -2,6 +2,9 @@
 
 #include <json.hpp>
 
+#include <sndfile.h>
+#include <sndfile.hh>
+
 #include "../processor_component.hpp"
 
 namespace live::tritone::vie::processor::component
@@ -47,6 +50,8 @@ namespace live::tritone::vie::processor::component
 		void set_parameter(parameter parameter) override;
 
 	private:
+		void loadFile(std::string filename);
+		
 		static constexpr const char* onoff_input_name = "on/off input";
 		static constexpr int onoff_input_id = 0;
 
@@ -65,6 +70,9 @@ namespace live::tritone::vie::processor::component
 		static constexpr const char* amplitude_output_name = "Sample amplitude output";
 		static constexpr int amplitude_output_id = 5;
 
+		static const uint_fast8_t max_nb_descriptors_ = 128;
+		static const uint_fast8_t max_nb_outputs_ = 32;
+
 		uint16_t id_;
 		std::string name_;
 		double sample_rate_;
@@ -75,35 +83,17 @@ namespace live::tritone::vie::processor::component
 		* We only want to process the sample once for all "process" calls.
 		*/
 		bool already_processed_;
-		bool has_finished_;
 
 		struct sample_descriptor {
-			uint32_t nb_channels;
-			uint32_t nb_frames;
-			uint32_t rate;
-			int format;
-			float* buffers[8]; //8 channels max for now to handle surround 7.1.
+			bool activated;
+			SndfileHandle* handle;
+			uint_fast16_t nb_frames;
+			float* buffer;
  		};
 
-		std::unordered_map<int, sample_descriptor> samples_descriptors_;
-
-		struct sample_state {
-			bool activated;
-			uint32_t position;
-		};
-
-		//std::unordered_map<int, sample_state&> samples_states_;
-		sample_state samples_states_[128] = {0};
-
-		float_array_component_output* amplitudes_;
-
-		float_array_component_output empty_array_component_;
+		sample_descriptor samples_descriptors_[max_nb_descriptors_];
 
 		uint_fast8_t nb_outputs_;
-		float_array_component_output* outputs_[32];
-
-		uint_fast16_t output_bus_id_;
-
-		void loadFile(std::string filename);
+		float_array_component_output* outputs_[max_nb_outputs_];
 	};
 } // namespace
