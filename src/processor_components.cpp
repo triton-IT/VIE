@@ -10,7 +10,7 @@
 #include "components/gain.hpp"
 #include "components/multiplier.hpp"
 #include "components/mixer.hpp"
-#include "components/output.hpp"
+#include "components/audio_output.hpp"
 #include "components/sample.hpp"
 
 using namespace live::tritone::vie;
@@ -60,9 +60,9 @@ processor_component* processor_components::create(nlohmann::json processor_defin
     {
         processor = new sample(processor_definition);
     }
-    else if (type == "output")
+    else if (type == "audio out")
     {
-        processor = new output(processor_definition);
+		processor = new audio_output(processor_definition);
     }
 	else if (type == "low-pass")
 	{

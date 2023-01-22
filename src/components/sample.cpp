@@ -2,9 +2,6 @@
 
 #include "../application.hpp"
 
-#include <sndfile.h>
-#include <sndfile.hh>
-
 namespace live::tritone::vie::processor::component
 {
 	sample::sample(nlohmann::json sample_definition) :
@@ -15,8 +12,8 @@ namespace live::tritone::vie::processor::component
 		std::string file_path = sample_definition["file_path"];
 
 		loadFile(file_path);
-		
-		for (int i = 0; i < 32; i++)
+
+		for (int i = 0; i < max_nb_outputs_; i++)
 		{
 			outputs_[i] = new float_array_component_output();
 		}
@@ -24,42 +21,39 @@ namespace live::tritone::vie::processor::component
 
 	sample::~sample()
 	{
-
-		for (int i = 0; i < 32; i++)
+		for (int i = 0; i < max_nb_outputs_; i++)
 		{
+			if (outputs_[i]->values.values != nullptr)
+			{
+				delete[] outputs_[i]->values.values;
+			}
 			delete outputs_[i];
+		}
+		
+		for (int i = 0; i < max_nb_descriptors_; i++)
+		{
+			if (samples_descriptors_[i].handle != nullptr)
+			{
+				if (samples_descriptors_[i].buffer != nullptr)
+				{
+					delete[] samples_descriptors_[i].buffer;
+				}
+				delete samples_descriptors_[i].handle;
+			}
 		}
 	}
 
     void sample::loadFile(std::string filename)
     {
-		SndfileHandle sndfileHandle = SndfileHandle(filename);
-
-        // Create the sample descriptor
-        sample_descriptor sample_descriptor;
-        sample_descriptor.nb_channels = sndfileHandle.channels();
-        sample_descriptor.nb_frames = sndfileHandle.frames();
-		sample_descriptor.rate = sndfileHandle.samplerate();
-		sample_descriptor.format = sndfileHandle.format();
-
-		for (int i = 0; i < sndfileHandle.channels() && i < 8; i++) {
-			sample_descriptor.buffers[i] = new float[sample_descriptor.nb_frames];
+		//TODO: Only one file for all notes for now. Implement one file for each.
+		for (sample_descriptor& descriptor : samples_descriptors_)
+		{
+			SndfileHandle* sndFileHandle = new SndfileHandle(filename);
+			descriptor.activated = false;
+			descriptor.handle = sndFileHandle;
+			descriptor.nb_frames = 0;
+			descriptor.buffer = nullptr;
 		}
-
-		//TODO: Optimize: Do not read a first the full buffer to copy it after in each channel
-		uint_fast32_t full_buffer_size = sample_descriptor.nb_frames * sample_descriptor.nb_channels;
-		float* full_buffer = new float[full_buffer_size];
-		sndfileHandle.read(full_buffer, full_buffer_size);
-
-		for (int i = 0; i < full_buffer_size; i++) {
-			int channel = i % sample_descriptor.nb_channels;
-			int frame = i / sample_descriptor.nb_channels;
-			sample_descriptor.buffers[channel][frame] = full_buffer[i];
-		}
-
-		delete[] full_buffer;
-		
-		samples_descriptors_[0] = sample_descriptor;
     }
 
 	uint16_t sample::get_id()
@@ -94,37 +88,60 @@ namespace live::tritone::vie::processor::component
 
 	void sample::process(output_process_data& output_process_data)
 	{
-		//can_process_ = false;
+		can_process_ = false;
 		if (!already_processed_) {
 			nb_outputs_ = 0;
 			int_fast16_t note_id = 0;
-			for (sample_state& sample_state : samples_states_)
+			for (sample_descriptor& sample_descriptor : samples_descriptors_)
 			{
-				if (sample_state.activated) {
-					float_array_component_output* output = outputs_[nb_outputs_];
-
-					//If nb of samples is greater than the ones currently allocated, reallocate.
-					if (output_process_data.num_samples > output->values.nb_values)
-					{
-						if (output->values.nb_values > 0)
-						{
-							delete output->values.values;
+				if (sample_descriptor.activated) {
+					int nb_channels = sample_descriptor.handle->channels();
+					uint_fast32_t buffer_size = output_process_data.num_samples * nb_channels;
+					
+					//Augment buffer if not large enough.
+					if (output_process_data.num_samples > sample_descriptor.nb_frames) {
+						if (sample_descriptor.buffer != nullptr) {
+							delete[] sample_descriptor.buffer;
 						}
-						output->values.values = new float[output_process_data.num_samples];
-						output->values.nb_values = output_process_data.num_samples;
-					}
+						sample_descriptor.buffer = new float[buffer_size];
+						sample_descriptor.nb_frames = output_process_data.num_samples;
+					}					
 
-					output->note_id = note_id;
+					sample_descriptor.handle->read(sample_descriptor.buffer, buffer_size);
 
-					for (uint_fast32_t frame = 0; frame < output_process_data.num_samples; frame++)
+					for (int output_id = 0; output_id < nb_channels; output_id++)
 					{
-						//TODO: Copy whole buffer at once instead of iterating.
-						output->values.values[frame] = samples_descriptors_[0].buffers[0][sample_state.position];
-						sample_state.position++;
-					}
+						assert(nb_outputs_ < max_nb_outputs_);
+						
+						float_array_component_output* output = outputs_[nb_outputs_];
 
-					nb_outputs_++;
+						//If nb of samples is greater than the ones currently allocated, reallocate.
+						if (output_process_data.num_samples > output->values.nb_values)
+						{
+							if (output->values.values != nullptr)
+							{
+								delete[] output->values.values;
+							}
+
+							output->values.nb_values = output_process_data.num_samples;
+							output->values.values = new float[output_process_data.num_samples];
+						}
+
+						output->note_id = note_id;
+
+						//TODO: Copy whole buffer at once instead of iterating.
+						//TODO: Handle multiple channels/outputs.
+						for (uint_fast32_t i = 0; i < output_process_data.num_samples; i++)
+						{
+							output->values.values[i] = sample_descriptor.buffer[(i + output_id) * nb_channels];
+						}
+
+						nb_outputs_++;
+					}
 				}
+				
+				//Note_id is represented by the position in array.
+				//So increment it at each loop.
 				note_id++;
 			}
 
@@ -133,10 +150,10 @@ namespace live::tritone::vie::processor::component
 	}
 
 	component_output** sample::get_outputs_pool(uint_fast16_t slot_id) {
-		return (component_output**) outputs_;
+		return (component_output**)outputs_;
 	}
 
-	uint_fast32_t sample::get_output_values(const uint_fast16_t slot_id, component_output* output_values[32])
+	uint_fast32_t sample::get_output_values(const uint_fast16_t slot_id, component_output* output_values[max_nb_outputs_])
 	{
 		switch (slot_id) {
 		case amplitude_output_id:
@@ -182,12 +199,11 @@ namespace live::tritone::vie::processor::component
 		return -1;
 	}
 
-	void sample::set_input_values(const uint_fast16_t slot_id, component_output* values[32], const uint_fast32_t nb_values)
+	void sample::set_input_values(const uint_fast16_t slot_id, component_output* values[max_nb_outputs_], const uint_fast32_t nb_values)
 	{
 		//Process if we have an output
 		if (nb_values > 0) {
-			//32 is the maximum number of inputs authorized by design.
-			assert(nb_values <= 32);
+			assert(nb_values <= max_nb_outputs_);
 			//Check which input slot is requested
 			switch (slot_id) {
 			case play_input_id:
@@ -198,31 +214,16 @@ namespace live::tritone::vie::processor::component
 					//We don't care about its value, we just need to know if it is set or not.
 					const auto& component_output = values[i];
 
-					uint32_t input_id = component_output->note_id;
-
-					//Do not reinit position but deactivate all sample by default.
-					/*for each (auto & sample_state_item in samples_states_)
-					{
-						sample_state_item.second.activated = false;
-					}*/
+					uint32_t note_id = component_output->note_id;
 
 					//And unmute the ones which are requested.
-					sample_state& sample_state = samples_states_[input_id];
-					if (!sample_state.activated)
+					sample_descriptor& descriptor = samples_descriptors_[note_id];
+					if (!descriptor.activated)
 					{
 						//If sample is a new one, activate it.
-						sample_state.activated = true;
-						sample_state.position = 0;
+						descriptor.activated = true;
+						descriptor.handle->seek(0, SEEK_SET);
 					}
-
-					//Reinit position of all samples that are not used.
-					/*for (auto& sample_state : samples_states_)
-					{
-						if (sample_state.activated == false)
-						{
-							sample_state.position = 0;
-						}
-					}*/
 				}
 				break;
 			case stop_input_id:
@@ -231,19 +232,14 @@ namespace live::tritone::vie::processor::component
 				{
 					//Get current value which is output value of previous component.
 					//We don't care about its value, we just need to know if it is set or not.
-					//FIXME: Casting can never work. We need to be sure of input type required.
 					const auto& component_output = values[i];
 
-					uint32_t input_id = component_output->note_id;
+					uint32_t note_id = component_output->note_id;
 
 					//And mute the ones which are requested.
-					sample_state& sample_state = samples_states_[input_id];
-					if (sample_state.activated)
-					{
-						//If sample is a new one, activate it.
-						sample_state.activated = false;
-						sample_state.position = 0;
-					}
+					sample_descriptor& descriptor = samples_descriptors_[note_id];
+					descriptor.activated = false;
+					descriptor.handle->seek(0, SEEK_SET);
 				}
 				break;
 			case play_at_input_id:
@@ -251,9 +247,13 @@ namespace live::tritone::vie::processor::component
 				for (uint_fast16_t i = 0; i < nb_values; i++)
 				{
 					const auto& component_output = values[i];
-					uint32_t input_id = component_output->note_id;
-					sample_state& sample_state = samples_states_[input_id];
-					sample_state.position = component_output->to_float();
+					
+					uint32_t note_id = component_output->note_id;
+					
+					sample_descriptor& descriptor = samples_descriptors_[note_id];
+					descriptor.activated = true;
+					float position = component_output->to_float();
+					descriptor.handle->seek(position, SEEK_SET);
 					
 				}
 				break;
@@ -267,11 +267,11 @@ namespace live::tritone::vie::processor::component
 	{
 		if (slot_id == play_input_id)
 		{
-			return 32;
+			return max_nb_outputs_;
 		}
 		if (slot_id == stop_input_id)
 		{
-			return 32;
+			return max_nb_outputs_;
 		}
 		if (slot_id == name_input_id)
 		{
@@ -282,12 +282,5 @@ namespace live::tritone::vie::processor::component
 	}
 
     void sample::set_parameter(parameter parameter) {
-        /*if (parameter.get_title() == "sample_name") {
-            name_ = parameter.get_title();
-        }*/
     }
-
-	/*void sample::set_sample_type(sample_type sample_type) {
-		sample_type_ = sample_type;
-	}*/
 } // namespace

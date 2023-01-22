@@ -1,47 +1,47 @@
-#include "output.hpp"
+#include "audio_output.hpp"
 
 #include "../application.hpp"
 
 namespace live::tritone::vie::processor::component
 {
-	output::output(nlohmann::json output_definition) : processor_component(),
-		id_(output_definition["id"]),
-		name_(output_definition["name"]),
+	audio_output::audio_output(nlohmann::json audio_output_definition) : processor_component(),
+		id_(audio_output_definition["id"]),
+		name_(audio_output_definition["name"]),
 		can_process_(false),
 		output_bus_id_(0)
 	{
 	}
 
-	output::~output() = default;
+	audio_output::~audio_output() = default;
 
-	uint16_t output::get_id()
+	uint16_t audio_output::get_id()
 	{
 		return id_;
 	}
 
-	std::string output::get_name()
+	std::string audio_output::get_name()
 	{
 		return name_;
 	}
 
-	processor_component_type output::get_type()
+	processor_component_type audio_output::get_type()
 	{
-		return processor_component_type::output;
+		return processor_component_type::audio_output;
 	}
 
-	void output::set_sample_rate(double sample_rate)
+	void audio_output::set_sample_rate(double sample_rate)
 	{
 	}
 
-	void output::preprocess() {
+	void audio_output::preprocess() {
 	}
 
-	bool output::can_process()
+	bool audio_output::can_process()
 	{
 		return can_process_;
 	}
 
-	void output::process(output_process_data& output_process_data)
+	void audio_output::process(output_process_data& output_process_data)
 	{
 		can_process_ = false;
 
@@ -63,21 +63,21 @@ namespace live::tritone::vie::processor::component
 		}
 	}
 
-	component_output** output::get_outputs_pool(uint_fast16_t slot_id) {
+	component_output** audio_output::get_outputs_pool(uint_fast16_t slot_id) {
 		return nullptr;
 	}
 
-	uint_fast32_t output::get_output_values(uint_fast16_t slot_id, component_output* output_values[32])
+	uint_fast32_t audio_output::get_output_values(uint_fast16_t slot_id, component_output* output_values[32])
 	{
 		return 0;
 	}
 
-	bool output::has_finished()
+	bool audio_output::has_finished()
 	{
 		return true;
 	}
 
-	uint_fast16_t output::get_slot_id(const std::string& slot_name)
+	uint_fast16_t audio_output::get_slot_id(const std::string& slot_name)
 	{
 		if (slot_name == onoff_input_name)
 		{
@@ -92,10 +92,10 @@ namespace live::tritone::vie::processor::component
 	}
 
 	/**
-	* An output accepts only one channel.
+	* An audio_output accepts only one channel.
 	* The first channel is picked, the other ones are ignored.
 	*/
-	void output::set_input_values(const uint_fast16_t slot_id, component_output* values[32], const uint_fast32_t nb_values)
+	void audio_output::set_input_values(const uint_fast16_t slot_id, component_output* values[32], const uint_fast32_t nb_values)
 	{
 		can_process_ = true;
 
@@ -114,7 +114,7 @@ namespace live::tritone::vie::processor::component
 		}
 	}
 
-	uint_fast32_t output::get_max_nb_input_values(const uint_fast16_t slot_id)
+	uint_fast32_t audio_output::get_max_nb_input_values(const uint_fast16_t slot_id)
 	{
 		if (slot_id == amplitudes_input_id)
 		{
@@ -125,12 +125,12 @@ namespace live::tritone::vie::processor::component
 		return -1;
 	}
 
-	void output::set_parameter(parameter parameter)
+	void audio_output::set_parameter(parameter parameter)
 	{
 
 	}
 
-	void output::set_output_bus_id(const uint_fast16_t bus_id)
+	void audio_output::set_output_bus_id(const uint_fast16_t bus_id)
 	{
 		output_bus_id_ = bus_id;
 	}

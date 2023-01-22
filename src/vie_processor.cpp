@@ -1,7 +1,7 @@
 #include "vie_processor.hpp"
 
 #include "application.hpp"
-#include "components/output.hpp"
+#include "components/audio_output.hpp"
 
 #include <cstdint>
 
@@ -172,11 +172,11 @@ namespace live::tritone::vie {
 				audio_input_buses_.push_back(audio_input_bus);
 				break;
 			}
-			case processor_component_type::output: {
+			case processor_component_type::audio_output: {
 				//TODO: Create another bus type if this one do not need a component as parameter.
 				auto audio_output_bus = new bus(std::wstring(L"Audio output"), bus_type::main, processor);
 				audio_output_buses_.push_back(audio_output_bus);
-				dynamic_cast<output*>(processor)->set_output_bus_id(static_cast<uint_fast16_t>(audio_output_buses_.size()) - 1);
+				dynamic_cast<audio_output*>(processor)->set_output_bus_id(static_cast<uint_fast16_t>(audio_output_buses_.size()) - 1);
 				break;
 			}
 			case processor_component_type::middle:

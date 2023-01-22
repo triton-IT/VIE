@@ -34,7 +34,7 @@ set(HEADER_FILES
         "components/multiplier.hpp"
         "components/noise.hpp"
         "components/oscillator.hpp"
-        "components/output.hpp"
+        "components/audio_output.hpp"
 		"components/sample.hpp"
         )
 source_group("Header Files" FILES ${HEADER_FILES})
@@ -77,7 +77,7 @@ set(SOURCE_FILES
         "components/multiplier.cpp"
         "components/noise.cpp"
         "components/oscillator.cpp"
-        "components/output.cpp"
+        "components/audio_output.cpp"
 		"components/sample.cpp"
         )
 source_group("Source Files" FILES ${SOURCE_FILES})

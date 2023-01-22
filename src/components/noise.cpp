@@ -30,7 +30,7 @@ namespace live::tritone::vie::processor::component
 		{
 			if (const float_array_component_output* output = outputs_[nb_outputs_]; output->values.nb_values > 0)
 			{
-				delete output->values.values;
+				delete[] output->values.values;
 			}
 		}
 		
@@ -82,7 +82,7 @@ namespace live::tritone::vie::processor::component
 			{
 				if (output->values.nb_values > 0)
 				{
-					delete output->values.values;
+					delete[] output->values.values;
 				}
 				output->values.values = new float[output_process_data.num_samples];
 				output->values.nb_values = output_process_data.num_samples;
