@@ -12,9 +12,6 @@
 
 #include "pluginterfaces/base/ipluginbase.h"
 
-using namespace cycfi;
-using namespace q;
-using namespace q::literals;
 using namespace std;
 using json = nlohmann::basic_json<std::map, std::vector, std::wstring>;
 

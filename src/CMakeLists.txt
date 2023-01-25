@@ -36,6 +36,7 @@ set(HEADER_FILES
         "components/oscillator.hpp"
         "components/audio_output.hpp"
 		"components/sample.hpp"
+		"components/recorder.hpp"
         )
 source_group("Header Files" FILES ${HEADER_FILES})
 
@@ -79,6 +80,7 @@ set(SOURCE_FILES
         "components/oscillator.cpp"
         "components/audio_output.cpp"
 		"components/sample.cpp"
+		"components/recorder.cpp"
         )
 source_group("Source Files" FILES ${SOURCE_FILES})
 

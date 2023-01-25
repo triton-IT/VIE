@@ -12,6 +12,7 @@
 #include "components/mixer.hpp"
 #include "components/audio_output.hpp"
 #include "components/sample.hpp"
+#include "components/recorder.hpp"
 
 using namespace live::tritone::vie;
 using namespace live::tritone::vie::processor::component;
@@ -75,6 +76,10 @@ processor_component* processor_components::create(nlohmann::json processor_defin
 	else if (type == "gain")
 	{
 		processor = new gain(processor_definition);
+	}
+	else if (type == "recorder")
+	{
+		processor = new recorder(processor_definition);
 	}
 
 	processor->initialize(processor_definition);

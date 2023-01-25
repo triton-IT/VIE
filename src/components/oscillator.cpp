@@ -20,13 +20,19 @@ namespace live::tritone::vie::processor::component
 	{
 		auto& parameters_definition = oscillator_definition["parameters"];
 
-		type_ = parameters_definition["type"];
-		if (type_ == "saw")
-		{
-			signal_type_ = signal_type::saw;
-		} else {
-            signal_type_ = signal_type::sin;
-        }
+		if (parameters_definition != nullptr) {
+			type_ = parameters_definition["type"];
+			if (type_ == "saw")
+			{
+				signal_type_ = signal_type::saw;
+			}
+			else {
+				signal_type_ = signal_type::sin;
+			}
+		}
+		else {
+			signal_type_ = signal_type::sin;
+		}
 		
 		for (int i = 0; i < 32; i++) {
 			outputs_[i] = new float_array_component_output();

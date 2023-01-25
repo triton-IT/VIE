@@ -7,9 +7,8 @@
     },
     {
       "id": 1,
-      "name": "Sample",
-      "type": "sample",
-      "file_path": "C:\\dev\\triton-IT\\VIE\\src\\assets\\samples\\1.wav"
+      "name": "Oscillator",
+      "type": "oscillator"
     },
     {
       "id": 2,
@@ -18,6 +17,12 @@
     },
     {
       "id": 3,
+      "name": "Recorder",
+      "type": "recorder",
+      "file_path": "C:\\dev\\triton-IT\\VIE\\src\\assets\\samples\\recorded.wav"
+    },
+    {
+      "id": 4,
       "name": "Audio out",
       "type": "audio out"
     }
@@ -25,19 +30,13 @@
   "relations": [
     {
       "sourceComponent": 0,
-      "sourceOutputSlot": 1,
+      "sourceOutputSlot": 3,
       "targetComponent": 1,
       "targetInputSlot": 1
     },
     {
-      "sourceComponent": 0,
-      "sourceOutputSlot": 2,
-      "targetComponent": 1,
-      "targetInputSlot": 2
-    },
-    {
       "sourceComponent": 1,
-      "sourceOutputSlot": 5,
+      "sourceOutputSlot": 3,
       "targetComponent": 2,
       "targetInputSlot": 1
     },
@@ -45,6 +44,12 @@
       "sourceComponent": 2,
       "sourceOutputSlot": 2,
       "targetComponent": 3,
+      "targetInputSlot": 1
+    },
+    {
+      "sourceComponent": 3,
+      "sourceOutputSlot": 2,
+      "targetComponent": 4,
       "targetInputSlot": 1
     }
   ]

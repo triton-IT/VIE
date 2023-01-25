@@ -130,7 +130,6 @@ namespace live::tritone::vie::processor::component
 						output->note_id = note_id;
 
 						//TODO: Copy whole buffer at once instead of iterating.
-						//TODO: Handle multiple channels/outputs.
 						for (uint_fast32_t i = 0; i < output_process_data.num_samples; i++)
 						{
 							output->values.values[i] = sample_descriptor.buffer[(i + output_id) * nb_channels];

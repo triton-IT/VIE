@@ -97,7 +97,7 @@ namespace live::tritone::vie::processor::component
 
 	uint_fast32_t mixer::get_output_values(const uint_fast16_t slot_id, component_output* output_values[32])
 	{
-		output_values = (component_output**) average_;
+		output_values = (component_output**) &average_;
 
 		return (nb_inputs_ > 0) ? 1 : 0;
 	}
