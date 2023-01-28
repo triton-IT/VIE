@@ -35,17 +35,15 @@ namespace live::tritone::vie::processor::component
 
 		bool can_process() override;
 
-		component_output** get_outputs_pool(uint_fast16_t slot_id) override;
-
 		void process(output_process_data& output_process_data) override;
 
-		uint_fast32_t get_output_values(uint_fast16_t slot_id, component_output* output_values[32]) override;
+		uint_fast8_t get_output_values(uint_fast16_t slot_id, std::array<component_output*, 32>& values) override;
 
 		bool has_finished() override;
 
 		uint_fast16_t get_slot_id(const std::string& slot_name) override;
 
-		void set_input_values(uint_fast16_t slot_id, component_output* values[32], uint_fast32_t nb_values) override;
+		void set_input_values(uint_fast16_t slot_id, std::array<component_output*, 32>& values, uint_fast8_t nb_values) override;
 
 		uint_fast32_t get_max_nb_input_values(uint_fast16_t slot_id) override;
 
@@ -94,31 +92,31 @@ namespace live::tritone::vie::processor::component
 		double sample_rate_;
 
 		uint_fast16_t nb_velocities_inputs_;
-		float_component_output* velocities_[32];
+		std::array<float_component_output*, 32> velocities_;
 
 		bool velocities_filled_;
 		bool notes_on_filled_;
 		bool notes_off_filled_;
 
 		uint_fast16_t nb_notes_off_ = 0;
-		novalue_component_output* notes_off_[32];
+		std::array<novalue_component_output*, 32> notes_off_;
 
 		uint_fast8_t nb_outputs_;
-		float_array_component_output* outputs_[32];
+		std::array<float_array_component_output*, 32> outputs_;
 
 		uint_fast16_t nb_sustains_starts_ = 0;
 		/**
 		* Send an event when marker of sustain start is reached.
 		* Value is the offset of the sustain start marker.
 		*/
-		float_component_output* sustains_starts_[32];
+		std::array<float_component_output*, 32> sustains_starts_;
 
 		uint_fast16_t nb_sustains_ends_ = 0;
 		/**
 		* Send an event when marker of sustain end is reached.
 		* Value is the offset of the sustain end marker.
 		*/
-		float_component_output* sustains_ends_[32];
+		std::array<float_component_output*, 32> sustains_ends_;
 
 		uint_fast8_t nb_sustains_loops_ = 0;
 		/**
@@ -126,6 +124,6 @@ namespace live::tritone::vie::processor::component
 		* Value is the offset of the sustain start marker.
 		* This event can be used to move a sample to a start marker when a sustain end marker is reached.
 		*/
-		float_component_output* sustains_loops_[32];
+		std::array<float_component_output*, 32> sustains_loops_;
 	};
 } // namespace

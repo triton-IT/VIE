@@ -201,22 +201,13 @@ namespace live::tritone::vie
 		* Run this processor.
 		*/
 		virtual void process(output_process_data& output_process_data) = 0;
-
-		/**
-		* Get a pool of output values for the given slot.
-		* The pool must be allocated with the right structure for the slot.
-		* The pool do not need to be reallocated on each request. The less allocation, the better.
-		* This pool will be used to populate output values.
-		* The pool must be allocated with enough objects to contain output values.
-		*/
-		virtual component_output** get_outputs_pool(uint_fast16_t slot_id) = 0;
 		
 		/**
 		* Get result of processing for specific slot.
 		* For a given slot, multiple notes can be played (one value by note).
 		* The output type of the requested slot is unknown by this interface.
 		*/
-		virtual uint_fast32_t get_output_values(uint_fast16_t slot_id, component_output* values[32]) = 0;
+		virtual uint_fast8_t get_output_values(uint_fast16_t slot_id, std::array<component_output*, 32>&) = 0;
 
 		/**
 		 * Has this processor finished the processing ?
@@ -234,7 +225,7 @@ namespace live::tritone::vie
 		* For a given slot, multiple notes can be played (one value by note).
 		* The input type of the requested slot is unknown by this interface.
 		*/
-		virtual void set_input_values(uint_fast16_t slot_id, component_output* values[32], uint_fast32_t nb_values) = 0;
+		virtual void set_input_values(uint_fast16_t slot_id, std::array<component_output*, 32>& values, uint_fast8_t nb_values) = 0;
 
 		/**
 		* Get the maximum number of values accepted for the given input identifier.

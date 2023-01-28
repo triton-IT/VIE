@@ -1,5 +1,7 @@
 set(PROJECT_NAME VIE)
 
+project(${PROJECT_NAME})
+
 set(JSON_DIRECTORY
         "../third_party/nlohman_json"
         )

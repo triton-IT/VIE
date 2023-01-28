@@ -21,9 +21,9 @@ namespace live::tritone::vie::processor::component
 		outputs_()
 	{
 		for (int i = 0; i < 32; i++) {
-			outputs_[i] = new float_array_component_output();
 			velocities_[i] = new float_component_output();
 			notes_off_[i] = new novalue_component_output();
+			outputs_[i] = new float_array_component_output();
 			sustains_starts_[i] = new float_component_output();
 			sustains_ends_[i] = new float_component_output();
 			sustains_loops_[i] = new float_component_output();
@@ -32,16 +32,17 @@ namespace live::tritone::vie::processor::component
 
 	envelope::~envelope()
 	{
+		for (int i = 0; i < 32; i++) {
+			delete velocities_[i];
+			delete notes_off_[i];
+			delete outputs_[i];
+			delete sustains_starts_[i];
+			delete sustains_ends_[i];
+			delete sustains_loops_[i];
+		}
 		for (const auto& [note_id, envelope] : envelopes_)
 		{
 			delete envelope.envelope;
-		}
-
-		for (int i = 0; i < 32; i++) {
-			delete velocities_[i];
-		}
-		for (int i = 0; i < 32; i++) {
-			delete outputs_[i];
 		}
 	}
 
@@ -104,25 +105,25 @@ namespace live::tritone::vie::processor::component
 					envelope_info.is_processed = true;
 				}
 
-				float_array_component_output& output = *(outputs_[velocity_index]);
+				float_array_component_output* output = outputs_[velocity_index];
 
 				//If nb of samples is greater than the ones currently allocated, reallocate.
 				//It means either that this is the first time we pass here or host changed the number of frames to process.
-				if (output_process_data.num_samples > output.values.nb_values)
+				if (output_process_data.num_samples > output->values.nb_values)
 				{
-					if (output.values.nb_values > 0)
+					if (output->values.nb_values > 0)
 					{
-						delete output.values.values;
+						delete output->values.values;
 					}
-					output.values.values = new float[output_process_data.num_samples];
-					output.values.nb_values = output_process_data.num_samples;
+					output->values.values = new float[output_process_data.num_samples];
+					output->values.nb_values = output_process_data.num_samples;
 				}
 
-				output.note_id = velocity_output_id;
+				output->note_id = velocity_output_id;
 
 				for (uint_fast32_t frame = 0; frame < output_process_data.num_samples; frame++)
 				{
-					output.values.values[frame] = q_envelope->operator()();
+					output->values.values[frame] = q_envelope->operator()();
 				}
 
 				//If sustain rate is reached, then loop position to start of sustain and order to process an event.
@@ -161,32 +162,27 @@ namespace live::tritone::vie::processor::component
 		}
 	}
 
-	component_output** envelope::get_outputs_pool(uint_fast16_t slot_id) {
-		return (component_output**) outputs_;
-	}
-
-	uint_fast32_t envelope::get_output_values(const uint_fast16_t slot_id, component_output* output_values[32])
+	uint_fast8_t envelope::get_output_values(const uint_fast16_t slot_id, std::array<component_output*, 32>& values)
 	{
 		switch (slot_id) {
 		case notes_off_output_id:
-			output_values = (component_output**)notes_off_;
+			values = reinterpret_cast<std::array<component_output*, 32>&>(notes_off_);
 			return nb_notes_off_;
 		case amplitudes_output_id:
-			output_values = (component_output**)outputs_;
+			values = reinterpret_cast<std::array<component_output*, 32>&>(outputs_);
 			return nb_outputs_;
 		case sustains_starts_output_id:
-			//output_values = (component_output**)outputs_;
-			//return nb_outputs_;
+			//TODO: Implement
+			return nb_sustains_starts_;
 		case sustains_ends_output_id:
-			output_values = (component_output**)sustains_ends_;
+			values = reinterpret_cast<std::array<component_output*, 32>&>(sustains_ends_);
 			return nb_sustains_ends_;
 		case sustains_loops_output_id:
-			output_values = (component_output**)sustains_loops_;
+			values = reinterpret_cast<std::array<component_output*, 32>&>(sustains_loops_);
 			return nb_sustains_loops_;
-			break;
 		}
 
-		return 0;
+		throw std::invalid_argument("Invalid slot id");
 	}
 
 	bool envelope::has_finished()
@@ -229,10 +225,10 @@ namespace live::tritone::vie::processor::component
 			return sustains_loops_output_id;
 		}
 
-		return -1;
+		throw std::invalid_argument("Invalid slot name");
 	}
 
-	void envelope::set_input_values(const uint_fast16_t slot_id, component_output* values[32], const uint_fast32_t nb_values)
+	void envelope::set_input_values(const uint_fast16_t slot_id, std::array<component_output*, 32>& values, uint_fast8_t nb_values)
 	{
 		switch (slot_id)
 		{
@@ -264,50 +260,46 @@ namespace live::tritone::vie::processor::component
 				}
 			}
 			notes_on_filled_ = true;
-			break;
+			return;
 		case notes_off_input_id:
 			assert(nb_values <= 32);
-			if (nb_values > 0) {
-				for (uint_fast32_t note_index = 0; note_index < nb_values; note_index++)
-				{
-					const component_output* note_event_component = values[note_index];
-					uint32_t note_id = note_event_component->note_id;
-					q::envelope* q_envelope = envelopes_[note_id].envelope;
-					q_envelope->release();
-				}
+			for (uint_fast32_t note_index = 0; note_index < nb_values; note_index++)
+			{
+				const component_output* note_event_component = values[note_index];
+				uint32_t note_id = note_event_component->note_id;
+				q::envelope* q_envelope = envelopes_[note_id].envelope;
+				q_envelope->release();
 			}
 			notes_off_filled_ = true;
-			break;
+			return;
 		case velocities_input_id:
 			assert(nb_values <= 32);
 			// If nb of velocity is positive, set it. Otherwise, let it as-is, it will serve until note off.
-			if (nb_values > 0) {
-				nb_velocities_inputs_ = nb_values;
-				for (int i = 0; i < 32; i++) {
-					velocities_[i]->note_id = values[i]->note_id;
-					velocities_[i]->value = values[i]->to_float();
-				}
+			nb_velocities_inputs_ = nb_values;
+			for (int note_index = 0; note_index < 32; note_index++) {
+				velocities_[note_index]->note_id = values[note_index]->note_id;
+				velocities_[note_index]->value = values[note_index]->to_float();
 			}
 			velocities_filled_ = true;
-			break;
+			return;
 		default:
 			break;
 		}
+
+		throw std::invalid_argument("Invalid slot name");
 	}
 
 	uint_fast32_t envelope::get_max_nb_input_values(const uint_fast16_t slot_id)
 	{
-		if (slot_id == notes_on_input_id)
+		switch(slot_id)
 		{
+		case notes_on_input_id:
+			return 32;
+		case notes_off_input_id:
 			return 32;
 		}
 
-		if (slot_id == notes_off_input_id)
-		{
-			return 32;
-		}
-
-		return -1;
+		throw std::invalid_argument("Invalid slot id");
 	}
 
 	void envelope::set_parameter(parameter parameter)

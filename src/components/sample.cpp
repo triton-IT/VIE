@@ -11,25 +11,15 @@ namespace live::tritone::vie::processor::component
 	{
 		std::string file_path = sample_definition["file_path"];
 
-		loadFile(file_path);
-
-		for (int i = 0; i < max_nb_outputs_; i++)
-		{
+		for (int i = 0; i < 32; i++) {
 			outputs_[i] = new float_array_component_output();
 		}
+
+		loadFile(file_path);
 	}
 
 	sample::~sample()
-	{
-		for (int i = 0; i < max_nb_outputs_; i++)
-		{
-			if (outputs_[i]->values.values != nullptr)
-			{
-				delete[] outputs_[i]->values.values;
-			}
-			delete outputs_[i];
-		}
-		
+	{		
 		for (int i = 0; i < max_nb_descriptors_; i++)
 		{
 			if (samples_descriptors_[i].handle != nullptr)
@@ -40,6 +30,10 @@ namespace live::tritone::vie::processor::component
 				}
 				delete samples_descriptors_[i].handle;
 			}
+		}
+		for (int i = 0; i < 32; i++) {
+			delete[] outputs_[i]->values.values;
+			delete outputs_[i];
 		}
 	}
 
@@ -148,19 +142,14 @@ namespace live::tritone::vie::processor::component
 		}
 	}
 
-	component_output** sample::get_outputs_pool(uint_fast16_t slot_id) {
-		return (component_output**)outputs_;
-	}
-
-	uint_fast32_t sample::get_output_values(const uint_fast16_t slot_id, component_output* output_values[max_nb_outputs_])
+	uint_fast8_t sample::get_output_values(const uint_fast16_t slot_id, std::array<component_output*, 32>& values)
 	{
 		switch (slot_id) {
 		case amplitude_output_id:
-			output_values = (component_output**)outputs_;
+			values = reinterpret_cast<std::array<component_output*, 32>&>(outputs_);
 			return nb_outputs_;
 		}
-
-		return 0;
+		throw std::invalid_argument("Invalid slot id");
 	}
 
 	bool sample::has_finished()
@@ -195,71 +184,71 @@ namespace live::tritone::vie::processor::component
 			return amplitude_output_id;
 		}
 
-		return -1;
+		throw std::invalid_argument("Invalid slot name");
 	}
 
-	void sample::set_input_values(const uint_fast16_t slot_id, component_output* values[max_nb_outputs_], const uint_fast32_t nb_values)
+	void sample::set_input_values(const uint_fast16_t slot_id, std::array<component_output*, max_nb_outputs_>& values, uint_fast8_t nb_values)
 	{
-		//Process if we have an output
-		if (nb_values > 0) {
-			assert(nb_values <= max_nb_outputs_);
-			//Check which input slot is requested
-			switch (slot_id) {
-			case play_input_id:
-				//Iterate over each value to set to input.
-				for (uint_fast16_t i = 0; i < nb_values; i++)
+		assert(nb_values <= max_nb_outputs_);
+		//Check which input slot is requested
+		switch (slot_id) {
+		case play_input_id:
+			//Iterate over each value to set to input.
+			for (uint_fast16_t i = 0; i < nb_values; i++)
+			{
+				//Get current value which is output value of previous component.
+				//We don't care about its value, we just need to know if it is set or not.
+				const auto component_output = values[i];
+
+				uint32_t note_id = component_output->note_id;
+
+				//And unmute the ones which are requested.
+				sample_descriptor& descriptor = samples_descriptors_[note_id];
+				if (!descriptor.activated)
 				{
-					//Get current value which is output value of previous component.
-					//We don't care about its value, we just need to know if it is set or not.
-					const auto& component_output = values[i];
-
-					uint32_t note_id = component_output->note_id;
-
-					//And unmute the ones which are requested.
-					sample_descriptor& descriptor = samples_descriptors_[note_id];
-					if (!descriptor.activated)
-					{
-						//If sample is a new one, activate it.
-						descriptor.activated = true;
-						descriptor.handle->seek(0, SEEK_SET);
-					}
-				}
-				break;
-			case stop_input_id:
-				//Iterate over each value to set to input.
-				for (uint_fast16_t i = 0; i < nb_values; i++)
-				{
-					//Get current value which is output value of previous component.
-					//We don't care about its value, we just need to know if it is set or not.
-					const auto& component_output = values[i];
-
-					uint32_t note_id = component_output->note_id;
-
-					//And mute the ones which are requested.
-					sample_descriptor& descriptor = samples_descriptors_[note_id];
-					descriptor.activated = false;
+					//If sample is a new one, activate it.
+					descriptor.activated = true;
 					descriptor.handle->seek(0, SEEK_SET);
 				}
-				break;
-			case play_at_input_id:
-				//Iterate over each value to set to input.
-				for (uint_fast16_t i = 0; i < nb_values; i++)
-				{
-					const auto& component_output = values[i];
-					
-					uint32_t note_id = component_output->note_id;
-					
-					sample_descriptor& descriptor = samples_descriptors_[note_id];
-					descriptor.activated = true;
-					float position = component_output->to_float();
-					descriptor.handle->seek(position, SEEK_SET);
-					
-				}
-				break;
 			}
+			can_process_ = true;
+			return;
+		case stop_input_id:
+			//Iterate over each value to set to input.
+			for (uint_fast16_t i = 0; i < nb_values; i++)
+			{
+				//Get current value which is output value of previous component.
+				//We don't care about its value, we just need to know if it is set or not.
+				const auto component_output = values[i];
+
+				uint32_t note_id = component_output->note_id;
+
+				//And mute the ones which are requested.
+				sample_descriptor& descriptor = samples_descriptors_[note_id];
+				descriptor.activated = false;
+				descriptor.handle->seek(0, SEEK_SET);
+			}
+			can_process_ = true;
+			return;
+		case play_at_input_id:
+			//Iterate over each value to set to input.
+			for (uint_fast16_t i = 0; i < nb_values; i++)
+			{
+				const auto component_output = values[i];
+					
+				uint32_t note_id = component_output->note_id;
+					
+				sample_descriptor& descriptor = samples_descriptors_[note_id];
+				descriptor.activated = true;
+				float position = component_output->to_float();
+				descriptor.handle->seek(position, SEEK_SET);
+					
+			}
+			can_process_ = true;
+			return;
 		}
 
-		can_process_ = true;
+		throw std::invalid_argument("Invalid slot name");
 	}
 
 	uint_fast32_t sample::get_max_nb_input_values(const uint_fast16_t slot_id)
@@ -277,7 +266,7 @@ namespace live::tritone::vie::processor::component
 			return 1;
 		}
 
-		return -1;
+		throw std::invalid_argument("Invalid slot name");
 	}
 
     void sample::set_parameter(parameter parameter) {

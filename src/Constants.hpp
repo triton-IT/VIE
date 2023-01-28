@@ -1,7 +1,5 @@
 #pragma once
 
-#include <pluginterfaces/base/funknown.h>
-
 constexpr const char* version = "0.0.0.1";
 constexpr const char* plugin_name = "Vie";
 constexpr const char* company_name = "tritone.live";
@@ -24,7 +22,4 @@ namespace live::tritone::vie {
 			7040.00f, 7458.62f, 7902.13f, 8372.02f, 8869.84f, 9397.27f, 9956.06f, 10548.08f, 11175.30f, 11839.82f,
 			12543.85f, 13289.75f
 	};
-
-	static const Steinberg::FUID processor_uid(0xbc00f531, 0x19a89841, 0x612dcc8c, 0x45bbceed);
-	static const Steinberg::FUID controller_uid(0x2afcd1cb, 0x6defd15e, 0x239a1b9e, 0x86959eaf);
 } // namespace

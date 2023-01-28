@@ -8,14 +8,17 @@ namespace live::tritone::vie::processor::component
 		id_(mixer_definition["id"]),
 		name_(mixer_definition["name"]),
 		nb_inputs_(0),
-		inputs_(nullptr),
 		can_process_(true)
 	{
-		average_ = new float_array_component_output();
+		for (uint_fast8_t i = 0; i < 32; i++) {
+			average_[i] = new float_array_component_output();
+		}
 	}
 
 	mixer::~mixer() {
-		delete average_;
+		for (uint_fast8_t i = 0; i < 32; i++) {
+			delete average_[i];
+		}
 	}
 
 	uint16_t mixer::get_id()
@@ -49,19 +52,19 @@ namespace live::tritone::vie::processor::component
 	{
 		can_process_ = false;
 
-		average_->note_id = id_;
+		average_[0]->note_id = id_;
 
 		if (nb_inputs_ > 0) {
 
 			//If nb of samples is greater than the ones currently allocated, reallocate.
-			if (output_process_data.num_samples > average_->values.nb_values)
+			if (output_process_data.num_samples > average_[0]->values.nb_values)
 			{
-				if (average_->values.nb_values > 0)
+				if (average_[0]->values.nb_values > 0)
 				{
-					delete average_->values.values;
+					delete average_[0]->values.values;
 				}
-				average_->values.values = new float[output_process_data.num_samples];
-				average_->values.nb_values = output_process_data.num_samples;
+				average_[0]->values.values = new float[output_process_data.num_samples];
+				average_[0]->values.nb_values = output_process_data.num_samples;
 			}
 
 			for (uint_fast32_t frame = 0; frame < output_process_data.num_samples; frame++)
@@ -71,7 +74,7 @@ namespace live::tritone::vie::processor::component
 				float nb_amplitude_for_frame = 0;
 				for (uint_fast32_t amplitude_id = 0; amplitude_id < nb_inputs_; amplitude_id++)
 				{
-					float_array& generic = inputs_[amplitude_id]->to_float_array();
+					float_array& generic = inputs_[amplitude_id];
 					if (generic.nb_values > frame)
 					{
 						nb_amplitude_for_frame++;
@@ -80,26 +83,26 @@ namespace live::tritone::vie::processor::component
 				}
 				if (nb_amplitude_for_frame > 0)
 				{
-					average_->values.values[frame] = amplitude / nb_amplitude_for_frame;
+					average_[0]->values.values[frame] = amplitude / nb_amplitude_for_frame;
 				}
 				else
 				{
-					average_->values.values[frame] = 0;
+					average_[0]->values.values[frame] = 0;
 				}
 			}
 		}
 		
 	}
 
-	component_output** mixer::get_outputs_pool(uint_fast16_t slot_id) {
-		return (component_output**) &average_;
-	}
-
-	uint_fast32_t mixer::get_output_values(const uint_fast16_t slot_id, component_output* output_values[32])
+	uint_fast8_t mixer::get_output_values(const uint_fast16_t slot_id, std::array<component_output*, 32>& values)
 	{
-		output_values = (component_output**) &average_;
-
-		return (nb_inputs_ > 0) ? 1 : 0;
+		switch (slot_id) {
+		case average_output_id:
+			values = reinterpret_cast<std::array<component_output*, 32>&>(average_);
+			return nb_inputs_;
+		}
+		
+		throw std::invalid_argument("Invalid slot id");
 	}
 
 	bool mixer::has_finished()
@@ -122,19 +125,24 @@ namespace live::tritone::vie::processor::component
 			return average_output_id;
 		}
 
-		return -1;
+		throw std::invalid_argument("Invalid slot name");
 	}
 
-	void mixer::set_input_values(const uint_fast16_t slot_id, component_output* values[32], const uint_fast32_t nb_values)
+	void mixer::set_input_values(const uint_fast16_t slot_id, std::array<component_output*, 32>& values, uint_fast8_t nb_values)
 	{
-		nb_inputs_ = nb_values;
-
-		if (slot_id == generics_input_id)
+		switch(slot_id)
 		{
-			inputs_ = values;
+		case generics_input_id:
+			for (nb_inputs_ = 0; nb_inputs_ < nb_values; nb_inputs_++)
+			{
+				inputs_[nb_inputs_] = values[nb_inputs_]->to_float_array();
+			}
 
 			can_process_ = true;
+			return;
 		}
+		
+		throw std::invalid_argument("Invalid slot name");
 	}
 
 	uint_fast32_t mixer::get_max_nb_input_values(const uint_fast16_t slot_id)
@@ -144,7 +152,7 @@ namespace live::tritone::vie::processor::component
 			return 32;
 		}
 
-		return -1;
+		throw std::invalid_argument("Invalid slot name");
 	}
 
 	void mixer::set_parameter(parameter parameter)

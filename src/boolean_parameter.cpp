@@ -1,11 +1,5 @@
-#include <pluginterfaces/vst/ivsteditcontroller.h>
-#include <pluginterfaces/vst/ivstunits.h>
-
 #include "boolean_parameter.hpp"
 #include "application.hpp"
-
-using namespace Steinberg;
-using namespace Steinberg::Vst;
 
 namespace live::tritone::vie {
 	boolean_parameter::boolean_parameter(
@@ -14,7 +8,7 @@ namespace live::tritone::vie {
 		const wchar_t short_title[128],
 		const wchar_t unit[128],
 		double default_value) : 
-		parameter(id, title, short_title, unit, 1, default_value, kRootUnitId, ParameterInfo::kCanAutomate) {
+		parameter(id, title, short_title, unit, 1, default_value) {
 	}
 
 	double boolean_parameter::to_plain_value(double value_normalized) {

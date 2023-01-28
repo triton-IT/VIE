@@ -19,6 +19,9 @@ namespace Steinberg {
 }
 
 namespace live::tritone::vie {
+	static const Steinberg::FUID processor_uid(0xbc00f531, 0x19a89841, 0x612dcc8c, 0x45bbceed);
+	static const Steinberg::FUID controller_uid(0x2afcd1cb, 0x6defd15e, 0x239a1b9e, 0x86959eaf);
+	
 	vst_plugin_factory::vst_plugin_factory() : nb_ref_(0) {
 		strcpy(factory_info_.vendor, company_name);
 		strcpy(factory_info_.url, company_url);

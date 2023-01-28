@@ -11,16 +11,19 @@ namespace live::tritone::vie::processor::component
 		id_(gain_definition["id"]),
 		name_(gain_definition["name"]),
 		nb_inputs_(0),
-		inputs_(nullptr),
 		gain_(1.1),
 		sample_rate_(44100),
 		inputs_set_(false)
 	{
-		amplified_output_ = new float_array_component_output();
+		for (int i = 0; i < 32; i++) {
+			amplified_output_[i] = new float_array_component_output();
+		}
 	}
 
 	gain::~gain() {
-		delete amplified_output_;
+		for (int i = 0; i < 32; i++) {
+			delete amplified_output_[i];
+		}
 	}
 
 	uint16_t gain::get_id()
@@ -55,23 +58,24 @@ namespace live::tritone::vie::processor::component
 	{
 		inputs_set_ = false;
 
-		amplified_output_->note_id = id_;
+		const auto amplified_output = amplified_output_[0];
+		amplified_output->note_id = id_;
 
 		if (nb_inputs_ > 0) {
 			//If nb of samples is greater than the ones currently allocated, reallocate.
-			if (output_process_data.num_samples > amplified_output_->values.nb_values)
+			if (output_process_data.num_samples > amplified_output->values.nb_values)
 			{
-				if (amplified_output_->values.nb_values > 0)
+				if (amplified_output->values.nb_values > 0)
 				{
-					delete amplified_output_->values.values;
+					delete amplified_output->values.values;
 				}
-				amplified_output_->values.values = new float[output_process_data.num_samples];
-				amplified_output_->values.nb_values = output_process_data.num_samples;
+				amplified_output->values.values = new float[output_process_data.num_samples];
+				amplified_output->values.nb_values = output_process_data.num_samples;
 			}
 
 			for (uint_fast32_t amplitude_id = 0; amplitude_id < nb_inputs_; amplitude_id++)
 			{
-				float_array& input_array = inputs_[amplitude_id]->to_float_array();
+				float_array& input_array = inputs_[amplitude_id];
 				
 				for (uint_fast32_t frame = 0; frame < output_process_data.num_samples; frame++)
 				{
@@ -82,22 +86,22 @@ namespace live::tritone::vie::processor::component
 						
 						float output = input * gain_;
 
-						amplified_output_->values.values[frame] = output;
+						amplified_output->values.values[frame] = output;
 					}
 				}
 			}
 		}		
 	}
 
-	component_output** gain::get_outputs_pool(uint_fast16_t slot_id) {
-		return (component_output**) &amplified_output_;
-	}
-
-	uint_fast32_t gain::get_output_values(const uint_fast16_t slot_id, component_output* output_values[32])
+	uint_fast8_t gain::get_output_values(const uint_fast16_t slot_id, std::array<component_output*, 32>& values)
 	{
-		output_values = (component_output**) amplified_output_;
-
-		return (nb_inputs_ > 0) ? 1 : 0;
+		switch (slot_id)
+		{
+			values = reinterpret_cast<std::array<component_output*, 32>&>(amplified_output_);
+			return nb_inputs_;
+		}
+		
+		throw std::invalid_argument("Invalid slot id");
 	}
 
 	bool gain::has_finished()
@@ -120,37 +124,41 @@ namespace live::tritone::vie::processor::component
 			return gain_input_id;
 		}
 
-		return -1;
+		throw std::invalid_argument("Invalid slot name");
 	}
 
-	void gain::set_input_values(const uint_fast16_t slot_id, component_output* values[32], const uint_fast32_t nb_values)
+	void gain::set_input_values(const uint_fast16_t slot_id, std::array<component_output*, 32>& values, uint_fast8_t nb_values)
 	{
-		nb_inputs_ = nb_values;
-
 		switch (slot_id)
 		{
 		case onoff_input_id:
-			break;
+			return;
 		case generics_input_id:
-			inputs_ = values;
+			for (nb_inputs_ = 0; nb_inputs_ < nb_values; nb_inputs_++)
+			{
+				inputs_[nb_inputs_] = values[nb_inputs_]->to_float_array();
+			}
 			inputs_set_ = true;
-			break;
+			return;
 		case gain_input_id:
-			gain_ = ((component_output*)values[0])->to_float();
-			break;
+			gain_ = values[0]->to_float();
+			return;
 		default:
 			break;
 		}
+
+		throw std::invalid_argument("Invalid slot id");
 	}
 
 	uint_fast32_t gain::get_max_nb_input_values(const uint_fast16_t slot_id)
 	{
-		if (slot_id == generics_input_id)
+		switch (slot_id)
 		{
+		case generics_input_id:
 			return 32;
 		}
 
-		return -1;
+		throw std::invalid_argument("Invalid slot id");
 	}
 
 	void gain::set_parameter(parameter parameter)

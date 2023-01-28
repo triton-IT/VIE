@@ -28,19 +28,17 @@ namespace live::tritone::vie::processor::component
 
         uint_fast16_t get_slot_id(const std::string& slot_name) override;
 
-		void set_input_values(uint_fast16_t slot_id, component_output* values[32], uint_fast32_t nb_values) override;
+		void set_input_values(uint_fast16_t slot_id, std::array<component_output*, 32>& values, uint_fast8_t nb_values) override;
 
 		uint_fast32_t get_max_nb_input_values(uint_fast16_t slot_id) override;
 
 		void preprocess() override;
 
-		component_output** get_outputs_pool(uint_fast16_t slot_id) override;
-
 		bool can_process() override;
 
 		void process(output_process_data& output_process_data) override;
 
-		uint_fast32_t get_output_values(uint_fast16_t slot_id, component_output* output_values[32]) override;
+		uint_fast8_t get_output_values(uint_fast16_t slot_id, std::array<component_output*, 32>& values) override;
 
 		bool has_finished() override;
 
@@ -70,12 +68,12 @@ namespace live::tritone::vie::processor::component
 		std::unordered_map<uint32_t, note_event> notes_;
 
 		uint_fast32_t nb_values_;
-		float_component_output* frequencies_outputs_[32];
-		float_component_output* velocities_outputs_[32];
+		std::array<float_component_output*, 32> frequencies_outputs_;
+		std::array<float_component_output*, 32> velocities_outputs_;
 		uint_fast32_t nb_notes_on_values_;
-		novalue_component_output* notes_on_outputs_[32];
+		std::array<novalue_component_output*, 32> notes_on_outputs_;
 		uint_fast32_t nb_notes_off_values_;
-		novalue_component_output* notes_off_outputs_[32];
+		std::array<novalue_component_output*, 32> notes_off_outputs_;
 		
 		std::unordered_set<uint32_t> notes_ids_to_delete_;
 

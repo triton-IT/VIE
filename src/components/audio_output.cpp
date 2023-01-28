@@ -7,6 +7,7 @@ namespace live::tritone::vie::processor::component
 	audio_output::audio_output(nlohmann::json audio_output_definition) : processor_component(),
 		id_(audio_output_definition["id"]),
 		name_(audio_output_definition["name"]),
+		nb_outputs_(0),
 		can_process_(false),
 		output_bus_id_(0)
 	{
@@ -46,30 +47,32 @@ namespace live::tritone::vie::processor::component
 		can_process_ = false;
 
 		const audio_bus_buffers* bus_buffer = &output_process_data.outputs[output_bus_id_];
-		const auto left = static_cast<float*>(bus_buffer->channels_buffer[0]);
-		const auto right = static_cast<float*>(bus_buffer->channels_buffer[1]);
-
-		const float* amplitudes = amplitudes_.to_float_array().values;
-
-		if (amplitudes_.to_float_array().nb_values == output_process_data.num_samples)
+		for (uint_fast8_t i = 0; i < nb_outputs_ && i < bus_buffer->num_channels; i++)
 		{
-			memcpy(left, amplitudes, output_process_data.num_samples * sizeof(amplitudes));
-			memcpy(right, amplitudes, output_process_data.num_samples * sizeof(amplitudes));
+			const auto channel_buffer = static_cast<float*>(bus_buffer->channels_buffer[i]);
+
+			const float* amplitudes = amplitudes_[i].to_float_array().values;
+
+			if (amplitudes_[i].to_float_array().nb_values == output_process_data.num_samples)
+			{
+				memcpy(channel_buffer, amplitudes, output_process_data.num_samples * sizeof(float));
+			}
+			else
+			{
+				memset(channel_buffer, 0, output_process_data.num_samples * sizeof(float));
+			}
 		}
-		else
+		for (uint_fast8_t i = nb_outputs_; i < bus_buffer->num_channels; i++)
 		{
-			memset(left, 0, output_process_data.num_samples * sizeof(amplitudes));
-			memset(right, 0, output_process_data.num_samples * sizeof(amplitudes));
+			const auto channel_buffer = static_cast<float*>(bus_buffer->channels_buffer[i]);
+
+			memset(channel_buffer, 0, output_process_data.num_samples * sizeof(float));
 		}
 	}
 
-	component_output** audio_output::get_outputs_pool(uint_fast16_t slot_id) {
-		return nullptr;
-	}
-
-	uint_fast32_t audio_output::get_output_values(uint_fast16_t slot_id, component_output* output_values[32])
+	uint_fast8_t audio_output::get_output_values(uint_fast16_t slot_id, std::array<component_output*, 32>& values)
 	{
-		return 0;
+		throw std::invalid_argument("Invalid slot id");
 	}
 
 	bool audio_output::has_finished()
@@ -88,46 +91,48 @@ namespace live::tritone::vie::processor::component
 			return amplitudes_input_id;
 		}
 
-		return -1;
+		throw std::invalid_argument("Invalid slot name");
 	}
 
 	/**
 	* An audio_output accepts only one channel.
 	* The first channel is picked, the other ones are ignored.
 	*/
-	void audio_output::set_input_values(const uint_fast16_t slot_id, component_output* values[32], const uint_fast32_t nb_values)
+	void audio_output::set_input_values(const uint_fast16_t slot_id, std::array<component_output*, 32>& values, uint_fast8_t nb_values)
 	{
-		can_process_ = true;
-
-		if (nb_values > 0)
+		switch (slot_id)
 		{
-			if (slot_id == amplitudes_input_id)
+		case amplitudes_input_id:
+			assert(nb_values <= 32);
+			nb_outputs_ = nb_values;
+			
+			for (uint_fast8_t i = 0; i < nb_outputs_; i++)
 			{
-				amplitudes_.note_id = ((component_output*)values[0])->note_id;
-				amplitudes_.values = ((component_output*)values[0])->to_float_array();
+				amplitudes_[i].note_id = values[0]->note_id;
+				amplitudes_[i].values = values[0]->to_float_array();
 			}
+
+			can_process_ = true;
+				
+			return;
 		}
-		else
-		{
-			amplitudes_.note_id = 0;
-			amplitudes_.values.nb_values = 0;
-		}
+		
+		throw std::invalid_argument("Invalid slot name");
 	}
 
 	uint_fast32_t audio_output::get_max_nb_input_values(const uint_fast16_t slot_id)
 	{
-		if (slot_id == amplitudes_input_id)
-		{
+		switch (slot_id)
+		{ 
+		case amplitudes_input_id: 
 			return 1;
 		}
 
-		//FIXME: Do not return -1 on a uint
-		return -1;
+		throw std::invalid_argument("Invalid slot id");
 	}
 
 	void audio_output::set_parameter(parameter parameter)
 	{
-
 	}
 
 	void audio_output::set_output_bus_id(const uint_fast16_t bus_id)
