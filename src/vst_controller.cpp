@@ -8,7 +8,7 @@
 using namespace Steinberg;
 using namespace Vst;
 
-namespace live::tritone::vie {
+namespace live::tritone::vie::vst {
 	vst_controller::vst_controller() : nb_ref_(0),
 	                                   view_(nullptr),
 	                                   component_handler_(nullptr)

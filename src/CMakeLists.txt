@@ -1,5 +1,7 @@
 set(PROJECT_NAME VIE)
 
+project(${PROJECT_NAME})
+
 set(JSON_DIRECTORY
         "../third_party/nlohman_json"
         )
@@ -22,6 +24,7 @@ set(HEADER_FILES
         "vie_processor.hpp"
         "vst_processor.hpp"
         "vie_view.hpp"
+        "vst_plugin.hpp"
         "vst_plugin_factory.hpp"
         "boolean_parameter.hpp"
         "components/audio_input.hpp"
@@ -66,6 +69,7 @@ set(SOURCE_FILES
         "vie_processor.cpp"
         "vst_processor.cpp"
         "vie_view.cpp"
+        "vst_plugin.cpp"
         "vst_plugin_factory.cpp"
         "boolean_parameter.cpp"
         "components/audio_input.cpp"

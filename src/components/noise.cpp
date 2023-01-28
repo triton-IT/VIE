@@ -19,22 +19,14 @@ namespace live::tritone::vie::processor::component
 		can_process_(false),
 		nb_outputs_(0)
 	{
-		for (int i = 0; i < 32; i++) {
+		for (uint_fast8_t i = 0; i < 32; i++) {
 			outputs_[i] = new float_array_component_output();
 		}
 	}
 
 	noise::~noise()
 	{
-		for (uint_fast32_t i = 0; i < nb_outputs_; i++)
-		{
-			if (const float_array_component_output* output = outputs_[nb_outputs_]; output->values.nb_values > 0)
-			{
-				delete[] output->values.values;
-			}
-		}
-		
-		for (int i = 0; i < 32; i++) {
+		for (uint_fast8_t i = 0; i < 32; i++) {
 			delete outputs_[i];
 		}
 	}
@@ -125,15 +117,16 @@ namespace live::tritone::vie::processor::component
 		}
 	}
 
-	component_output** noise::get_outputs_pool(uint_fast16_t slot_id) {
-		return (component_output**) outputs_;
-	}
-
-	uint_fast32_t noise::get_output_values(const uint_fast16_t slot_id, component_output* output_values[32])
+	uint_fast8_t noise::get_output_values(const uint_fast16_t slot_id, std::array<component_output*, 32>& values)
 	{
-		output_values = (component_output**) outputs_;
-
-		return nb_outputs_;
+		switch (slot_id)
+		{
+		case amplitudes_output_id:
+			values = reinterpret_cast<std::array<component_output*, 32>&>(outputs_);
+			return nb_outputs_;
+		}
+		
+		throw std::invalid_argument("Invalid slot id");
 	}
 
 	bool noise::has_finished()
@@ -148,14 +141,15 @@ namespace live::tritone::vie::processor::component
 			return onoff_input_id;
 		}
 
-		return -1;
+		throw std::invalid_argument("Invalid slot name");
 	}
 
-	void noise::set_input_values(const uint_fast16_t slot_id, component_output* values[32], const uint_fast32_t nb_values)
+	void noise::set_input_values(const uint_fast16_t slot_id, std::array<component_output*, 32>& values, uint_fast8_t nb_values)
 	{
-		if (slot_id == onoff_input_id)
+		switch (slot_id)
 		{
-			assert(nb_values <= 32);
+		case onoff_input_id:
+			assert(nb_values > 0);
 			for (uint_fast16_t i = 0; i < nb_values; i++)
 			{
 				const auto component_output = values[i];
@@ -186,7 +180,11 @@ namespace live::tritone::vie::processor::component
 			next_noises_descriptors_->clear();
 
 			can_process_ = true;
+
+			return;
 		}
+		
+		throw std::invalid_argument("Invalid slot name");
 	}
 
 	uint_fast32_t noise::get_max_nb_input_values(const uint_fast16_t slot_id)
@@ -196,7 +194,7 @@ namespace live::tritone::vie::processor::component
 			return 32;
 		}
 
-		return -1;
+		throw std::invalid_argument("Invalid slot name");
 	}
 
 	void noise::set_noise_type(noise_type noise_type) {

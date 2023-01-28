@@ -30,17 +30,15 @@ namespace live::tritone::vie::processor::component
 
 		bool can_process() override;
 
-		component_output** get_outputs_pool(uint_fast16_t slot_id) override;
-
 		void process(output_process_data& output_process_data) override;
 
-		uint_fast32_t get_output_values(uint_fast16_t slot_id, component_output* output_values[32]) override;
+		uint_fast8_t get_output_values(uint_fast16_t slot_id, std::array<component_output*, 32>& values) override;
 
 		bool has_finished() override;
 
 		uint_fast16_t get_slot_id(const std::string& slot_name) override;
 
-		void set_input_values(uint_fast16_t slot_id, component_output* values[32], uint_fast32_t nb_values) override;
+		void set_input_values(uint_fast16_t slot_id, std::array<component_output*, 32>& values, uint_fast8_t nb_values) override;
 
 		uint_fast32_t get_max_nb_input_values(uint_fast16_t slot_id) override;
 
@@ -58,8 +56,9 @@ namespace live::tritone::vie::processor::component
 		uint16_t id_;
 		std::string name_;
 		std::string type_;
+		uint_fast8_t nb_outputs_;
 
-		float_array_component_output amplitudes_;
+		std::array<float_array_component_output, 32> amplitudes_;
 
 		bool can_process_;
 

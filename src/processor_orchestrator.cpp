@@ -176,15 +176,14 @@ namespace live::tritone::vie
 			{
 				const auto [relation_component, source_slot_id, target_component, target_slot_id] = component_relations[i];
 
-				component_output** source_output_values = source_component->get_outputs_pool(source_slot_id);
+				std::array<component_output*, 32> source_output_values;
 				
 				//Because component has been processed, we can get its output values.
-				const uint_fast32_t nb_output_values = source_component->get_output_values(
-					source_slot_id,
-					source_output_values);
+				uint_fast8_t nb_outputs = source_component->get_output_values(
+					source_slot_id, source_output_values);
 
 				//And then pass output values to input values of next component.
-				target_component->set_input_values(target_slot_id, source_output_values, nb_output_values);
+				target_component->set_input_values(target_slot_id, source_output_values, nb_outputs);
 
 				// And process next component.
 				process(target_component, output_process_data);

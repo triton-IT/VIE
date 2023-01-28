@@ -6,6 +6,7 @@
 
 #include <iostream>
 
+#include "vst_plugin.hpp"
 #include "vst_processor.hpp"
 #include "application.hpp"
 #include "constants.hpp"
@@ -15,7 +16,7 @@
 using namespace std;
 using json = nlohmann::basic_json<std::map, std::vector, std::wstring>;
 
-namespace live::tritone::vie
+namespace live::tritone::vie::vst
 {
 	Steinberg::FUnknown* vst_processor::createInstance(void* /*context*/)
 	{
@@ -111,7 +112,7 @@ namespace live::tritone::vie
 
 	Steinberg::tresult __stdcall vst_processor::getControllerClassId(Steinberg::TUID class_id)
 	{
-		controller_uid.toTUID(class_id);
+		vst_plugin::controller_uid.toTUID(class_id);
 
 		return Steinberg::kResultTrue;
 	}

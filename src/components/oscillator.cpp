@@ -41,15 +41,8 @@ namespace live::tritone::vie::processor::component
 
 	oscillator::~oscillator()
 	{
-		for (uint_fast32_t i = 0; i < nb_outputs_; i++)
-		{
-			if (const float_array_component_output* output = outputs_[nb_outputs_]; output->values.nb_values > 0)
-			{
-				delete[] output->values.values;
-			}
-		}
-
 		for (int i = 0; i < 32; i++) {
+			delete[] outputs_[i]->values.values;
 			delete outputs_[i];
 		}
 
@@ -127,14 +120,16 @@ namespace live::tritone::vie::processor::component
 		}
 	}
 
-	component_output** oscillator::get_outputs_pool(uint_fast16_t slot_id) {
-		return (component_output**) outputs_;
-	}
-
-	uint_fast32_t oscillator::get_output_values(const uint_fast16_t slot_id, component_output* output_values[32])
+	uint_fast8_t oscillator::get_output_values(const uint_fast16_t slot_id, std::array<component_output*, 32>& values)
 	{
-		output_values = (component_output**) outputs_;
-		return nb_outputs_;
+		switch (slot_id)
+		{
+		case amplitudes_output_id:
+			values = reinterpret_cast<std::array<component_output*, 32>&>(outputs_);
+			return nb_outputs_;
+		}
+		
+		throw std::invalid_argument("Invalid slot id");
 	}
 
 	bool oscillator::has_finished()
@@ -161,14 +156,14 @@ namespace live::tritone::vie::processor::component
 			return amplitudes_output_id;
 		}
 
-		//FIXME: Do not return -1 on a uint !
-		return -1;
+		throw std::invalid_argument("Invalid slot name");
 	}
 
-	void oscillator::set_input_values(const uint_fast16_t slot_id, component_output* values[32], const uint_fast32_t nb_values)
+	void oscillator::set_input_values(const uint_fast16_t slot_id, std::array<component_output*, 32>& values, uint_fast8_t nb_values)
 	{
-		if (slot_id == frequency_input_id)
+		switch (slot_id)
 		{
+		case frequency_input_id:
 			assert(nb_values <= 32);
 			for (uint_fast16_t i = 0; i < nb_values; i++)
 			{
@@ -194,17 +189,19 @@ namespace live::tritone::vie::processor::component
 				}
 			}
 
-			//Switching between current and next phases is done to simplify the deletion of phases no more used.
-			std::unordered_map<uint_fast16_t, phase_descriptor>* tmp_phases_descriptors = current_phases_descriptors_;
-			current_phases_descriptors_ = next_phases_descriptors_;
-			next_phases_descriptors_ = tmp_phases_descriptors;
+			{
+				//Switching between current and next phases is done to simplify the deletion of phases no more used.
+				std::unordered_map<uint_fast16_t, phase_descriptor>* tmp_phases_descriptors = current_phases_descriptors_;
+				current_phases_descriptors_ = next_phases_descriptors_;
+				next_phases_descriptors_ = tmp_phases_descriptors;
+			}
 
 			//Clear the phases for next call.
 			next_phases_descriptors_->clear();
 
 			can_process_ = true;
-		}
-		else if (slot_id == signal_type_input_id) {
+			return;
+		case signal_type_input_id:
 			const auto value = values[0]->to_boolean();
 			if (value)
 			{
@@ -214,7 +211,10 @@ namespace live::tritone::vie::processor::component
 			{
 				signal_type_ = signal_type::sin;
 			}
+			return;
 		}
+		
+		throw std::invalid_argument("Invalid slot name");
 	}
 
 	uint_fast32_t oscillator::get_max_nb_input_values(const uint_fast16_t slot_id)
@@ -224,7 +224,7 @@ namespace live::tritone::vie::processor::component
 			return 32;
 		}
 
-		return -1;
+		throw std::invalid_argument("Invalid slot name");
 	}
 
 	void oscillator::set_parameter(parameter parameter)

@@ -3,28 +3,23 @@
 #include "../application.hpp"
 
 namespace live::tritone::vie::processor::component
-{
-	audio_input::audio_input() :
-		id_(0),
-		name_("test"),
-		buffer_(nullptr),
-		sample_rate_(44100)
-	{
-		output_ = new float_array_component_output();
-	}
-	
+{	
 	audio_input::audio_input(nlohmann::json audio_input_definition) :
 		id_(audio_input_definition["id"]),
 		name_(audio_input_definition["name"]),
 		buffer_(nullptr),
 		sample_rate_(44100)
 	{
-		output_ = new float_array_component_output();
+		for (int i = 0; i < 32; i++) {
+			outputs_[i] = new float_array_component_output();
+		}
 	}
 
 	audio_input::~audio_input()
 	{
-		delete output_;
+		for (int i = 0; i < 32; i++) {
+			delete outputs_[i];
+		}
 	}
 
 	uint16_t audio_input::get_id()
@@ -58,28 +53,32 @@ namespace live::tritone::vie::processor::component
 
 	void audio_input::process(output_process_data& output_process_data)
 	{
+		assert(("Buffer must be set-up before processing", buffer_ != nullptr));
+
 		if (buffer_->num_channels > 0)
 		{
+			assert(("Output component must be set-up before processing", outputs_[0] != nullptr));
+			
 			//If nb of audio_inputs is greater than the ones currently allocated, reallocate.
-			if (output_process_data.num_samples > output_->values.nb_values)
+			if (output_process_data.num_samples > outputs_[0]->values.nb_values)
 			{
-				if (output_->values.nb_values > 0)
+				if (outputs_[0]->values.nb_values > 0)
 				{
-					delete output_->values.values;
+					delete outputs_[0]->values.values;
 				}
-				output_->values.values = new float[output_process_data.num_samples];
-				output_->values.nb_values = output_process_data.num_samples;
+				outputs_[0]->values.values = new float[output_process_data.num_samples];
+				outputs_[0]->values.nb_values = output_process_data.num_samples;
 			}
 
 			//FIXME: We should handle the noteId correctly.
 			//Have each input component configured return the maximum number of note id it can handle.
 			//and then assign a starting noteId offset to each input component.
 			//Each input component could then set the noteId it is processing according to the starting id specified.
-			output_->note_id = 256;
+			outputs_[0]->note_id = 256;
 
 			//FIXME: Handle multiple channels !
 			//output_->values.values = (float*)buffer_->channels_buffer[0];
-			memcpy(output_->values.values, buffer_->channels_buffer[0], output_process_data.num_samples * sizeof(float));
+			memcpy(outputs_[0]->values.values, buffer_->channels_buffer[0], output_process_data.num_samples * sizeof(float));
 
 			//for (uint_fast32_t frame = 0; frame < output_process_data.num_samples; frame++)
 			//{
@@ -88,19 +87,15 @@ namespace live::tritone::vie::processor::component
 		}
 	}
 
-	component_output** audio_input::get_outputs_pool(uint_fast16_t slot_id) {
-		return (component_output**) &output_;
-	}
-
-	uint_fast32_t audio_input::get_output_values(const uint_fast16_t slot_id, component_output* output_values[32])
+	uint_fast8_t audio_input::get_output_values(const uint_fast16_t slot_id, std::array<component_output*, 32>& values)
 	{
 		switch (slot_id) {
 		case audio_output_id:
-			output_values = (component_output**) &output_;
+			values = reinterpret_cast<std::array<component_output*, 32>&>(outputs_);
 			return 1;
 		}
 
-		return 0;
+		throw std::invalid_argument("Invalid slot id");
 	}
 
 	bool audio_input::has_finished()
@@ -119,16 +114,17 @@ namespace live::tritone::vie::processor::component
 			return audio_output_id;
 		}
 
-		return -1;
+		throw std::invalid_argument("Invalid slot name");
 	}
 
-	void audio_input::set_input_values(const uint_fast16_t slot_id, component_output* values[32], const uint_fast32_t nb_values)
+	void audio_input::set_input_values(const uint_fast16_t slot_id, std::array<component_output*, 32>& values, uint_fast8_t nb_values)
 	{
+		throw std::invalid_argument("Invalid slot id");
 	}
 
 	uint_fast32_t audio_input::get_max_nb_input_values(const uint_fast16_t slot_id)
 	{
-		return -1;
+		throw std::invalid_argument("Invalid slot id");
 	}
 
     void audio_input::set_parameter(parameter parameter) {

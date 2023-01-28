@@ -27,8 +27,6 @@ namespace live::tritone::vie::processor::component
 
 		void preprocess() override;
 
-		component_output** get_outputs_pool(uint_fast16_t slot_id) override;
-
 		bool can_process() override;
 
 		void process(output_process_data& output_process_data) override;
@@ -36,13 +34,13 @@ namespace live::tritone::vie::processor::component
 		/**
 		* Set a pair<string, float> where string is the id of this gain and float is the gain output value.
 		*/
-		uint_fast32_t get_output_values(uint_fast16_t slot_id, component_output* output_values[32]) override;
+		uint_fast8_t get_output_values(uint_fast16_t slot_id, std::array<component_output*, 32>& values) override;
 
 		bool has_finished() override;
 
 		uint_fast16_t get_slot_id(const std::string& slot_name) override;
 
-		void set_input_values(uint_fast16_t slot_id, component_output* values[32], uint_fast32_t nb_values) override;
+		void set_input_values(uint_fast16_t slot_id, std::array<component_output*, 32>& values, uint_fast8_t nb_values) override;
 
 		uint_fast32_t get_max_nb_input_values(uint_fast16_t slot_id) override;
 
@@ -66,13 +64,13 @@ namespace live::tritone::vie::processor::component
 		std::string type_;
 
 		uint_fast32_t nb_inputs_;
-		component_output** inputs_;
+		std::array<float_array, 32> inputs_;
 		bool inputs_set_;
 		
 		float gain_;
 
 		double sample_rate_;
 
-		float_array_component_output* amplified_output_;
+		std::array<float_array_component_output*, 32> amplified_output_;
 	};
 } // namespace

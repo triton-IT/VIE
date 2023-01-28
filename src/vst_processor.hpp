@@ -10,7 +10,7 @@
 #include "processor_component.hpp"
 #include "vie_processor.hpp"
 
-namespace live::tritone::vie {
+namespace live::tritone::vie::vst {
 	class vst_processor final :
 		public Steinberg::Vst::IComponent,
 		public Steinberg::Vst::IAudioProcessor,

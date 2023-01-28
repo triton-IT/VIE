@@ -9,13 +9,12 @@ namespace live::tritone::vie::processor::component
 		name_(recorder_definition["name"]),
 		sample_rate_(.0),
 		can_process_(false),
+		on_(true),
 		nb_outputs_(0)
 	{
 		//auto& parameters_definition = recorder_definition["parameters"];
 
 		std::string file_path = recorder_definition["file_path"];
-		
-		output_ = new float_array_component_output();
 		
 		SF_INFO info;
 		info.channels = 1;
@@ -28,12 +27,6 @@ namespace live::tritone::vie::processor::component
 
 	recorder::~recorder()
 	{
-		if (output_->values.nb_values > 0)
-		{
-			delete[] output_->values.values;
-		}
-		delete output_;
-
 		sf_close(output_file_);
 	}
 
@@ -70,20 +63,26 @@ namespace live::tritone::vie::processor::component
 		can_process_ = false;
 
 		if (nb_outputs_ > 0) {
-			output_->note_id = id_;
+			//TODO: Handle more channels than mono.
+			auto output = output_[0];
+			output->note_id = id_;
 			
-			sf_writef_float(output_file_, output_->values.values, output_->values.nb_values);
+			if (on_)
+			{
+				sf_writef_float(output_file_, output->values.values, output->values.nb_values);
+			}
 		}
 	}
 
-	component_output** recorder::get_outputs_pool(uint_fast16_t slot_id) {
-		return (component_output**) &output_;
-	}
-
-	uint_fast32_t recorder::get_output_values(const uint_fast16_t slot_id, component_output* output_values[32])
+	uint_fast8_t recorder::get_output_values(const uint_fast16_t slot_id, std::array<component_output*, 32>& values)
 	{
-		output_values = (component_output**) &output_;
-		return nb_outputs_;
+		switch (slot_id) {
+		case amplitude_output_id:
+			values = reinterpret_cast<std::array<component_output*, 32>&>(output_);
+			return nb_outputs_;
+		}
+		
+		throw std::invalid_argument("Invalid slot id");
 	}
 
 	bool recorder::has_finished()
@@ -106,35 +105,48 @@ namespace live::tritone::vie::processor::component
 			return amplitude_output_id;
 		}
 
-		//FIXME: Do not return -1 on a uint !
-		return -1;
+		throw std::invalid_argument("Invalid slot name");
 	}
 
-	void recorder::set_input_values(const uint_fast16_t slot_id, component_output* values[32], const uint_fast32_t nb_values)
+	void recorder::set_input_values(const uint_fast16_t slot_id, std::array<component_output*, 32>& values, uint_fast8_t nb_values)
 	{
-		nb_outputs_ = 0;
-		
-		if (slot_id == amplitude_input_id)
+		switch (slot_id)
 		{
+		case onoff_input_id:
+			assert(nb_values == 1);
+
+			on_ = reinterpret_cast<std::array<float_component_output*, 32>&>(values)[0]->to_boolean();
+
+			return;
+		case amplitude_input_id:
 			assert(nb_values <= 32);
+			nb_outputs_ = nb_values;
 			
-			if (nb_values > 0) {
-				output_->values = values[0]->to_float_array();
-				nb_outputs_ = nb_values;
+			if (nb_outputs_ > 0)
+			{
+				output_ = reinterpret_cast<std::array<float_array_component_output*, 32>&>(values);
 			}
 
 			can_process_ = true;
+			
+			return;
 		}
+
+		throw std::invalid_argument("Invalid slot name");
 	}
 
 	uint_fast32_t recorder::get_max_nb_input_values(const uint_fast16_t slot_id)
 	{
-		if (slot_id == amplitude_input_id)
+		if (slot_id == onoff_input_id)
 		{
 			return 1;
 		}
+		if (slot_id == amplitude_input_id)
+		{
+			return 32;
+		}
 
-		return -1;
+		throw std::invalid_argument("Invalid slot name");
 	}
 
 	void recorder::set_parameter(parameter parameter)

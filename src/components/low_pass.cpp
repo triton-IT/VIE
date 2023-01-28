@@ -11,7 +11,6 @@ namespace live::tritone::vie::processor::component
 		id_(low_pass_definition["id"]),
 		name_(low_pass_definition["name"]),
 		nb_inputs_(0),
-		inputs_(nullptr),
 		cutoff_set_(false),
 		resonance_set_(false),
 		cutoff_(300),
@@ -25,11 +24,15 @@ namespace live::tritone::vie::processor::component
 		cos_omega(0),
 		input_modified_(true)
 	{
-		filtered_ = new float_array_component_output();
+		for (int i = 0; i < 32; i++) {
+			filtered_[i] = new float_array_component_output();
+		}
 	}
 
 	low_pass::~low_pass() {
-		delete filtered_;
+		for (int i = 0; i < 32; i++) {
+			delete filtered_[i];
+		}
 	}
 
 	uint16_t low_pass::get_id()
@@ -68,18 +71,18 @@ namespace live::tritone::vie::processor::component
 		cutoff_set_ = false;
 		resonance_set_ = false;
 
-		filtered_->note_id = id_;
+		filtered_[0]->note_id = id_;
 
 		if (nb_inputs_ > 0) {
 			//If nb of samples is greater than the ones currently allocated, reallocate.
-			if (output_process_data.num_samples > filtered_->values.nb_values)
+			if (output_process_data.num_samples > filtered_[0]->values.nb_values)
 			{
-				if (filtered_->values.nb_values > 0)
+				if (filtered_[0]->values.nb_values > 0)
 				{
-					delete filtered_->values.values;
+					delete filtered_[0]->values.values;
 				}
-				filtered_->values.values = new float[output_process_data.num_samples];
-				filtered_->values.nb_values = output_process_data.num_samples;
+				filtered_[0]->values.values = new float[output_process_data.num_samples];
+				filtered_[0]->values.nb_values = output_process_data.num_samples;
 			}
 
 			if (input_modified_)
@@ -104,7 +107,7 @@ namespace live::tritone::vie::processor::component
 
 			for (uint_fast32_t amplitude_id = 0; amplitude_id < nb_inputs_; amplitude_id++)
 			{
-				float_array& input_array = inputs_[amplitude_id]->to_float_array();
+				float_array& input_array = inputs_[amplitude_id];
 				
 				for (uint_fast32_t frame = 0; frame < output_process_data.num_samples; frame++)
 				{
@@ -121,22 +124,23 @@ namespace live::tritone::vie::processor::component
 						output_prev_[1] = output_prev_[0];
 						output_prev_[0] = output;
 
-						filtered_->values.values[frame] = output;
+						filtered_[0]->values.values[frame] = output;
 					}
 				}
 			}
 		}		
 	}
 
-	component_output** low_pass::get_outputs_pool(uint_fast16_t slot_id) {
-		return (component_output**) &filtered_;
-	}
-
-	uint_fast32_t low_pass::get_output_values(const uint_fast16_t slot_id, component_output* output_values[32])
+	uint_fast8_t low_pass::get_output_values(const uint_fast16_t slot_id, std::array<component_output*, 32>& values)
 	{
-		output_values = (component_output**) filtered_;
+		switch (slot_id)
+		{
+		case average_output_id:
+			values = reinterpret_cast<std::array<component_output*, 32>&>(filtered_);
+			return nb_inputs_;
+		}
 
-		return (nb_inputs_ > 0) ? 1 : 0;
+		throw std::invalid_argument("Invalid slot id");
 	}
 
 	bool low_pass::has_finished()
@@ -167,54 +171,58 @@ namespace live::tritone::vie::processor::component
 			return average_output_id;
 		}
 
-		return -1;
+		throw std::invalid_argument("Invalid slot name");
 	}
 
-	void low_pass::set_input_values(const uint_fast16_t slot_id, component_output* values[32], const uint_fast32_t nb_values)
+	void low_pass::set_input_values(const uint_fast16_t slot_id, std::array<component_output*, 32>& values, uint_fast8_t nb_values)
 	{
-		nb_inputs_ = nb_values;
-
 		switch (slot_id)
 		{
 		case onoff_input_id:
-			break;
+			return;
 		case generics_input_id:
-			inputs_ = values;
+			for (nb_inputs_ = 0; nb_inputs_ < nb_values; nb_inputs_++)
+			{
+				inputs_[nb_inputs_] = values[nb_inputs_]->to_float_array();
+			}
 			inputs_set_ = true;
-			break;
+			return;
 		case cutoff_input_id:
 		{
-			float new_cutoff = ((component_output*)values[0])->to_float();
+			float new_cutoff = values[0]->to_float();
 			if (new_cutoff != cutoff_) {
 				input_modified_ = true;
 			}
 			cutoff_ = new_cutoff;
 		}
 			cutoff_set_ = true;
-			break;
+			return;
 		case resonance_input_id:
 		{
-			float new_resonance = ((component_output*)values[0])->to_float();
+			float new_resonance = values[0]->to_float();
 			if (new_resonance != resonance_) {
 				input_modified_ = true;
 			}
 			resonance_ = new_resonance;
 		}
 			resonance_set_ = true;
-			break;
+			return;
 		default:
 			break;
 		}
+
+		throw std::invalid_argument("Invalid slot id");
 	}
 
 	uint_fast32_t low_pass::get_max_nb_input_values(const uint_fast16_t slot_id)
 	{
-		if (slot_id == generics_input_id)
+		switch (slot_id)
 		{
+		case generics_input_id:
 			return 32;
 		}
 
-		return -1;
+		throw std::invalid_argument("Invalid slot id");
 	}
 
 	void low_pass::set_parameter(parameter parameter)
