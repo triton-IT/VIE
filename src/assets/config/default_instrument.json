@@ -1,5 +1,5 @@
 {
-  "components": [
+  "modules": [
     {
       "id": 0,
       "name": "Audio in",

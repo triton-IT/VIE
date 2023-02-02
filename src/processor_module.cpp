@@ -1,4 +1,4 @@
-#include "processor_component.hpp"
+#include "processor_module.hpp"
 
 #include "application.hpp"
 
@@ -6,7 +6,7 @@ using namespace nlohmann;
 
 namespace live::tritone::vie
 {
-	void processor_component::initialize(nlohmann::json processor_definition) {
+	void processor_module::initialize(nlohmann::json processor_definition) {
 		for (auto& [index, parameter_definition] : processor_definition["parameters"].items()) {
 			const unsigned long id = parameter_definition["id"];
 			const std::string name = parameter_definition["name"];

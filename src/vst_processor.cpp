@@ -230,7 +230,7 @@ namespace live::tritone::vie::vst
 
 	Steinberg::uint32 __stdcall vst_processor::getLatencySamples()
 	{
-		//TODO: Get latency based on components needs.
+		//TODO: Get latency based on modules needs.
 		return 64;
 	}
 
@@ -296,7 +296,7 @@ namespace live::tritone::vie::vst
 
 	Steinberg::uint32 __stdcall vst_processor::getTailSamples()
 	{
-		//TODO: Compute based on middle components needs.
+		//TODO: Compute based on middle modules needs.
 		return Steinberg::Vst::kNoTail;
 	}
 
@@ -304,7 +304,7 @@ namespace live::tritone::vie::vst
 	{
 		Steinberg::uint32 flags = 0;
 
-		//FIXME: Do not request all but compute based on middle components.
+		//FIXME: Do not request all but compute based on middle modules.
 		flags |= kNeedSystemTime;
 		flags |= kNeedContinousTimeSamples;
 		flags |= kNeedProjectTimeMusic;

@@ -3,7 +3,7 @@
 #include <string>
 #include "logger.hpp"
 #include "parameters.hpp"
-#include "processor_components.hpp"
+#include "processor_modules.hpp"
 
 using namespace live::tritone::vie;
 
@@ -26,8 +26,8 @@ enum {
 
 class application {
 public:
-	static processor_components& get_processor_components() {
-		return processor_components::get_instance();
+	static processor_modules& get_processor_modules() {
+		return processor_modules::get_instance();
 	}
 
 	static parameter add_parameter(uint_fast8_t id, parameter parameter);

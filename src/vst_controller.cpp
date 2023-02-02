@@ -198,7 +198,7 @@ namespace live::tritone::vie::vst {
 
 		if (view_ != nullptr)
 		{
-			view_->set_component_handler(component_handler_);
+			view_->set_module_handler(component_handler_);
 		}
 
 		return kResultTrue;

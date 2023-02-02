@@ -2,9 +2,9 @@
 
 #include "../application.hpp"
 
-namespace live::tritone::vie::processor::component
+namespace live::tritone::vie::processor::module
 {
-	multiplier::multiplier(nlohmann::json multiplier_definition) : processor_component(),
+	multiplier::multiplier(nlohmann::json multiplier_definition) : processor_module(),
 		id_(multiplier_definition["id"]),
 		name_(multiplier_definition["name"]),
 		nb_inputs_multipliers_(0),
@@ -14,7 +14,7 @@ namespace live::tritone::vie::processor::component
 		nb_products_(0)
 	{
 		for (uint_fast8_t i = 0; i < 32; i++) {
-			products_[i] = new float_array_component_output();
+			products_[i] = new float_array_module_output();
 		}
 	}
 	
@@ -34,9 +34,9 @@ namespace live::tritone::vie::processor::component
 		return name_;
 	}
 
-	processor_component_type multiplier::get_type()
+	processor_module_type multiplier::get_type()
 	{
-		return processor_component_type::middle;
+		return processor_module_type::middle;
 	}
 
 	void multiplier::set_sample_rate(const double sample_rate)
@@ -101,12 +101,12 @@ namespace live::tritone::vie::processor::component
 		nb_inputs_multiplicands_ = 0;
 	}
 
-	uint_fast8_t multiplier::get_output_values(const uint_fast16_t slot_id, std::array<component_output*, 32>& values)
+	uint_fast8_t multiplier::get_output_values(const uint_fast16_t slot_id, std::array<module_output*, 32>& values)
 	{
 		switch (slot_id)
 		{
 		case products_output_id:
-			values = reinterpret_cast<std::array<component_output*, 32>&>(products_);
+			values = reinterpret_cast<std::array<module_output*, 32>&>(products_);
 			return nb_products_;
 		}
 
@@ -136,7 +136,7 @@ namespace live::tritone::vie::processor::component
 		throw std::invalid_argument("Invalid slot name");
 	}
 
-	void multiplier::set_input_values(const uint_fast16_t slot_id, std::array<component_output*, 32>& values, uint_fast8_t nb_values)
+	void multiplier::set_input_values(const uint_fast16_t slot_id, std::array<module_output*, 32>& values, uint_fast8_t nb_values)
 	{
 		switch (slot_id)
 		{

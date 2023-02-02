@@ -1,36 +1,36 @@
 #include "Application.hpp"
-#include "processor_components.hpp"
+#include "processor_modules.hpp"
 
-#include "components/midi_input.hpp"
-#include "components/audio_input.hpp"
-#include "components/oscillator.hpp"
-#include "components/envelope.hpp"
-#include "components/low_pass.hpp"
-#include "components/high_pass.hpp"
-#include "components/gain.hpp"
-#include "components/multiplier.hpp"
-#include "components/mixer.hpp"
-#include "components/audio_output.hpp"
-#include "components/sample.hpp"
-#include "components/recorder.hpp"
+#include "modules/midi_input.hpp"
+#include "modules/audio_input.hpp"
+#include "modules/oscillator.hpp"
+#include "modules/envelope.hpp"
+#include "modules/low_pass.hpp"
+#include "modules/high_pass.hpp"
+#include "modules/gain.hpp"
+#include "modules/multiplier.hpp"
+#include "modules/mixer.hpp"
+#include "modules/audio_output.hpp"
+#include "modules/sample.hpp"
+#include "modules/recorder.hpp"
 
 using namespace live::tritone::vie;
-using namespace live::tritone::vie::processor::component;
+using namespace live::tritone::vie::processor::module;
 
-processor_components& processor_components::get_instance() {
-	static processor_components instance;
+processor_modules& processor_modules::get_instance() {
+	static processor_modules instance;
 	return instance;
 }
 
-processor_components::processor_components() : components_{} {
+processor_modules::processor_modules() : modules_{} {
 }
 
-processor_components::~processor_components() {
+processor_modules::~processor_modules() {
 
 }
 
-processor_component* processor_components::create(nlohmann::json processor_definition) {
-	processor_component* processor = nullptr;
+processor_module* processor_modules::create(nlohmann::json processor_definition) {
+	processor_module* processor = nullptr;
 	
 	const std::string type = processor_definition["type"];
 	if (type == "midi in")
@@ -84,8 +84,8 @@ processor_component* processor_components::create(nlohmann::json processor_defin
 
 	processor->initialize(processor_definition);
 
-	components_[nb_components_] = processor;
-	nb_components_++;
+	modules_[nb_modules_] = processor;
+	nb_modules_++;
 
 #ifdef VIE_DEBUG
 	debugLogger.write("Added processor: " + processor->get_name());
@@ -94,7 +94,7 @@ processor_component* processor_components::create(nlohmann::json processor_defin
 	return processor;
 }
 
-processor_component& processor_components::get_by_id(uint_fast8_t id)
+processor_module& processor_modules::get_by_id(uint_fast8_t id)
 {
-	return *components_[nb_components_];
+	return *modules_[nb_modules_];
 }

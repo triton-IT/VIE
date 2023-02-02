@@ -4,11 +4,11 @@
 #include <sndfile.h>
 #include <sndfile.hh>
 
-#include "../processor_component.hpp"
+#include "../processor_module.hpp"
 
-namespace live::tritone::vie::processor::component
+namespace live::tritone::vie::processor::module
 {
-	class recorder final : public processor_component
+	class recorder final : public processor_module
 	{
 	public:
 		enum class signal_type
@@ -30,7 +30,7 @@ namespace live::tritone::vie::processor::component
 
 		std::string get_name() override;
 
-		processor_component_type get_type() override;
+		processor_module_type get_type() override;
 
 		void set_sample_rate(double sample_rate) override;
 
@@ -40,13 +40,13 @@ namespace live::tritone::vie::processor::component
 
 		void process(output_process_data& output_process_data) override;
 
-		uint_fast8_t get_output_values(uint_fast16_t slot_id, std::array<component_output*, 32>& values) override;
+		uint_fast8_t get_output_values(uint_fast16_t slot_id, std::array<module_output*, 32>& values) override;
 
 		bool has_finished() override;
 
 		uint_fast16_t get_slot_id(const std::string& slot_name) override;
 
-		void set_input_values(uint_fast16_t slot_id, std::array<component_output*, 32>& values, uint_fast8_t nb_values) override;
+		void set_input_values(uint_fast16_t slot_id, std::array<module_output*, 32>& values, uint_fast8_t nb_values) override;
 
 		uint_fast32_t get_max_nb_input_values(uint_fast16_t slot_id) override;
 
@@ -70,7 +70,7 @@ namespace live::tritone::vie::processor::component
 
 		bool can_process_;
 
-		std::array<float_array_component_output*, 32> output_;
+		std::array<float_array_module_output*, 32> output_;
 		uint_fast32_t nb_outputs_;
 		
 		SNDFILE* output_file_;

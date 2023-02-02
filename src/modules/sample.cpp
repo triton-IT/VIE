@@ -2,7 +2,7 @@
 
 #include "../application.hpp"
 
-namespace live::tritone::vie::processor::component
+namespace live::tritone::vie::processor::module
 {
 	sample::sample(nlohmann::json sample_definition) :
 		id_(sample_definition["id"]),
@@ -12,7 +12,7 @@ namespace live::tritone::vie::processor::component
 		std::string file_path = sample_definition["file_path"];
 
 		for (int i = 0; i < 32; i++) {
-			outputs_[i] = new float_array_component_output();
+			outputs_[i] = new float_array_module_output();
 		}
 
 		loadFile(file_path);
@@ -60,9 +60,9 @@ namespace live::tritone::vie::processor::component
 		return name_;
 	}
 
-	processor_component_type sample::get_type()
+	processor_module_type sample::get_type()
 	{
-		return processor_component_type::middle;
+		return processor_module_type::middle;
 	}
 
 	void sample::set_sample_rate(const double sample_rate)
@@ -107,7 +107,7 @@ namespace live::tritone::vie::processor::component
 					{
 						assert(nb_outputs_ < max_nb_outputs_);
 						
-						float_array_component_output* output = outputs_[nb_outputs_];
+						float_array_module_output* output = outputs_[nb_outputs_];
 
 						//If nb of samples is greater than the ones currently allocated, reallocate.
 						if (output_process_data.num_samples > output->values.nb_values)
@@ -142,11 +142,11 @@ namespace live::tritone::vie::processor::component
 		}
 	}
 
-	uint_fast8_t sample::get_output_values(const uint_fast16_t slot_id, std::array<component_output*, 32>& values)
+	uint_fast8_t sample::get_output_values(const uint_fast16_t slot_id, std::array<module_output*, 32>& values)
 	{
 		switch (slot_id) {
 		case amplitude_output_id:
-			values = reinterpret_cast<std::array<component_output*, 32>&>(outputs_);
+			values = reinterpret_cast<std::array<module_output*, 32>&>(outputs_);
 			return nb_outputs_;
 		}
 		throw std::invalid_argument("Invalid slot id");
@@ -187,7 +187,7 @@ namespace live::tritone::vie::processor::component
 		throw std::invalid_argument("Invalid slot name");
 	}
 
-	void sample::set_input_values(const uint_fast16_t slot_id, std::array<component_output*, max_nb_outputs_>& values, uint_fast8_t nb_values)
+	void sample::set_input_values(const uint_fast16_t slot_id, std::array<module_output*, max_nb_outputs_>& values, uint_fast8_t nb_values)
 	{
 		assert(nb_values <= max_nb_outputs_);
 		//Check which input slot is requested
@@ -196,11 +196,11 @@ namespace live::tritone::vie::processor::component
 			//Iterate over each value to set to input.
 			for (uint_fast16_t i = 0; i < nb_values; i++)
 			{
-				//Get current value which is output value of previous component.
+				//Get current value which is output value of previous module.
 				//We don't care about its value, we just need to know if it is set or not.
-				const auto component_output = values[i];
+				const auto module_output = values[i];
 
-				uint32_t note_id = component_output->note_id;
+				uint32_t note_id = module_output->note_id;
 
 				//And unmute the ones which are requested.
 				sample_descriptor& descriptor = samples_descriptors_[note_id];
@@ -217,11 +217,11 @@ namespace live::tritone::vie::processor::component
 			//Iterate over each value to set to input.
 			for (uint_fast16_t i = 0; i < nb_values; i++)
 			{
-				//Get current value which is output value of previous component.
+				//Get current value which is output value of previous module.
 				//We don't care about its value, we just need to know if it is set or not.
-				const auto component_output = values[i];
+				const auto module_output = values[i];
 
-				uint32_t note_id = component_output->note_id;
+				uint32_t note_id = module_output->note_id;
 
 				//And mute the ones which are requested.
 				sample_descriptor& descriptor = samples_descriptors_[note_id];
@@ -234,13 +234,13 @@ namespace live::tritone::vie::processor::component
 			//Iterate over each value to set to input.
 			for (uint_fast16_t i = 0; i < nb_values; i++)
 			{
-				const auto component_output = values[i];
+				const auto module_output = values[i];
 					
-				uint32_t note_id = component_output->note_id;
+				uint32_t note_id = module_output->note_id;
 					
 				sample_descriptor& descriptor = samples_descriptors_[note_id];
 				descriptor.activated = true;
-				float position = component_output->to_float();
+				float position = module_output->to_float();
 				descriptor.handle->seek(position, SEEK_SET);
 					
 			}

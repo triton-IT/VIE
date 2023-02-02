@@ -5,11 +5,11 @@
 #include <sndfile.h>
 #include <sndfile.hh>
 
-#include "../processor_component.hpp"
+#include "../processor_module.hpp"
 
-namespace live::tritone::vie::processor::component
+namespace live::tritone::vie::processor::module
 {
-	class sample final : public processor_component
+	class sample final : public processor_module
 	{
 	public:
 		explicit sample(nlohmann::json sample_definition);
@@ -25,7 +25,7 @@ namespace live::tritone::vie::processor::component
 
 		std::string get_name() override;
 
-		processor_component_type get_type() override;
+		processor_module_type get_type() override;
 
 		void set_sample_rate(double sample_rate) override;
 
@@ -35,13 +35,13 @@ namespace live::tritone::vie::processor::component
 
 		void process(output_process_data& output_process_data) override;
 
-		uint_fast8_t get_output_values(uint_fast16_t slot_id, std::array<component_output*, 32>& values) override;
+		uint_fast8_t get_output_values(uint_fast16_t slot_id, std::array<module_output*, 32>& values) override;
 
 		bool has_finished() override;
 
 		uint_fast16_t get_slot_id(const std::string& slot_name) override;
 
-		void set_input_values(uint_fast16_t slot_id, std::array<component_output*, 32>& values, uint_fast8_t nb_values) override;
+		void set_input_values(uint_fast16_t slot_id, std::array<module_output*, 32>& values, uint_fast8_t nb_values) override;
 
 		uint_fast32_t get_max_nb_input_values(uint_fast16_t slot_id) override;
 
@@ -76,8 +76,8 @@ namespace live::tritone::vie::processor::component
 		double sample_rate_;
 		bool can_process_;
 		/**
-		* Because the component has multiple inputs. Multiples relations can be bound to it.
-		* It means that the "process" method of the component can be called multiple times.
+		* Because the module has multiple inputs. Multiples relations can be bound to it.
+		* It means that the "process" method of the module can be called multiple times.
 		* We only want to process the sample once for all "process" calls.
 		*/
 		bool already_processed_;
@@ -92,6 +92,6 @@ namespace live::tritone::vie::processor::component
 		std::array<sample_descriptor, max_nb_descriptors_> samples_descriptors_;
 
 		uint_fast8_t nb_outputs_;
-		std::array<float_array_component_output*, max_nb_outputs_> outputs_;
+		std::array<float_array_module_output*, max_nb_outputs_> outputs_;
 	};
 } // namespace

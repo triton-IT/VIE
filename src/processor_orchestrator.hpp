@@ -3,29 +3,29 @@
 #include <unordered_set>
 
 #include "processor_definition.hpp"
-#include "processor_component.hpp"
-#include "components/midi_input.hpp"
-#include "components/audio_input.hpp"
+#include "processor_module.hpp"
+#include "modules/midi_input.hpp"
+#include "modules/audio_input.hpp"
 
 namespace live::tritone::vie {
 	/**
-	* A source component output slot can be linked to multiple target components input slots.
+	* A source module output slot can be linked to multiple target modules input slots.
 	**/
-	struct component_relation {
+	struct module_relation {
 		/**
-		* Pointer to source component.
+		* Pointer to source module.
 		**/
-		processor_component* source_component;
+		processor_module* source_module;
 		/**
-		* Id of slot in source component.
+		* Id of slot in source module.
 		**/
 		uint_fast16_t source_slot_id;
 		/**
-		* Pointer to target component.
+		* Pointer to target module.
 		**/
-		processor_component* target_component;
+		processor_module* target_module;
 		/**
-		* Id of slot in target component.
+		* Id of slot in target module.
 		**/
 		uint_fast16_t target_slot_id;
 	};
@@ -34,9 +34,9 @@ namespace live::tritone::vie {
 	public:
 		processor_orchestrator();
 
-		void add_processor_component(processor_component* processor);
+		void add_processor_module(processor_module* processor);
 
-		component_relation& add_relation(nlohmann::json relation_definition);
+		module_relation& add_relation(nlohmann::json relation_definition);
 
 		void terminate() const;
 
@@ -52,30 +52,30 @@ namespace live::tritone::vie {
 
 
 	private:
-		int nb_components_;
-		//TODO: compute nb of components when parsing config file instead of using constant.
-		processor_component* processor_components_[128];
+		int nb_modules_;
+		//TODO: compute nb of modules when parsing config file instead of using constant.
+		processor_module* processor_modules_[128];
 
-		int nb_midi_input_components_;
-		//TODO: compute nb of midi components when parsing config file instead of using constant.
-		processor::component::midi_input* sources_midi_input_components_[16];
+		int nb_midi_input_modules_;
+		//TODO: compute nb of midi modules when parsing config file instead of using constant.
+		processor::module::midi_input* sources_midi_input_modules_[16];
 
-		int nb_audio_input_components_;
-		//TODO: compute nb of audio input components when parsing config file instead of using constant.
-		processor::component::audio_input* sources_audio_input_components_[16];
+		int nb_audio_input_modules_;
+		//TODO: compute nb of audio input modules when parsing config file instead of using constant.
+		processor::module::audio_input* sources_audio_input_modules_[16];
 
 		processing_setup processing_setup_;
 		
-		int nb_component_relations_[32]{};
-		//Contains an array of output relations for the given component id.
-		//TODO: compute nb of components when parsing config file instead of using constant.
-		//TODO: compute max nb of relations for components when parsing config file instead of using constant.
-		component_relation relations_[128][32];
+		int nb_module_relations_[32]{};
+		//Contains an array of output relations for the given module id.
+		//TODO: compute nb of modules when parsing config file instead of using constant.
+		//TODO: compute max nb of relations for modules when parsing config file instead of using constant.
+		module_relation relations_[128][32];
 
-		void process(processor_component* source_component, output_process_data& output_process_data);
+		void process(processor_module* source_module, output_process_data& output_process_data);
 		
-		[[nodiscard]] processor::component::midi_input* get_midi_input_component_for_event(const event& event) const;
-		[[nodiscard]] processor::component::audio_input* get_audio_input_component_for_buffer(int32_t buffer_id) const;
+		[[nodiscard]] processor::module::midi_input* get_midi_input_module_for_event(const event& event) const;
+		[[nodiscard]] processor::module::audio_input* get_audio_input_module_for_buffer(int32_t buffer_id) const;
 
 		bool bypass_;
 	};

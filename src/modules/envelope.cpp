@@ -7,9 +7,9 @@
 using namespace cycfi;
 using namespace q::literals;
 
-namespace live::tritone::vie::processor::component
+namespace live::tritone::vie::processor::module
 {
-	envelope::envelope(nlohmann::json envelope_definition) : processor_component(),
+	envelope::envelope(nlohmann::json envelope_definition) : processor_module(),
 		id_(envelope_definition["id"]),
 		name_(envelope_definition["name"]),
 		sample_rate_(0.0),
@@ -21,12 +21,12 @@ namespace live::tritone::vie::processor::component
 		outputs_()
 	{
 		for (int i = 0; i < 32; i++) {
-			velocities_[i] = new float_component_output();
-			notes_off_[i] = new novalue_component_output();
-			outputs_[i] = new float_array_component_output();
-			sustains_starts_[i] = new float_component_output();
-			sustains_ends_[i] = new float_component_output();
-			sustains_loops_[i] = new float_component_output();
+			velocities_[i] = new float_module_output();
+			notes_off_[i] = new novalue_module_output();
+			outputs_[i] = new float_array_module_output();
+			sustains_starts_[i] = new float_module_output();
+			sustains_ends_[i] = new float_module_output();
+			sustains_loops_[i] = new float_module_output();
 		}
 	}
 
@@ -56,9 +56,9 @@ namespace live::tritone::vie::processor::component
 		return name_;
 	}
 
-	processor_component_type envelope::get_type()
+	processor_module_type envelope::get_type()
 	{
-		return processor_component_type::middle;
+		return processor_module_type::middle;
 	}
 
 	void envelope::set_sample_rate(const double sample_rate)
@@ -105,7 +105,7 @@ namespace live::tritone::vie::processor::component
 					envelope_info.is_processed = true;
 				}
 
-				float_array_component_output* output = outputs_[velocity_index];
+				float_array_module_output* output = outputs_[velocity_index];
 
 				//If nb of samples is greater than the ones currently allocated, reallocate.
 				//It means either that this is the first time we pass here or host changed the number of frames to process.
@@ -162,23 +162,23 @@ namespace live::tritone::vie::processor::component
 		}
 	}
 
-	uint_fast8_t envelope::get_output_values(const uint_fast16_t slot_id, std::array<component_output*, 32>& values)
+	uint_fast8_t envelope::get_output_values(const uint_fast16_t slot_id, std::array<module_output*, 32>& values)
 	{
 		switch (slot_id) {
 		case notes_off_output_id:
-			values = reinterpret_cast<std::array<component_output*, 32>&>(notes_off_);
+			values = reinterpret_cast<std::array<module_output*, 32>&>(notes_off_);
 			return nb_notes_off_;
 		case amplitudes_output_id:
-			values = reinterpret_cast<std::array<component_output*, 32>&>(outputs_);
+			values = reinterpret_cast<std::array<module_output*, 32>&>(outputs_);
 			return nb_outputs_;
 		case sustains_starts_output_id:
 			//TODO: Implement
 			return nb_sustains_starts_;
 		case sustains_ends_output_id:
-			values = reinterpret_cast<std::array<component_output*, 32>&>(sustains_ends_);
+			values = reinterpret_cast<std::array<module_output*, 32>&>(sustains_ends_);
 			return nb_sustains_ends_;
 		case sustains_loops_output_id:
-			values = reinterpret_cast<std::array<component_output*, 32>&>(sustains_loops_);
+			values = reinterpret_cast<std::array<module_output*, 32>&>(sustains_loops_);
 			return nb_sustains_loops_;
 		}
 
@@ -228,7 +228,7 @@ namespace live::tritone::vie::processor::component
 		throw std::invalid_argument("Invalid slot name");
 	}
 
-	void envelope::set_input_values(const uint_fast16_t slot_id, std::array<component_output*, 32>& values, uint_fast8_t nb_values)
+	void envelope::set_input_values(const uint_fast16_t slot_id, std::array<module_output*, 32>& values, uint_fast8_t nb_values)
 	{
 		switch (slot_id)
 		{
@@ -237,8 +237,8 @@ namespace live::tritone::vie::processor::component
 			if (nb_values > 0) {
 				for (uint_fast32_t note_index = 0; note_index < nb_values; note_index++)
 				{
-					component_output* note_event_component = values[note_index];
-					uint32_t note_id = note_event_component->note_id;
+					module_output* note_event_module = values[note_index];
+					uint32_t note_id = note_event_module->note_id;
 
 					if (auto envelope_iterator = envelopes_.find(note_id); envelope_iterator != envelopes_.end())
 					{
@@ -265,8 +265,8 @@ namespace live::tritone::vie::processor::component
 			assert(nb_values <= 32);
 			for (uint_fast32_t note_index = 0; note_index < nb_values; note_index++)
 			{
-				const component_output* note_event_component = values[note_index];
-				uint32_t note_id = note_event_component->note_id;
+				const module_output* note_event_module = values[note_index];
+				uint32_t note_id = note_event_module->note_id;
 				q::envelope* q_envelope = envelopes_[note_id].envelope;
 				q_envelope->release();
 			}

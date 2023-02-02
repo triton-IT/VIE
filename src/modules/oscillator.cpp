@@ -7,9 +7,9 @@
 
 using namespace cycfi;
 
-namespace live::tritone::vie::processor::component
+namespace live::tritone::vie::processor::module
 {
-	oscillator::oscillator(nlohmann::json oscillator_definition) : processor_component(),
+	oscillator::oscillator(nlohmann::json oscillator_definition) : processor_module(),
 		id_(oscillator_definition["id"]),
 		name_(oscillator_definition["name"]),
 		sample_rate_(.0),
@@ -35,7 +35,7 @@ namespace live::tritone::vie::processor::component
 		}
 		
 		for (int i = 0; i < 32; i++) {
-			outputs_[i] = new float_array_component_output();
+			outputs_[i] = new float_array_module_output();
 		}
 	}
 
@@ -60,9 +60,9 @@ namespace live::tritone::vie::processor::component
 		return name_;
 	}
 
-	processor_component_type oscillator::get_type()
+	processor_module_type oscillator::get_type()
 	{
-		return processor_component_type::middle;
+		return processor_module_type::middle;
 	}
 
 	void oscillator::set_sample_rate(const double sample_rate)
@@ -85,7 +85,7 @@ namespace live::tritone::vie::processor::component
 		nb_outputs_ = 0;
 		for (auto& [note_id, phase_descriptor] : *current_phases_descriptors_)
 		{
-			float_array_component_output* output = outputs_[nb_outputs_];
+			float_array_module_output* output = outputs_[nb_outputs_];
 
 			//If nb of samples is greater than the ones currently allocated, reallocate.
 			if (output_process_data.num_samples > output->values.nb_values)
@@ -120,12 +120,12 @@ namespace live::tritone::vie::processor::component
 		}
 	}
 
-	uint_fast8_t oscillator::get_output_values(const uint_fast16_t slot_id, std::array<component_output*, 32>& values)
+	uint_fast8_t oscillator::get_output_values(const uint_fast16_t slot_id, std::array<module_output*, 32>& values)
 	{
 		switch (slot_id)
 		{
 		case amplitudes_output_id:
-			values = reinterpret_cast<std::array<component_output*, 32>&>(outputs_);
+			values = reinterpret_cast<std::array<module_output*, 32>&>(outputs_);
 			return nb_outputs_;
 		}
 		
@@ -159,7 +159,7 @@ namespace live::tritone::vie::processor::component
 		throw std::invalid_argument("Invalid slot name");
 	}
 
-	void oscillator::set_input_values(const uint_fast16_t slot_id, std::array<component_output*, 32>& values, uint_fast8_t nb_values)
+	void oscillator::set_input_values(const uint_fast16_t slot_id, std::array<module_output*, 32>& values, uint_fast8_t nb_values)
 	{
 		switch (slot_id)
 		{
@@ -167,9 +167,9 @@ namespace live::tritone::vie::processor::component
 			assert(nb_values <= 32);
 			for (uint_fast16_t i = 0; i < nb_values; i++)
 			{
-				auto component_values = values[i];
+				auto module_values = values[i];
 
-				const auto note_id = component_values->note_id;
+				const auto note_id = module_values->note_id;
 
 				if (const auto current_phase_descriptor = current_phases_descriptors_->find(note_id); current_phase_descriptor != current_phases_descriptors_->end())
 				{
@@ -181,7 +181,7 @@ namespace live::tritone::vie::processor::component
 				else
 				{
 					//If frequency is a new one, create a phase for it.
-					const auto raw_frequency = component_values->to_float();
+					const auto raw_frequency = module_values->to_float();
 					const auto frequency = q::frequency(static_cast<double>(raw_frequency));
 
 					phase_descriptor& phase_descriptor = next_phases_descriptors_->operator[](note_id);

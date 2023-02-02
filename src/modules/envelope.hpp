@@ -2,13 +2,13 @@
 
 #include <json.hpp>
 
-#include "../processor_component.hpp"
+#include "../processor_module.hpp"
 
 #include <q/synth/envelope.hpp>
 
-namespace live::tritone::vie::processor::component
+namespace live::tritone::vie::processor::module
 {
-	class envelope final : public processor_component
+	class envelope final : public processor_module
 	{
 	public:
 		explicit envelope(nlohmann::json envelope_definition);
@@ -27,7 +27,7 @@ namespace live::tritone::vie::processor::component
 
 		std::string get_name() override;
 
-		processor_component_type get_type() override;
+		processor_module_type get_type() override;
 
 		void set_sample_rate(double sample_rate) override;
 
@@ -37,13 +37,13 @@ namespace live::tritone::vie::processor::component
 
 		void process(output_process_data& output_process_data) override;
 
-		uint_fast8_t get_output_values(uint_fast16_t slot_id, std::array<component_output*, 32>& values) override;
+		uint_fast8_t get_output_values(uint_fast16_t slot_id, std::array<module_output*, 32>& values) override;
 
 		bool has_finished() override;
 
 		uint_fast16_t get_slot_id(const std::string& slot_name) override;
 
-		void set_input_values(uint_fast16_t slot_id, std::array<component_output*, 32>& values, uint_fast8_t nb_values) override;
+		void set_input_values(uint_fast16_t slot_id, std::array<module_output*, 32>& values, uint_fast8_t nb_values) override;
 
 		uint_fast32_t get_max_nb_input_values(uint_fast16_t slot_id) override;
 
@@ -92,31 +92,31 @@ namespace live::tritone::vie::processor::component
 		double sample_rate_;
 
 		uint_fast16_t nb_velocities_inputs_;
-		std::array<float_component_output*, 32> velocities_;
+		std::array<float_module_output*, 32> velocities_;
 
 		bool velocities_filled_;
 		bool notes_on_filled_;
 		bool notes_off_filled_;
 
 		uint_fast16_t nb_notes_off_ = 0;
-		std::array<novalue_component_output*, 32> notes_off_;
+		std::array<novalue_module_output*, 32> notes_off_;
 
 		uint_fast8_t nb_outputs_;
-		std::array<float_array_component_output*, 32> outputs_;
+		std::array<float_array_module_output*, 32> outputs_;
 
 		uint_fast16_t nb_sustains_starts_ = 0;
 		/**
 		* Send an event when marker of sustain start is reached.
 		* Value is the offset of the sustain start marker.
 		*/
-		std::array<float_component_output*, 32> sustains_starts_;
+		std::array<float_module_output*, 32> sustains_starts_;
 
 		uint_fast16_t nb_sustains_ends_ = 0;
 		/**
 		* Send an event when marker of sustain end is reached.
 		* Value is the offset of the sustain end marker.
 		*/
-		std::array<float_component_output*, 32> sustains_ends_;
+		std::array<float_module_output*, 32> sustains_ends_;
 
 		uint_fast8_t nb_sustains_loops_ = 0;
 		/**
@@ -124,6 +124,6 @@ namespace live::tritone::vie::processor::component
 		* Value is the offset of the sustain start marker.
 		* This event can be used to move a sample to a start marker when a sustain end marker is reached.
 		*/
-		std::array<float_component_output*, 32> sustains_loops_;
+		std::array<float_module_output*, 32> sustains_loops_;
 	};
 } // namespace

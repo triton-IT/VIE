@@ -2,9 +2,9 @@
 
 #include "../application.hpp"
 
-namespace live::tritone::vie::processor::component
+namespace live::tritone::vie::processor::module
 {
-	audio_output::audio_output(nlohmann::json audio_output_definition) : processor_component(),
+	audio_output::audio_output(nlohmann::json audio_output_definition) : processor_module(),
 		id_(audio_output_definition["id"]),
 		name_(audio_output_definition["name"]),
 		nb_outputs_(0),
@@ -25,9 +25,9 @@ namespace live::tritone::vie::processor::component
 		return name_;
 	}
 
-	processor_component_type audio_output::get_type()
+	processor_module_type audio_output::get_type()
 	{
-		return processor_component_type::audio_output;
+		return processor_module_type::audio_output;
 	}
 
 	void audio_output::set_sample_rate(double sample_rate)
@@ -70,7 +70,7 @@ namespace live::tritone::vie::processor::component
 		}
 	}
 
-	uint_fast8_t audio_output::get_output_values(uint_fast16_t slot_id, std::array<component_output*, 32>& values)
+	uint_fast8_t audio_output::get_output_values(uint_fast16_t slot_id, std::array<module_output*, 32>& values)
 	{
 		throw std::invalid_argument("Invalid slot id");
 	}
@@ -98,7 +98,7 @@ namespace live::tritone::vie::processor::component
 	* An audio_output accepts only one channel.
 	* The first channel is picked, the other ones are ignored.
 	*/
-	void audio_output::set_input_values(const uint_fast16_t slot_id, std::array<component_output*, 32>& values, uint_fast8_t nb_values)
+	void audio_output::set_input_values(const uint_fast16_t slot_id, std::array<module_output*, 32>& values, uint_fast8_t nb_values)
 	{
 		switch (slot_id)
 		{

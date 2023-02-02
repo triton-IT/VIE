@@ -5,9 +5,9 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 
-namespace live::tritone::vie::processor::component
+namespace live::tritone::vie::processor::module
 {
-	gain::gain(nlohmann::json gain_definition) : processor_component(),
+	gain::gain(nlohmann::json gain_definition) : processor_module(),
 		id_(gain_definition["id"]),
 		name_(gain_definition["name"]),
 		nb_inputs_(0),
@@ -16,7 +16,7 @@ namespace live::tritone::vie::processor::component
 		inputs_set_(false)
 	{
 		for (int i = 0; i < 32; i++) {
-			amplified_output_[i] = new float_array_component_output();
+			amplified_output_[i] = new float_array_module_output();
 		}
 	}
 
@@ -36,9 +36,9 @@ namespace live::tritone::vie::processor::component
 		return name_;
 	}
 
-	processor_component_type gain::get_type()
+	processor_module_type gain::get_type()
 	{
-		return processor_component_type::middle;
+		return processor_module_type::middle;
 	}
 
 	void gain::set_sample_rate(double sample_rate)
@@ -93,11 +93,11 @@ namespace live::tritone::vie::processor::component
 		}		
 	}
 
-	uint_fast8_t gain::get_output_values(const uint_fast16_t slot_id, std::array<component_output*, 32>& values)
+	uint_fast8_t gain::get_output_values(const uint_fast16_t slot_id, std::array<module_output*, 32>& values)
 	{
 		switch (slot_id)
 		{
-			values = reinterpret_cast<std::array<component_output*, 32>&>(amplified_output_);
+			values = reinterpret_cast<std::array<module_output*, 32>&>(amplified_output_);
 			return nb_inputs_;
 		}
 		
@@ -127,7 +127,7 @@ namespace live::tritone::vie::processor::component
 		throw std::invalid_argument("Invalid slot name");
 	}
 
-	void gain::set_input_values(const uint_fast16_t slot_id, std::array<component_output*, 32>& values, uint_fast8_t nb_values)
+	void gain::set_input_values(const uint_fast16_t slot_id, std::array<module_output*, 32>& values, uint_fast8_t nb_values)
 	{
 		switch (slot_id)
 		{

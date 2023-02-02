@@ -7,9 +7,9 @@
 
 using namespace std;
 
-namespace live::tritone::vie::processor::component
+namespace live::tritone::vie::processor::module
 {
-	midi_input::midi_input(nlohmann::json midi_definition) : processor_component(),
+	midi_input::midi_input(nlohmann::json midi_definition) : processor_module(),
 		id_(midi_definition["id"]),
 		name_(midi_definition["name"]),
 		nb_values_(0),
@@ -21,10 +21,10 @@ namespace live::tritone::vie::processor::component
 		notes_off_outputs_()
 	{
 		for (int i = 0; i < 32; i++) {
-			frequencies_outputs_[i] = new float_component_output();
-			velocities_outputs_[i] = new float_component_output();
-			notes_on_outputs_[i] = new novalue_component_output();
-			notes_off_outputs_[i] = new novalue_component_output();
+			frequencies_outputs_[i] = new float_module_output();
+			velocities_outputs_[i] = new float_module_output();
+			notes_on_outputs_[i] = new novalue_module_output();
+			notes_off_outputs_[i] = new novalue_module_output();
 		}
 	}
 
@@ -47,9 +47,9 @@ namespace live::tritone::vie::processor::component
 		return name_;
 	}
 
-	processor_component_type midi_input::get_type()
+	processor_module_type midi_input::get_type()
 	{
-		return processor_component_type::event_input;
+		return processor_module_type::event_input;
 	}
 
 	void midi_input::set_sample_rate(double sample_rate)
@@ -82,7 +82,7 @@ namespace live::tritone::vie::processor::component
 		throw std::invalid_argument("Invalid slot name");
 	}
 
-	void midi_input::set_input_values(uint_fast16_t slot_id, std::array<component_output*, 32>& values, uint_fast8_t nb_values)
+	void midi_input::set_input_values(uint_fast16_t slot_id, std::array<module_output*, 32>& values, uint_fast8_t nb_values)
 	{
 		throw std::invalid_argument("Invalid slot id");
 	}
@@ -106,7 +106,7 @@ namespace live::tritone::vie::processor::component
 
 	void midi_input::process(output_process_data& output_process_data)
 	{
-		//If component is on and has not already been processed.
+		//If module is on and has not already been processed.
 		if (is_on && nb_values_ == 0) {
 			//Get all outputs information from midi event.
 			for (auto& [note_id, note_on_event] : notes_)
@@ -125,23 +125,23 @@ namespace live::tritone::vie::processor::component
 		}
 	}
 
-	uint_fast8_t midi_input::get_output_values(const uint_fast16_t slot_id, std::array<component_output*, 32>& values)
+	uint_fast8_t midi_input::get_output_values(const uint_fast16_t slot_id, std::array<module_output*, 32>& values)
 	{
 		uint_fast32_t nb_values = -1;
 		switch (slot_id)
 		{
 		case frequencies_output_id:
-			values = reinterpret_cast<std::array<component_output*, 32>&>(frequencies_outputs_);
+			values = reinterpret_cast<std::array<module_output*, 32>&>(frequencies_outputs_);
 			return nb_values_;
 		case velocities_output_id:
-			values = reinterpret_cast<std::array<component_output*, 32>&>(velocities_outputs_);
+			values = reinterpret_cast<std::array<module_output*, 32>&>(velocities_outputs_);
 			return nb_values_;
 		case notes_on_output_id:
-			values = reinterpret_cast<std::array<component_output*, 32>&>(notes_on_outputs_);
+			values = reinterpret_cast<std::array<module_output*, 32>&>(notes_on_outputs_);
 			note_on_processed = true;
 			return nb_notes_on_values_;
 		case notes_off_output_id:
-			values = reinterpret_cast<std::array<component_output*, 32>&>(notes_off_outputs_);
+			values = reinterpret_cast<std::array<module_output*, 32>&>(notes_off_outputs_);
 			note_off_processed = true;
 			return nb_notes_off_values_;
 		default:

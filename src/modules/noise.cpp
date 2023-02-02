@@ -7,7 +7,7 @@
 using namespace cycfi;
 using namespace q::literals;
 
-namespace live::tritone::vie::processor::component
+namespace live::tritone::vie::processor::module
 {
 	noise::noise(nlohmann::json noise_definition) :
 		id_(noise_definition["id"]),
@@ -20,7 +20,7 @@ namespace live::tritone::vie::processor::component
 		nb_outputs_(0)
 	{
 		for (uint_fast8_t i = 0; i < 32; i++) {
-			outputs_[i] = new float_array_component_output();
+			outputs_[i] = new float_array_module_output();
 		}
 	}
 
@@ -41,9 +41,9 @@ namespace live::tritone::vie::processor::component
 		return name_;
 	}
 
-	processor_component_type noise::get_type()
+	processor_module_type noise::get_type()
 	{
-		return processor_component_type::middle;
+		return processor_module_type::middle;
 	}
 
 	void noise::set_sample_rate(const double sample_rate)
@@ -67,7 +67,7 @@ namespace live::tritone::vie::processor::component
 		nb_outputs_ = 0;
 		for (auto& [note_id, noise_descriptor] : *current_noises_descriptors_)
 		{
-			float_array_component_output* output = outputs_[nb_outputs_];
+			float_array_module_output* output = outputs_[nb_outputs_];
 
 			//If nb of samples is greater than the ones currently allocated, reallocate.
 			if (output_process_data.num_samples > output->values.nb_values)
@@ -117,12 +117,12 @@ namespace live::tritone::vie::processor::component
 		}
 	}
 
-	uint_fast8_t noise::get_output_values(const uint_fast16_t slot_id, std::array<component_output*, 32>& values)
+	uint_fast8_t noise::get_output_values(const uint_fast16_t slot_id, std::array<module_output*, 32>& values)
 	{
 		switch (slot_id)
 		{
 		case amplitudes_output_id:
-			values = reinterpret_cast<std::array<component_output*, 32>&>(outputs_);
+			values = reinterpret_cast<std::array<module_output*, 32>&>(outputs_);
 			return nb_outputs_;
 		}
 		
@@ -144,7 +144,7 @@ namespace live::tritone::vie::processor::component
 		throw std::invalid_argument("Invalid slot name");
 	}
 
-	void noise::set_input_values(const uint_fast16_t slot_id, std::array<component_output*, 32>& values, uint_fast8_t nb_values)
+	void noise::set_input_values(const uint_fast16_t slot_id, std::array<module_output*, 32>& values, uint_fast8_t nb_values)
 	{
 		switch (slot_id)
 		{
@@ -152,9 +152,9 @@ namespace live::tritone::vie::processor::component
 			assert(nb_values > 0);
 			for (uint_fast16_t i = 0; i < nb_values; i++)
 			{
-				const auto component_output = values[i];
+				const auto module_output = values[i];
 
-				uint32_t input_id = component_output->note_id;
+				uint32_t input_id = module_output->note_id;
 
 				if (const auto current_noise_descriptor = current_noises_descriptors_->find(input_id); current_noise_descriptor != current_noises_descriptors_->end())
 				{

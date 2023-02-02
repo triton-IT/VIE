@@ -130,7 +130,7 @@ namespace live::tritone::vie
 		return kResultTrue;
 	}
 
-	void vie_view::set_component_handler(Steinberg::Vst::IComponentHandler* handler)
+	void vie_view::set_module_handler(Steinberg::Vst::IComponentHandler* handler)
 	{
 		handler_ = handler;
 	}

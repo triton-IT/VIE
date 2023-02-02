@@ -2,7 +2,7 @@
 
 #include "../application.hpp"
 
-namespace live::tritone::vie::processor::component
+namespace live::tritone::vie::processor::module
 {	
 	audio_input::audio_input(nlohmann::json audio_input_definition) :
 		id_(audio_input_definition["id"]),
@@ -11,7 +11,7 @@ namespace live::tritone::vie::processor::component
 		sample_rate_(44100)
 	{
 		for (int i = 0; i < 32; i++) {
-			outputs_[i] = new float_array_component_output();
+			outputs_[i] = new float_array_module_output();
 		}
 	}
 
@@ -32,9 +32,9 @@ namespace live::tritone::vie::processor::component
 		return name_;
 	}
 
-	processor_component_type audio_input::get_type()
+	processor_module_type audio_input::get_type()
 	{
-		return processor_component_type::audio_input;
+		return processor_module_type::audio_input;
 	}
 
 	void audio_input::set_sample_rate(const double audio_input_rate)
@@ -57,7 +57,7 @@ namespace live::tritone::vie::processor::component
 
 		if (buffer_->num_channels > 0)
 		{
-			assert(("Output component must be set-up before processing", outputs_[0] != nullptr));
+			assert(("Output module must be set-up before processing", outputs_[0] != nullptr));
 			
 			//If nb of audio_inputs is greater than the ones currently allocated, reallocate.
 			if (output_process_data.num_samples > outputs_[0]->values.nb_values)
@@ -71,9 +71,9 @@ namespace live::tritone::vie::processor::component
 			}
 
 			//FIXME: We should handle the noteId correctly.
-			//Have each input component configured return the maximum number of note id it can handle.
-			//and then assign a starting noteId offset to each input component.
-			//Each input component could then set the noteId it is processing according to the starting id specified.
+			//Have each input module configured return the maximum number of note id it can handle.
+			//and then assign a starting noteId offset to each input module.
+			//Each input module could then set the noteId it is processing according to the starting id specified.
 			outputs_[0]->note_id = 256;
 
 			//FIXME: Handle multiple channels !
@@ -87,11 +87,11 @@ namespace live::tritone::vie::processor::component
 		}
 	}
 
-	uint_fast8_t audio_input::get_output_values(const uint_fast16_t slot_id, std::array<component_output*, 32>& values)
+	uint_fast8_t audio_input::get_output_values(const uint_fast16_t slot_id, std::array<module_output*, 32>& values)
 	{
 		switch (slot_id) {
 		case audio_output_id:
-			values = reinterpret_cast<std::array<component_output*, 32>&>(outputs_);
+			values = reinterpret_cast<std::array<module_output*, 32>&>(outputs_);
 			return 1;
 		}
 
@@ -117,7 +117,7 @@ namespace live::tritone::vie::processor::component
 		throw std::invalid_argument("Invalid slot name");
 	}
 
-	void audio_input::set_input_values(const uint_fast16_t slot_id, std::array<component_output*, 32>& values, uint_fast8_t nb_values)
+	void audio_input::set_input_values(const uint_fast16_t slot_id, std::array<module_output*, 32>& values, uint_fast8_t nb_values)
 	{
 		throw std::invalid_argument("Invalid slot id");
 	}

@@ -44,7 +44,7 @@ namespace live::tritone::vie
 		Steinberg::tresult set_state(Steinberg::IBStream* state);
 		Steinberg::tresult get_state(Steinberg::IBStream* state);
 
-		void set_component_handler(Steinberg::Vst::IComponentHandler* handler);
+		void set_module_handler(Steinberg::Vst::IComponentHandler* handler);
 
 		void render();
 

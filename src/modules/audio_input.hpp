@@ -2,11 +2,11 @@
 
 #include <json.hpp>
 
-#include "../processor_component.hpp"
+#include "../processor_module.hpp"
 
-namespace live::tritone::vie::processor::component
+namespace live::tritone::vie::processor::module
 {
-	class audio_input final : public processor_component
+	class audio_input final : public processor_module
 	{
 	public:
 		//FIXME: Just to test. To remove:
@@ -24,7 +24,7 @@ namespace live::tritone::vie::processor::component
 
 		std::string get_name() override;
 
-		processor_component_type get_type() override;
+		processor_module_type get_type() override;
 
 		void set_sample_rate(double audio_input_rate) override;
 
@@ -34,13 +34,13 @@ namespace live::tritone::vie::processor::component
 
 		void process(output_process_data& output_process_data) override;
 
-		uint_fast8_t get_output_values(uint_fast16_t slot_id, std::array<component_output*, 32>& values) override;
+		uint_fast8_t get_output_values(uint_fast16_t slot_id, std::array<module_output*, 32>& values) override;
 
 		bool has_finished() override;
 
 		uint_fast16_t get_slot_id(const std::string& slot_name) override;
 
-		void set_input_values(uint_fast16_t slot_id, std::array<component_output*, 32>& values, uint_fast8_t nb_values) override;
+		void set_input_values(uint_fast16_t slot_id, std::array<module_output*, 32>& values, uint_fast8_t nb_values) override;
 
 		uint_fast32_t get_max_nb_input_values(uint_fast16_t slot_id) override;
 
@@ -74,9 +74,9 @@ namespace live::tritone::vie::processor::component
 			uint32_t position;
 		};
 
-		float_array_component_output empty_array_component_;
+		float_array_module_output empty_array_module_;
 
-		std::array<float_array_component_output*, 32> outputs_;
+		std::array<float_array_module_output*, 32> outputs_;
 
 		audio_bus_buffers* buffer_;
 	};

@@ -35,9 +35,9 @@ namespace live::tritone::vie
 		float* values;
 	} float_array;
 	
-	struct component_output
+	struct module_output
 	{		
-		component_output(uint32_t id) : note_id(id)
+		module_output(uint32_t id) : note_id(id)
 		{
 		}
 
@@ -51,16 +51,16 @@ namespace live::tritone::vie
 	};
 
 	/**
-	* Used to transfer output event from one component to another.
+	* Used to transfer output event from one module to another.
 	* For example, a note on event (that does not contain any additional data).
 	*/
-	struct novalue_component_output : public component_output
+	struct novalue_module_output : public module_output
 	{
-		novalue_component_output() : component_output(0)
+		novalue_module_output() : module_output(0)
 		{
 		}
 		
-		novalue_component_output(uint32_t note_id) : component_output(note_id)
+		novalue_module_output(uint32_t note_id) : module_output(note_id)
 		{
 		}
 
@@ -80,14 +80,14 @@ namespace live::tritone::vie
 		}
 	};
 
-	struct float_component_output : public component_output
+	struct float_module_output : public module_output
 	{
-		float_component_output() : component_output(0), value(.0f)
+		float_module_output() : module_output(0), value(.0f)
 		{
 			value = .0f;
 		}
 		
-		float_component_output(uint32_t note_id, float value) : component_output(note_id), value(value)
+		float_module_output(uint32_t note_id, float value) : module_output(note_id), value(value)
 		{
 		}
 
@@ -109,15 +109,15 @@ namespace live::tritone::vie
 		}
 	};
 
-	struct float_array_component_output : public component_output
+	struct float_array_module_output : public module_output
 	{
-		float_array_component_output() : component_output(0)
+		float_array_module_output() : module_output(0)
 		{
 			values.nb_values = 0;
 			values.values = nullptr;
 		}
 		
-		float_array_component_output(uint32_t note_id, float_array values) : component_output(note_id), values(values)
+		float_array_module_output(uint32_t note_id, float_array values) : module_output(note_id), values(values)
 		{
 		}
 
@@ -139,7 +139,7 @@ namespace live::tritone::vie
 		}
 	};
 
-	enum class processor_component_type
+	enum class processor_module_type
 	{
 		event_input,
 		audio_input,
@@ -147,20 +147,20 @@ namespace live::tritone::vie
 		middle
 	};
 
-	class processor_component
+	class processor_module
 	{
 	public:
 		/**
 		* throw std::runtime_error when construction fails.
 		*/
-		processor_component() = default;
-		processor_component(const processor_component&) = default;
-		processor_component(processor_component&&) = default;
+		processor_module() = default;
+		processor_module(const processor_module&) = default;
+		processor_module(processor_module&&) = default;
 
-		virtual ~processor_component() = default;
+		virtual ~processor_module() = default;
 
-		processor_component& operator=(const processor_component&) = default;
-		processor_component& operator=(processor_component&&) = default;
+		processor_module& operator=(const processor_module&) = default;
+		processor_module& operator=(processor_module&&) = default;
 
 		/**
 		* Get this processor identifier.
@@ -173,9 +173,9 @@ namespace live::tritone::vie
 		virtual std::string get_name() = 0;
 
 		/**
-		* Get component type. (input, output or middle).
+		* Get module type. (input, output or middle).
 		*/
-		virtual processor_component_type get_type() = 0;
+		virtual processor_module_type get_type() = 0;
 
 		/**
 		* Set sample rate.
@@ -183,9 +183,26 @@ namespace live::tritone::vie
 		virtual void set_sample_rate(double sample_rate) = 0;
 
 		/**
-		* Pre-process the component.
+		* Get the input identifier for the given input name.
+		*/
+		virtual uint_fast16_t get_slot_id(const std::string& slot_name) = 0;
+
+		/**
+		* Set the values for the given slot.
+		* For a given slot, multiple notes can be played (one value by note).
+		* The input type of the requested slot is unknown by this interface.
+		*/
+		virtual void set_input_values(uint_fast16_t slot_id, std::array<module_output*, 32>& values, uint_fast8_t nb_values) = 0;
+
+		/**
+		* Get the maximum number of values accepted for the given input identifier.
+		*/
+		virtual uint_fast32_t get_max_nb_input_values(uint_fast16_t slot_id) = 0;
+
+		/**
+		* Pre-process the module.
 		* Called only once per process loop.
-		* If the component has multiple inputs relations, 
+		* If the module has multiple inputs relations, 
 		* the "process" method and the "get_output_values" are called once by input relation.
 		* The "preprocess" method is called only once whatever the number of input relations.
 		*/
@@ -207,7 +224,7 @@ namespace live::tritone::vie
 		* For a given slot, multiple notes can be played (one value by note).
 		* The output type of the requested slot is unknown by this interface.
 		*/
-		virtual uint_fast8_t get_output_values(uint_fast16_t slot_id, std::array<component_output*, 32>&) = 0;
+		virtual uint_fast8_t get_output_values(uint_fast16_t slot_id, std::array<module_output*, 32>&) = 0;
 
 		/**
 		 * Has this processor finished the processing ?
@@ -216,33 +233,16 @@ namespace live::tritone::vie
 		virtual bool has_finished() = 0;
 
 		/**
-		* Get the input identifier for the given input name.
-		*/
-		virtual uint_fast16_t get_slot_id(const std::string& slot_name) = 0;
-
-		/**
-		* Set the values for the given slot.
-		* For a given slot, multiple notes can be played (one value by note).
-		* The input type of the requested slot is unknown by this interface.
-		*/
-		virtual void set_input_values(uint_fast16_t slot_id, std::array<component_output*, 32>& values, uint_fast8_t nb_values) = 0;
-
-		/**
-		* Get the maximum number of values accepted for the given input identifier.
-		*/
-		virtual uint_fast32_t get_max_nb_input_values(uint_fast16_t slot_id) = 0;
-
-		/**
 		* Set a parameter to this processor.
 		*/
 		virtual void set_parameter(parameter parameter) = 0;
 
 	private:
 		/**
-		* Initialize component with specified configuration.
+		* Initialize module with specified configuration.
 		*/
 		void initialize(nlohmann::json processor_definition);
 
-		friend class processor_components;
+		friend class processor_modules;
 	};
 } // namespace

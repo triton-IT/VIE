@@ -2,16 +2,16 @@
 
 #include "../application.hpp"
 
-namespace live::tritone::vie::processor::component
+namespace live::tritone::vie::processor::module
 {
-	mixer::mixer(nlohmann::json mixer_definition) : processor_component(),
+	mixer::mixer(nlohmann::json mixer_definition) : processor_module(),
 		id_(mixer_definition["id"]),
 		name_(mixer_definition["name"]),
 		nb_inputs_(0),
 		can_process_(true)
 	{
 		for (uint_fast8_t i = 0; i < 32; i++) {
-			average_[i] = new float_array_component_output();
+			average_[i] = new float_array_module_output();
 		}
 	}
 
@@ -31,9 +31,9 @@ namespace live::tritone::vie::processor::component
 		return name_;
 	}
 
-	processor_component_type mixer::get_type()
+	processor_module_type mixer::get_type()
 	{
-		return processor_component_type::middle;
+		return processor_module_type::middle;
 	}
 
 	void mixer::set_sample_rate(double sample_rate)
@@ -94,11 +94,11 @@ namespace live::tritone::vie::processor::component
 		
 	}
 
-	uint_fast8_t mixer::get_output_values(const uint_fast16_t slot_id, std::array<component_output*, 32>& values)
+	uint_fast8_t mixer::get_output_values(const uint_fast16_t slot_id, std::array<module_output*, 32>& values)
 	{
 		switch (slot_id) {
 		case average_output_id:
-			values = reinterpret_cast<std::array<component_output*, 32>&>(average_);
+			values = reinterpret_cast<std::array<module_output*, 32>&>(average_);
 			return nb_inputs_;
 		}
 		
@@ -128,7 +128,7 @@ namespace live::tritone::vie::processor::component
 		throw std::invalid_argument("Invalid slot name");
 	}
 
-	void mixer::set_input_values(const uint_fast16_t slot_id, std::array<component_output*, 32>& values, uint_fast8_t nb_values)
+	void mixer::set_input_values(const uint_fast16_t slot_id, std::array<module_output*, 32>& values, uint_fast8_t nb_values)
 	{
 		switch(slot_id)
 		{

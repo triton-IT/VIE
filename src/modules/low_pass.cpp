@@ -1,19 +1,19 @@
-#include "high_pass.hpp"
+#include "low_pass.hpp"
 
 #include "../application.hpp"
 
 #define _USE_MATH_DEFINES
 #include <math.h>
 
-namespace live::tritone::vie::processor::component
+namespace live::tritone::vie::processor::module
 {
-	high_pass::high_pass(nlohmann::json high_pass_definition) : processor_component(),
-		id_(high_pass_definition["id"]),
-		name_(high_pass_definition["name"]),
+	low_pass::low_pass(nlohmann::json low_pass_definition) : processor_module(),
+		id_(low_pass_definition["id"]),
+		name_(low_pass_definition["name"]),
 		nb_inputs_(0),
 		cutoff_set_(false),
 		resonance_set_(false),
-		cutoff_(2000),
+		cutoff_(300),
 		resonance_(16),
 		input_prev_{ 0, 0 },
 		output_prev_{ 0, 0 },
@@ -25,48 +25,48 @@ namespace live::tritone::vie::processor::component
 		input_modified_(true)
 	{
 		for (int i = 0; i < 32; i++) {
-			filtered_[i] = new float_array_component_output();
+			filtered_[i] = new float_array_module_output();
 		}
 	}
 
-	high_pass::~high_pass() {
+	low_pass::~low_pass() {
 		for (int i = 0; i < 32; i++) {
 			delete filtered_[i];
 		}
 	}
 
-	uint16_t high_pass::get_id()
+	uint16_t low_pass::get_id()
 	{
 		return id_;
 	}
 
-	std::string high_pass::get_name()
+	std::string low_pass::get_name()
 	{
 		return name_;
 	}
 
-	processor_component_type high_pass::get_type()
+	processor_module_type low_pass::get_type()
 	{
-		return processor_component_type::middle;
+		return processor_module_type::middle;
 	}
 
-	void high_pass::set_sample_rate(double sample_rate)
+	void low_pass::set_sample_rate(double sample_rate)
 	{
 		sample_rate_ = sample_rate;
 		input_modified_ = true;
 	}
 
-	void high_pass::preprocess() {
+	void low_pass::preprocess() {
 	}
 
-	bool high_pass::can_process()
+	bool low_pass::can_process()
 	{
 		//FIXME: Pass input parameters
 		//return cutoff_set_ && resonance_set_ && inputs_set_;
 		return inputs_set_;
 	}
 
-	void high_pass::process(output_process_data& output_process_data)
+	void low_pass::process(output_process_data& output_process_data)
 	{
 		cutoff_set_ = false;
 		resonance_set_ = false;
@@ -94,30 +94,30 @@ namespace live::tritone::vie::processor::component
 				cos_omega = cos(omega);
 
 				float a0 = 1 + alpha; //Impulse normalizer
-				
+
 				a1 = (-2 * cos_omega) / a0; //Normalized delay for previous sample.
 				a2 = (1 - alpha) / a0; //Normalized delay for older sample.
 
-				b0 = ((1 + cos_omega) / 2) / a0; //Normalized response for current sample.
-				b1 = -(1 + cos_omega) / a0; //Normalized response to previous sample.
+				b0 = ((1 - cos_omega) / 2) / a0; //Normalized response for current sample.
+				b1 = (1 - cos_omega) / a0; //Normalized response to previous sample.
 				b2 = b0; //Normalized response for older sample.
-
+				
 				input_modified_ = false;
 			}
 
 			for (uint_fast32_t amplitude_id = 0; amplitude_id < nb_inputs_; amplitude_id++)
 			{
 				float_array& input_array = inputs_[amplitude_id];
-
+				
 				for (uint_fast32_t frame = 0; frame < output_process_data.num_samples; frame++)
 				{
 					if (input_array.nb_values > frame)
 					{
 						// Mise à jour de l'entrée et de la sortie courantes
 						float input = input_array.values[frame];
-
+						
 						float output = b0 * input + b1 * input_prev_[0] + b2 * input_prev_[1] - a1 * output_prev_[0] - a2 * output_prev_[1];
-
+						
 						// Mise à jour des entrées et sorties précédentes
 						input_prev_[1] = input_prev_[0];
 						input_prev_[0] = input;
@@ -128,27 +128,27 @@ namespace live::tritone::vie::processor::component
 					}
 				}
 			}
-		}
+		}		
 	}
 
-	uint_fast8_t high_pass::get_output_values(const uint_fast16_t slot_id, std::array<component_output*, 32>& values)
+	uint_fast8_t low_pass::get_output_values(const uint_fast16_t slot_id, std::array<module_output*, 32>& values)
 	{
 		switch (slot_id)
 		{
 		case average_output_id:
-			values = reinterpret_cast<std::array<component_output*, 32>&>(filtered_);
+			values = reinterpret_cast<std::array<module_output*, 32>&>(filtered_);
 			return nb_inputs_;
 		}
 
 		throw std::invalid_argument("Invalid slot id");
 	}
 
-	bool high_pass::has_finished()
+	bool low_pass::has_finished()
 	{
 		return true;
 	}
 
-	uint_fast16_t high_pass::get_slot_id(const std::string& slot_name)
+	uint_fast16_t low_pass::get_slot_id(const std::string& slot_name)
 	{
 		if (slot_name == onoff_input_name)
 		{
@@ -174,7 +174,7 @@ namespace live::tritone::vie::processor::component
 		throw std::invalid_argument("Invalid slot name");
 	}
 
-	void high_pass::set_input_values(const uint_fast16_t slot_id, std::array<component_output*, 32>& values, uint_fast8_t nb_values)
+	void low_pass::set_input_values(const uint_fast16_t slot_id, std::array<module_output*, 32>& values, uint_fast8_t nb_values)
 	{
 		switch (slot_id)
 		{
@@ -188,13 +188,13 @@ namespace live::tritone::vie::processor::component
 			inputs_set_ = true;
 			return;
 		case cutoff_input_id:
-			{
-				float new_cutoff = values[0]->to_float();
-				if (new_cutoff != cutoff_) {
-					input_modified_ = true;
-				}
-				cutoff_ = new_cutoff;
+		{
+			float new_cutoff = values[0]->to_float();
+			if (new_cutoff != cutoff_) {
+				input_modified_ = true;
 			}
+			cutoff_ = new_cutoff;
+		}
 			cutoff_set_ = true;
 			return;
 		case resonance_input_id:
@@ -210,11 +210,11 @@ namespace live::tritone::vie::processor::component
 		default:
 			break;
 		}
-		
+
 		throw std::invalid_argument("Invalid slot id");
 	}
 
-	uint_fast32_t high_pass::get_max_nb_input_values(const uint_fast16_t slot_id)
+	uint_fast32_t low_pass::get_max_nb_input_values(const uint_fast16_t slot_id)
 	{
 		switch (slot_id)
 		{
@@ -225,7 +225,7 @@ namespace live::tritone::vie::processor::component
 		throw std::invalid_argument("Invalid slot id");
 	}
 
-	void high_pass::set_parameter(parameter parameter)
+	void low_pass::set_parameter(parameter parameter)
 	{
 	}
 } // namespace

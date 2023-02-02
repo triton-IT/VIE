@@ -2,9 +2,9 @@
 
 #include "../application.hpp"
 
-namespace live::tritone::vie::processor::component
+namespace live::tritone::vie::processor::module
 {
-	recorder::recorder(nlohmann::json recorder_definition) : processor_component(),
+	recorder::recorder(nlohmann::json recorder_definition) : processor_module(),
 		id_(recorder_definition["id"]),
 		name_(recorder_definition["name"]),
 		sample_rate_(.0),
@@ -40,9 +40,9 @@ namespace live::tritone::vie::processor::component
 		return name_;
 	}
 
-	processor_component_type recorder::get_type()
+	processor_module_type recorder::get_type()
 	{
-		return processor_component_type::middle;
+		return processor_module_type::middle;
 	}
 
 	void recorder::set_sample_rate(const double sample_rate)
@@ -74,11 +74,11 @@ namespace live::tritone::vie::processor::component
 		}
 	}
 
-	uint_fast8_t recorder::get_output_values(const uint_fast16_t slot_id, std::array<component_output*, 32>& values)
+	uint_fast8_t recorder::get_output_values(const uint_fast16_t slot_id, std::array<module_output*, 32>& values)
 	{
 		switch (slot_id) {
 		case amplitude_output_id:
-			values = reinterpret_cast<std::array<component_output*, 32>&>(output_);
+			values = reinterpret_cast<std::array<module_output*, 32>&>(output_);
 			return nb_outputs_;
 		}
 		
@@ -108,14 +108,14 @@ namespace live::tritone::vie::processor::component
 		throw std::invalid_argument("Invalid slot name");
 	}
 
-	void recorder::set_input_values(const uint_fast16_t slot_id, std::array<component_output*, 32>& values, uint_fast8_t nb_values)
+	void recorder::set_input_values(const uint_fast16_t slot_id, std::array<module_output*, 32>& values, uint_fast8_t nb_values)
 	{
 		switch (slot_id)
 		{
 		case onoff_input_id:
 			assert(nb_values == 1);
 
-			on_ = reinterpret_cast<std::array<float_component_output*, 32>&>(values)[0]->to_boolean();
+			on_ = reinterpret_cast<std::array<float_module_output*, 32>&>(values)[0]->to_boolean();
 
 			return;
 		case amplitude_input_id:
@@ -124,7 +124,7 @@ namespace live::tritone::vie::processor::component
 			
 			if (nb_outputs_ > 0)
 			{
-				output_ = reinterpret_cast<std::array<float_array_component_output*, 32>&>(values);
+				output_ = reinterpret_cast<std::array<float_array_module_output*, 32>&>(values);
 			}
 
 			can_process_ = true;
