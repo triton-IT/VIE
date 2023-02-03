@@ -95,24 +95,25 @@ def create_matrix(id)
       # puts "======>#{grab(:selected).data}"
       grab(:connection).data[1] = index
       source_cell = grab(:connection).data.value[0]
-      target_cell = grab(:connection).data.value[1]
-      unless source_cell == target_cell
+      dest_cell = grab(:connection).data.value[1]
+      unless source_cell == dest_cell
         clear_zone(inspector)
         new_connection = grab(:connection).data.value
         vivify({ connect: "TODO :add matrix _id  #{new_connection}" })
-        grab(:links).data[:toto] = :poilu
-        grab(:connection).data << :titi
+
+        grab(:links).data[modules.cell(index).id.value] = [source_cell,dest_cell]
+        grab(:connection).data << [source_cell,dest_cell]
 
         inspector.text(data: new_connection)
         modules.cell(source_cell).detached(:cell_color)
-        modules.cell(target_cell).detached(:cell_color)
+        modules.cell(dest_cell).detached(:cell_color)
         modules.cell(source_cell).attached(:cell_connected)
-        modules.cell(target_cell).attached(:cell_connected)
+        modules.cell(dest_cell).attached(:cell_connected)
         wait 0.6 do
           modules.cell(source_cell).attached(:cell_color)
-          modules.cell(target_cell).attached(:cell_color)
+          modules.cell(dest_cell).attached(:cell_color)
           modules.cell(source_cell).detached(:cell_connected)
-          modules.cell(target_cell).detached(:cell_connected)
+          modules.cell(dest_cell).detached(:cell_connected)
         end
 
       end
@@ -164,7 +165,7 @@ def fill_toolzone (ids)
   end
 end
 
-fill_toolzone([:folder, :clear, :settings, :edition, :select, :group, :copy, :paste, :undo])
+fill_toolzone([:folder, :clear, :settings, :edition, :select, :group,:link, :copy, :paste, :undo])
 
 def action_clear
   grab(:selected).data.each do |selected_slot|
@@ -172,6 +173,10 @@ def action_clear
       grab(child_found).delete(true) if grab(child_found)
     end
   end
+end
+
+def action_link
+  alert grab(:links).data
 end
 
 def clear_zone(zone)
