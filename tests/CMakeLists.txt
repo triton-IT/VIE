@@ -75,5 +75,3 @@ target_link_libraries(${TEST_PROJECT_NAME} PRIVATE Catch2::Catch2WithMain)
 message(STATUS "VIE> tests> Adding nlohman's json header directory")
 set(JSON_DIRECTORY "../third_party/nlohman_json")
 target_include_directories(${TEST_PROJECT_NAME} PUBLIC ${JSON_DIRECTORY})
-
-#catch_discover_tests(${TEST_PROJECT_NAME})

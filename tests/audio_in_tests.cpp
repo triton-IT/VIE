@@ -7,7 +7,8 @@ using namespace live::tritone::vie::processor::module;
 
 SCENARIO("audio_in should output same sample than input one.", "[audio-in]") {
     GIVEN("An empty input buffer") {
-        audio_input audio_in;
+        auto json = R"({"id": 0, "name": "audio-in"})"_json;
+		audio_input audio_in(json);
 		
         audio_bus_buffers buffer;
         audio_in.set_buffer(&buffer);
@@ -35,7 +36,8 @@ SCENARIO("audio_in should output same sample than input one.", "[audio-in]") {
     }
 	
     GIVEN("An input buffer with data") {
-        audio_input audio_in;
+        auto json = R"({"id": 0, "name": "audio-in"})"_json;
+        audio_input audio_in(json);
 
         audio_bus_buffers buffer;
         buffer.num_channels = 1;
