@@ -12,12 +12,6 @@
 #   end
 #
 # end
-class Atome
-
-  def <<(val)
-
-  end
-end
 
 
 def svg_fetch(svg_name, svg_color = :lightgray, target)
