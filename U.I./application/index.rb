@@ -69,15 +69,15 @@ def create_matrix(id)
   # end
   # resize_matrix(modules, center)
   inspector = grab(:inspector)
-  modules.children.each_with_index do |_module_found, index|
+  modules.children.value.each_with_index do |_module_found, index|
     modules.cell(index).touch(:down) do
-      puts "down context is: #{grab(:context).data}"
+      puts "down context is: #{grab(:context).data.value}"
       grab(:connection).data[0] = index
     end
     modules.cell(index).touch(:long) do
-      puts "up context is: #{grab(:context).data}"
-      if grab(:selected).data.include?(self.id)
-        grab(:selected).data.each do |cell_id|
+      puts "up context is: #{grab(:context).data.value}"
+      if grab(:selected).data.value.include?(self.id.value)
+        grab(:selected).data.value.each do |cell_id|
 
           selected_cell = grab(cell_id)
           selected_cell.attached([:cell_color])
@@ -85,35 +85,34 @@ def create_matrix(id)
         end
         grab(:selected).data([])
       else
-        grab(:selected).data << self.id
+        grab(:selected).data.value << self.id.value
         attached([:active_color])
         detached(:cell_color)
       end
     end
     modules.cell(index).touch(:up) do
-      # puts "up context is: #{grab(:context)}.data"
+      # puts "up context is: #{grab(:context)}.data.value"
       # puts "======>#{grab(:selected).data}"
       grab(:connection).data[1] = index
-      source_cell = grab(:connection).data[0]
-      dest_cell = grab(:connection).data[1]
-      unless source_cell == dest_cell
+      source_cell = grab(:connection).data.value[0]
+      target_cell = grab(:connection).data.value[1]
+      unless source_cell == target_cell
         clear_zone(inspector)
-        new_connection = grab(:connection).data
+        new_connection = grab(:connection).data.value
         vivify({ connect: "TODO :add matrix _id  #{new_connection}" })
-
-        grab(:links).data[modules.cell(index).id] = [source_cell,dest_cell]
-        grab(:connection).data << [source_cell,dest_cell]
+        grab(:links).data[:toto] = :poilu
+        grab(:connection).data << :titi
 
         inspector.text(data: new_connection)
         modules.cell(source_cell).detached(:cell_color)
-        modules.cell(dest_cell).detached(:cell_color)
+        modules.cell(target_cell).detached(:cell_color)
         modules.cell(source_cell).attached(:cell_connected)
-        modules.cell(dest_cell).attached(:cell_connected)
+        modules.cell(target_cell).attached(:cell_connected)
         wait 0.6 do
           modules.cell(source_cell).attached(:cell_color)
-          modules.cell(dest_cell).attached(:cell_color)
+          modules.cell(target_cell).attached(:cell_color)
           modules.cell(source_cell).detached(:cell_connected)
-          modules.cell(dest_cell).detached(:cell_connected)
+          modules.cell(target_cell).detached(:cell_connected)
         end
 
       end
@@ -165,7 +164,7 @@ def fill_toolzone (ids)
   end
 end
 
-fill_toolzone([:folder, :clear, :settings, :edition, :select, :group,:link, :copy, :paste, :undo])
+fill_toolzone([:folder, :clear, :settings, :edition, :select, :group, :copy, :paste, :undo])
 
 def action_clear
   grab(:selected).data.each do |selected_slot|
@@ -173,10 +172,6 @@ def action_clear
       grab(child_found).delete(true) if grab(child_found)
     end
   end
-end
-
-def action_link
-  alert grab(:links).data
 end
 
 def clear_zone(zone)
@@ -235,8 +230,8 @@ def action_settings
   inspector = grab(:inspector)
   clear_zone(inspector)
   text_list_style = vie_styles[:list_style].merge({ classes: :settings_list })
-  project_name = grab(:current_project).data
-  # project_name=project_list[grab(:current_project).data][:name] if project_list[grab(:current_project).data]
+  project_name = grab(:current_project).data.value
+  # project_name=project_list[grab(:current_project).data.value][:name] if project_list[grab(:current_project).data.value]
   list(inspector, text_list_style, {
     rename: { name: "rename : #{project_name}", data: :item1, action: :rename_project },
     delete: { name: "delete", data: :item2, action: :delete_project },
@@ -259,7 +254,6 @@ def action_edition
     support = grab(:inspector).box(support_style.merge({ top: (icon_spacing * index) + margin, id: "module_support_#{index}" }))
     svg_fetch(icon_found, svg_color, support.id)
     support.touch(true) do
-
       send(action_found, id_found)
     end
     # support.depth(5)
@@ -276,8 +270,8 @@ def insert_module(module_id)
     end
     tool_found = tool_list[module_id][:icon]
     tool_color= :orange
-    module_found.box({id: "#{module_found.id}_svg_support", width: module_found.width/2, height: module_found.height/2, center: true, attached: :invisible_color})
-    svg_fetch(tool_found, tool_color, "#{module_found.id}_svg_support")
+    module_found.box({id: "#{module_found.id.value}_svg_support", width: module_found.width.value/2, height: module_found.height.value/2, center: true, attached: :invisible_color})
+    svg_fetch(tool_found, tool_color, "#{module_found.id.value}_svg_support")
   end
 
 end
@@ -354,7 +348,6 @@ end
 # TODO : remmove doesn't work with shadow
 
 # FIXME:
-
 
 
 
