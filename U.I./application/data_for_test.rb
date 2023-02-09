@@ -40,13 +40,13 @@ def receive_from_controller
 end
 receive_from_controller
 def send_to_controller(msg)
-
+  puts msg
   json_msg = msg.to_json
   `
     if (window.webkit) {
         window.webkit.messageHandlers.toggleMessageHandler.postMessage(#{json_msg});
     } else {
-        window.chrome.webview.postMessage(json);
+        window.chrome.webview.postMessage(#{json_msg});
     }
 
 `

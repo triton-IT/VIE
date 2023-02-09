@@ -157,7 +157,8 @@ def fill_toolzone (ids)
   icon_spacing = vie_styles[:support_style][:height] + margin * 2
   ids.each_with_index do |id_found, index|
     support = grab(:toolbox).box(support_style.merge({ top: (icon_spacing * index) + margin, id: "tool_support_#{index}" }))
-    svg_fetch(id_found, svg_color, support.id)
+    support.color(:red)
+    # svg_fetch(id_found, svg_color, support.id)
     support.touch(true) do
       send("action_#{id_found}")
     end
@@ -207,7 +208,7 @@ end
 def action_folder
 
   # we send the command get_projects to the server
-  send_to_controller(:get_projects)
+  send_to_controller({ action: :get_projects })
   # inspector = grab(:inspector)
   # clear_zone(inspector)
   # text_list_style = vie_styles[:list_style].merge({ classes: :project_list })
