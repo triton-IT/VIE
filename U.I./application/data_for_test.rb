@@ -10,19 +10,46 @@ end
 
 def tool_list
   {
-     t1: {id: :t1, action: :insert_module, label: :saw, type: :oscillator, icon: :'wave-saw' },
-     t2: {id: :t2 ,action: :insert_module, label: :sin, type: :oscillator, icon: :'wave-sine' },
-     t3: {id: :t3 ,action: :insert_module, label: :square, type: :oscillator, icon: :'wave-square' },
-     t4: {id: :t4 ,action: :insert_module, label: :triangle, type: :oscillator, icon: :'wave-triangle' },
-     t5: {id: :t5 ,action: :insert_module, label: 'audio in', type: :io, icon: :microphone },
-     t6: {id: :t6 ,action: :insert_module, label: 'audio out', type: :io, icon: :speaker },
-     t7: {id: :t7 ,action: :insert_module, label: 'midi in', type: :io, icon: :midi_in },
-     t8: {id: :t8 ,action: :insert_module, label: 'midi outdrdr', type: :io, icon: :midi_out },
-     t9: {id: :t9 ,action: :insert_module, label: 'sample', type: :waveform, icon: :waveform },
-    t10: {id: :t10 ,action: :insert_module, label: 'lowpass', type: :filter, icon: :low_pass },
-    t11: {id: :t11 ,action: :insert_module, label: 'highpass', type: :filter, icon: :high_pass },
-    t12: {id: :t12 ,action: :insert_module, label: 'bandpass', type: :io, icon: :band_pass },
+    t1: { id: :t1, action: :insert_module, label: :saw, type: :oscillator, icon: :'wave-saw' },
+    t2: { id: :t2, action: :insert_module, label: :sin, type: :oscillator, icon: :'wave-sine' },
+    t3: { id: :t3, action: :insert_module, label: :square, type: :oscillator, icon: :'wave-square' },
+    t4: { id: :t4, action: :insert_module, label: :triangle, type: :oscillator, icon: :'wave-triangle' },
+    t5: { id: :t5, action: :insert_module, label: 'audio in', type: :io, icon: :microphone },
+    t6: { id: :t6, action: :insert_module, label: 'audio out', type: :io, icon: :speaker },
+    t7: { id: :t7, action: :insert_module, label: 'midi in', type: :io, icon: :midi_in },
+    t8: { id: :t8, action: :insert_module, label: 'midi outdrdr', type: :io, icon: :midi_out },
+    t9: { id: :t9, action: :insert_module, label: 'sample', type: :waveform, icon: :waveform },
+    t10: { id: :t10, action: :insert_module, label: 'lowpass', type: :filter, icon: :low_pass },
+    t11: { id: :t11, action: :insert_module, label: 'highpass', type: :filter, icon: :high_pass },
+    t12: { id: :t12, action: :insert_module, label: 'bandpass', type: :io, icon: :band_pass },
   }
+end
+
+def receive_from_controller
+  `
+
+  if (window.webkit) {
+// write code here:
+    } else {
+     window.chrome.webview.addEventListener('message', arg => {
+     console.log("data received from the controller : "+arg.data);
+       });
+    }
+`
+
+end
+receive_from_controller
+def send_to_controller(msg)
+
+  json_msg = msg.to_json
+  `
+    if (window.webkit) {
+        window.webkit.messageHandlers.toggleMessageHandler.postMessage(#{json_msg});
+    } else {
+        window.chrome.webview.postMessage(json);
+    }
+
+`
 end
 
 # JSON example
@@ -178,9 +205,6 @@ vie_object_format = {
     }
   ]
 }
-
-
-
 
 json_test = vie_object_format.to_json
 # alert "#{json_test.class }: #{json_test.class}"

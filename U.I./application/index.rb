@@ -203,13 +203,15 @@ def list(parent, style, items)
     end
   end
 end
-
 # main methods
 def action_folder
-  inspector = grab(:inspector)
-  clear_zone(inspector)
-  text_list_style = vie_styles[:list_style].merge({ classes: :project_list })
-  list(inspector, text_list_style, project_list)
+
+  # we send the command get_projects to the server
+  send_to_controller(:get_projects)
+  # inspector = grab(:inspector)
+  # clear_zone(inspector)
+  # text_list_style = vie_styles[:list_style].merge({ classes: :project_list })
+  # list(inspector, text_list_style, project_list)
 end
 
 def rename_project
