@@ -1,5 +1,6 @@
 const atomeJS = Object.assign(atomeAnimate,atomeDrag,atomeFile,atomeSort, atomeTime, atomeVideo);
-
+// This const is used to store and get all atome created canvas by id
+const Atome_canvas={}
 // // class AtomeDrag {
 // //     constructor() {
 // //     }
@@ -157,4 +158,19 @@ const atomeJS = Object.assign(atomeAnimate,atomeDrag,atomeFile,atomeSort, atomeT
 // });
 
 
-
+// function send_to_controller(module_id, parameter_id, parameter_value) {
+//     var json = {
+//         "action": "set_module_parameter_value",
+//         "parameters": [
+//             {"name": "module_id", "value": "Midi"},
+//             {"name": "parameter_id", "value": "on/off input"},
+//             {"name": "parameter_value", "value": "0.0"}
+//         ]
+//     }
+//
+//     if (window.webkit) {
+//         window.webkit.messageHandlers.toggleMessageHandler.postMessage(json);
+//     } else {
+//         window.chrome.webview.postMessage(json);
+//     }
+// }
