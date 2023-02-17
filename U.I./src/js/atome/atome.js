@@ -158,19 +158,4 @@ const Atome_canvas={}
 // });
 
 
-// function send_to_controller(module_id, parameter_id, parameter_value) {
-//     var json = {
-//         "action": "set_module_parameter_value",
-//         "parameters": [
-//             {"name": "module_id", "value": "Midi"},
-//             {"name": "parameter_id", "value": "on/off input"},
-//             {"name": "parameter_value", "value": "0.0"}
-//         ]
-//     }
-//
-//     if (window.webkit) {
-//         window.webkit.messageHandlers.toggleMessageHandler.postMessage(json);
-//     } else {
-//         window.chrome.webview.postMessage(json);
-//     }
-// }
+

@@ -1,5 +1,25 @@
 # frozen_string_literal: true
 
+def webview_receiver(msg)
+  puts JSON.parse(msg).to_json # => {"val"=>"test","val1"=>"test1","val2"=>"test2"}
+end
+
+def webview_sender(params)
+  json_msg = params.to_json
+
+  `
+ var json_msg = JSON.parse(#{json_msg});
+    if (window.webkit) {
+console.log('=====>'+typeof json_msg);
+        //window.webkit.messageHandlers.toggleMessageHandler.postMessage(json_msg);
+    } else {
+       window.chrome.webview.postMessage(json_msg);
+    }
+
+`
+end
+
+
 require 'application/data_for_test'
 require 'application/atome_experimental'
 require 'application/version'
@@ -30,7 +50,7 @@ box(vie_styles[:inspector_style])
 # logo
 logo_color = 'rgba(99, 255, 99, 0.3)'
 grab(:action).box({ id: :logo_support, width: 33, height: 33, left: :auto, top: 7, right: 15, attached: :invisible_color })
-svg_fetch(:vie, logo_color, :logo_support)
+# svg_fetch(:vie, logo_color, :logo_support)
 
 # project title
 grab(:action).text(vie_styles[:title].merge({ data: default_project_name }))
@@ -165,7 +185,7 @@ def fill_toolzone (ids)
   end
 end
 
-fill_toolzone([:folder, :clear, :settings, :edition, :select, :group, :copy, :paste, :undo])
+fill_toolzone([:load, :clear, :settings, :edition, :select, :group, :copy, :paste, :undo])
 
 def action_clear
   grab(:selected).data.each do |selected_slot|
@@ -205,10 +225,13 @@ def list(parent, style, items)
   end
 end
 # main methods
-def action_folder
+def action_load
 
+`
+  on_message_get_projects("json_msg");
+`
   # we send the command get_projects to the server
-  send_to_controller({ action: :get_projects })
+  webview_sender({ action: :get_projects })
   # inspector = grab(:inspector)
   # clear_zone(inspector)
   # text_list_style = vie_styles[:list_style].merge({ classes: :project_list })
@@ -305,7 +328,7 @@ def action_undo
 end
 
 # alert filer
-# grab(:tool_zone).image({ path: "./medias/images/icons/folder.svg", top: 15, left: 0, size: 24 })
+# grab(:tool_zone).image({ path: "./medias/images/icons/load.svg", top: 15, left: 0, size: 24 })
 
 # files.touch(true) do
 #   grab(:filer).color(:red)
@@ -351,6 +374,7 @@ end
 # TODO : remmove doesn't work with shadow
 
 # FIXME:
+
 
 
 

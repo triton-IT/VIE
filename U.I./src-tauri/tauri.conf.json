@@ -7,14 +7,14 @@
     "withGlobalTauri": true
   },
   "package": {
-    "productName": "Vie",
+    "productName": "atome",
     "version": "0.0.0"
   },
   "tauri": {
     "allowlist": {
-      "all": true,
+      "all": false,
       "shell": {
-        "all": true,
+        "all": false,
         "open": true
       }
     },
@@ -62,7 +62,7 @@
         "fullscreen": false,
         "height": 600,
         "resizable": true,
-        "title": "Vie",
+        "title": "atome",
         "width": 800
       }
     ]
