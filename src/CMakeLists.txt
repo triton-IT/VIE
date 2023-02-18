@@ -1,8 +1,6 @@
 set(PROJECT_NAME VIE)
 
-set(JSON_DIRECTORY
-        "../third_party/nlohman_json"
-        )
+project(${PROJECT_NAME})
 
 # Source groups
 set(HEADER_FILES
@@ -15,32 +13,37 @@ set(HEADER_FILES
         "note_event.hpp"
         "parameter.hpp"
         "processor_definition.hpp"
-        "processor_component.hpp"
-        "processor_components.hpp"
+        "processor_module.hpp"
+        "processor_modules.hpp"
         "processor_orchestrator.hpp"
+        "project.hpp"
         "vst_controller.hpp"
-        "vie_processor.hpp"
+		"host_callback.hpp"
+		"vie_processor.hpp"
         "vst_processor.hpp"
         "vie_view.hpp"
+        "vst_plugin.hpp"
         "vst_plugin_factory.hpp"
         "boolean_parameter.hpp"
-        "components/audio_input.hpp"
-        "components/envelope.hpp"
-        "components/gain.hpp"
-        "components/low_pass.hpp"
-        "components/high_pass.hpp"
-        "components/midi_input.hpp"
-        "components/mixer.hpp"
-        "components/multiplier.hpp"
-        "components/noise.hpp"
-        "components/oscillator.hpp"
-        "components/audio_output.hpp"
-		"components/sample.hpp"
+        "modules/audio_input.hpp"
+        "modules/envelope.hpp"
+        "modules/gain.hpp"
+        "modules/low_pass.hpp"
+        "modules/high_pass.hpp"
+        "modules/midi_input.hpp"
+        "modules/mixer.hpp"
+        "modules/multiplier.hpp"
+        "modules/noise.hpp"
+        "modules/oscillator.hpp"
+        "modules/audio_output.hpp"
+		"modules/sample.hpp"
+		"modules/recorder.hpp"
         )
 source_group("Header Files" FILES ${HEADER_FILES})
 
 if (WIN32)
     list(APPEND HEADER_FILES "windows/editor_view.hpp")
+    list(APPEND HEADER_FILES "windows/vst_host_callback.hpp")
 endif ()
 
 set(RESOURCES
@@ -58,33 +61,37 @@ set(SOURCE_FILES
         "data_event.cpp"
         "note_event.cpp"
         "parameter.cpp"
-        "processor_component.cpp"
-        "processor_components.cpp"
+        "processor_module.cpp"
+        "processor_modules.cpp"
         "processor_orchestrator.cpp"
+        "project.cpp"
         "vst_controller.cpp"
         "vie_processor.cpp"
         "vst_processor.cpp"
         "vie_view.cpp"
+        "vst_plugin.cpp"
         "vst_plugin_factory.cpp"
         "boolean_parameter.cpp"
-        "components/audio_input.cpp"
-        "components/envelope.cpp"
-        "components/gain.cpp"
-        "components/low_pass.cpp"
-        "components/high_pass.cpp"
-        "components/midi_input.cpp"
-        "components/mixer.cpp"
-        "components/multiplier.cpp"
-        "components/noise.cpp"
-        "components/oscillator.cpp"
-        "components/audio_output.cpp"
-		"components/sample.cpp"
+        "modules/audio_input.cpp"
+        "modules/envelope.cpp"
+        "modules/gain.cpp"
+        "modules/low_pass.cpp"
+        "modules/high_pass.cpp"
+        "modules/midi_input.cpp"
+        "modules/mixer.cpp"
+        "modules/multiplier.cpp"
+        "modules/noise.cpp"
+        "modules/oscillator.cpp"
+        "modules/audio_output.cpp"
+		"modules/sample.cpp"
+		"modules/recorder.cpp"
         )
 source_group("Source Files" FILES ${SOURCE_FILES})
 
 if (WIN32)
     list(APPEND SOURCE_FILES "windows/application.cpp")
     list(APPEND SOURCE_FILES "windows/editor_view.cpp")
+    list(APPEND SOURCE_FILES "windows/vst_host_callback.cpp")
 endif ()
 
 set(ALL_FILES
@@ -114,10 +121,11 @@ add_dependencies(${PROJECT_NAME}
         libsndfile
         )
 
-message(STATUS "VIE> Set target C++ standard to 17")
-target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_17)
+message(STATUS "VIE> Set target C++ standard to 20")
+target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_20)
 
 message(STATUS "VIE> Adding nlohman's json header directory")
+set(JSON_DIRECTORY "../third_party/nlohman_json")
 target_include_directories(${PROJECT_NAME} PUBLIC ${JSON_DIRECTORY})
 
 message(STATUS "VIE> Linking-up VST interfaces")

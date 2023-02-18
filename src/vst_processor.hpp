@@ -7,10 +7,10 @@
 #include <pluginterfaces/vst/ivstevents.h>
 
 #include "processor_definition.hpp"
-#include "processor_component.hpp"
+#include "processor_module.hpp"
 #include "vie_processor.hpp"
 
-namespace live::tritone::vie {
+namespace live::tritone::vie::vst {
 	class vst_processor final :
 		public Steinberg::Vst::IComponent,
 		public Steinberg::Vst::IAudioProcessor,
@@ -84,16 +84,16 @@ namespace live::tritone::vie {
 		void handle_input_parameter_changes(Steinberg::Vst::IParameterChanges* input_parameter_changes);
 
 		/**
-		 * Send events before processing to processor components capable of handling them.
+		 * Send events before processing to processor modules capable of handling them.
 		*/
 		void process_input_events(Steinberg::Vst::IEventList* events) const;
 
 		/**
-		 * Send data before processing to processor components capable of handling them.
+		 * Send data before processing to processor modules capable of handling them.
 		*/
 		void process_input_data(audio_bus_buffers* source_buffers, Steinberg::Vst::AudioBusBuffers* buffers, int32_t nb_buffers, int32_t sample_size) const;
 
-		vie_processor vie_processor_;
+		vie_processor& vie_processor_;
 
 		Steinberg::IPtr <Steinberg::FUnknown> host_context_;
 		Steinberg::uint32 nb_ref_;

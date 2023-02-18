@@ -12,8 +12,9 @@
 
 #include "vie_view.hpp"
 #include "parameter.hpp"
+#include "windows/vst_host_callback.hpp"
 
-namespace live::tritone::vie {
+namespace live::tritone::vie::vst {
 	class vst_controller final :
 		public Steinberg::Vst::IEditController,
 		public Steinberg::Vst::IConnectionPoint,
@@ -59,6 +60,6 @@ namespace live::tritone::vie {
 		Steinberg::IPtr <Steinberg::FUnknown> host_context_;
 		Steinberg::uint32 nb_ref_;
 		vie_view* view_;
-		Steinberg::Vst::IComponentHandler* component_handler_;
+		vst_host_callback* vst_host_callback_;
 	};
 } // namespace

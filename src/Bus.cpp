@@ -3,7 +3,7 @@
 namespace live::tritone::vie {
 	bus::bus(std::wstring name,
 		const bus_type type,
-		processor_component* processor_component,
+		processor_module* processor_module,
 		const short channel_count,
 		const bool is_default_active,
 		const bool is_control_voltage):
@@ -13,7 +13,7 @@ namespace live::tritone::vie {
 	is_control_voltage_(is_control_voltage),
 	active_(false),
 	arrangement_(0),
-	processor_component_(processor_component) {
+	processor_module_(processor_module) {
 	}
 
 	std::wstring bus::get_name()
@@ -59,8 +59,8 @@ namespace live::tritone::vie {
 		arrangement_ = arrangement;
 	}
 
-	processor_component* bus::get_processor_component() const
+	processor_module* bus::get_processor_module() const
 	{
-		return processor_component_;
+		return processor_module_;
 	}
 }

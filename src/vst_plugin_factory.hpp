@@ -4,7 +4,7 @@
 
 #include "constants.hpp"
 
-namespace live::tritone::vie {
+namespace live::tritone::vie::vst {
 	class vst_plugin_factory : public Steinberg::IPluginFactory3 {
 	public:
 		vst_plugin_factory();

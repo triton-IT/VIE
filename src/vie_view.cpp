@@ -3,16 +3,18 @@
 using namespace Steinberg;
 using namespace Vst;
 
+using namespace nlohmann;
+
 namespace live::tritone::vie
 {
-	vie_view::vie_view(Steinberg::Vst::IComponentHandler* handler) :
+	vie_view::vie_view(host_callback* host_callback) :
 		nb_ref_(0),
 		ptr_frame_(nullptr),
 		width_(1024),
 		height_(600),
-		handler_(handler)
+		host_callback_(host_callback)
 	{
-		editor_view.set_component_handler(handler);
+		editor_view.set_host_callback(host_callback_);
 	}
 
 	tresult __stdcall vie_view::queryInterface(const TUID iid, void** obj)
@@ -130,12 +132,38 @@ namespace live::tritone::vie
 		return kResultTrue;
 	}
 
-	void vie_view::set_component_handler(Steinberg::Vst::IComponentHandler* handler)
+	void vie_view::set_host_callback(host_callback* callback)
 	{
-		handler_ = handler;
+		host_callback_ = callback;
+	}
+
+	void vie_view::load(nlohmann::json instrument)
+	{
+		parse_processors(instrument["modules"]);
+		parse_relations(instrument["relations"]);
+		parse_ui(instrument["ui"]);
 	}
 
 	void vie_view::render()
 	{
+	}
+
+	void vie_view::parse_processors(json processors_definitions)
+	{
+		for (auto& [index, processor_definition] : processors_definitions.items()) {
+			const std::string type = processor_definition["type"];
+		}
+	}
+
+	void vie_view::parse_relations(json relations_definitions)
+	{
+		for (auto& [index, relation_definition] : relations_definitions.items()) {
+		}
+	}
+
+	void vie_view::parse_ui(json ui_definitions)
+	{
+		for (auto& [index, ui_definition] : ui_definitions.items()) {
+		}
 	}
 } // namespace

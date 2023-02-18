@@ -10,14 +10,12 @@ namespace live::tritone::vie {
 		const wchar_t short_title[128],
 		const wchar_t units[128],
 		const long step_count,
-		const double default_normalized_value,
-		const long unit_id,
-		const long flags)
+		const double default_normalized_value)
 		: id_(id),
 		  step_count_(step_count),
 		  default_normalized_value_(default_normalized_value),
-		  unit_id_(unit_id),
-		  flags_(flags),
+		  unit_id_(0), //Equivalent to kRootUnitId
+		  flags_(1), //Equivalent ParameterInfo::kCanAutomate
 		  normalized_value_(default_normalized_value)
 	{
 		wcscpy(title_, title);

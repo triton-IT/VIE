@@ -11,9 +11,7 @@ namespace live::tritone::vie {
 			const wchar_t short_title[128],
 			const wchar_t units[128],
 			long step_count,
-			double default_normalized_value,
-			long unit_id,
-			long flags);
+			double default_normalized_value);
 
 		parameter(const parameter&) = default;
 		parameter(parameter&&) = default;

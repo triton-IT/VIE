@@ -7,6 +7,8 @@
 #include "WebView2.h"
 #include "wil/com.h"
 
+#include "../host_callback.hpp"
+
 namespace live::tritone::vie {
 	class editor_view {
 	public:
@@ -26,7 +28,7 @@ namespace live::tritone::vie {
 
 		void removed();
 
-		void set_component_handler(Steinberg::Vst::IComponentHandler* handler);
+		void set_host_callback(host_callback* host_callback);
 
 	private:
 		wchar_t appdata_path[4096];
@@ -35,8 +37,15 @@ namespace live::tritone::vie {
 		ICoreWebView2* ptr_web_view_window_;
 		EventRegistrationToken web_message_received_token_;
 
-		Steinberg::Vst::IComponentHandler* handler_;
+		host_callback* host_callback_;
 
+#ifdef UNIT_TESTING //Because "attached" method contains a lot of non testable elements (webview2), we plug our tests to this method.
+	public:
+#endif // UNIT_TESTING
+		void on_message_received(ICoreWebView2* sender, std::wstring json_wstring);
+#ifdef UNIT_TESTING
+	private:
+#endif // UNIT_TESTING
 		void on_message_get_projects(ICoreWebView2* sender, nlohmann::json message);
 		void on_message_new_project(ICoreWebView2* sender, nlohmann::json message);
 		void on_message_load_project(ICoreWebView2* sender, nlohmann::json message);

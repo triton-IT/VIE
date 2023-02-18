@@ -6,7 +6,7 @@
 #include <cstdint>
 
 #include "processor_definition.hpp"
-#include "processor_component.hpp"
+#include "processor_module.hpp"
 #include "processor_orchestrator.hpp"
 #include "bus.hpp"
 
@@ -17,6 +17,8 @@ namespace live::tritone::vie {
 		vie_processor();
 
 		void initialize();
+
+		void load(nlohmann::json instrument);
 
 		void terminate();
 
@@ -45,9 +47,9 @@ namespace live::tritone::vie {
 		bool process_output_data(output_process_data& output_process_data);
 
 	private:
-		void parse_processors(nlohmann::json processors_definition);
+		void parse_processors(nlohmann::json processors_definitions);
 
-		void parse_relations(nlohmann::json relations_definition);
+		void parse_relations(nlohmann::json relations_definitions);
 
 		std::vector<bus*>* get_buses(media_type media_type, bus_direction bus_direction);
 

@@ -8,7 +8,11 @@
 #include <string>
 #include <vector>
 
+#include <json.hpp>
+
 #include "parameter.hpp"
+
+#include "host_callback.hpp"
 
 #ifdef _WIN32
 
@@ -21,7 +25,7 @@ namespace live::tritone::vie
 	class vie_view final : public Steinberg::IPlugView
 	{
 	public:
-		explicit vie_view(Steinberg::Vst::IComponentHandler* handler);
+		explicit vie_view(host_callback* host_callback);
 
 		virtual ~vie_view() = default;
 
@@ -44,11 +48,17 @@ namespace live::tritone::vie
 		Steinberg::tresult set_state(Steinberg::IBStream* state);
 		Steinberg::tresult get_state(Steinberg::IBStream* state);
 
-		void set_component_handler(Steinberg::Vst::IComponentHandler* handler);
+		void set_host_callback(host_callback* callback);
+
+		void load(nlohmann::json instrument);
 
 		void render();
 
 	private:
+		void parse_processors(nlohmann::json processors_definition);
+		void parse_relations(nlohmann::json processors_definition);
+		void parse_ui(nlohmann::json processors_definition);
+		
 		Steinberg::uint32 nb_ref_;
 		Steinberg::IPlugFrame* ptr_frame_;
 
@@ -56,7 +66,7 @@ namespace live::tritone::vie
 
 		int width_;
 		int height_;
-
-		Steinberg::Vst::IComponentHandler* handler_;
+		
+		host_callback* host_callback_;
 	};
 }

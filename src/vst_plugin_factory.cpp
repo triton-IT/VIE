@@ -1,4 +1,5 @@
 #include "vst_plugin_factory.hpp"
+#include "vst_plugin.hpp"
 
 #include "vst_controller.hpp"
 #include "vst_processor.hpp"
@@ -18,14 +19,14 @@ namespace Steinberg {
 	}
 }
 
-namespace live::tritone::vie {
+namespace live::tritone::vie::vst {	
 	vst_plugin_factory::vst_plugin_factory() : nb_ref_(0) {
 		strcpy(factory_info_.vendor, company_name);
 		strcpy(factory_info_.url, company_url);
 		strcpy(factory_info_.email, company_email);
 		factory_info_.flags = PFactoryInfo::FactoryFlags::kUnicode;
 
-		TUID controller_tuid = INLINE_UID_FROM_FUID(controller_uid);
+		TUID controller_tuid = INLINE_UID_FROM_FUID(vst_plugin::controller_uid);
 		controller_class_info_ = PClassInfo2(
 			controller_tuid,
 			PClassInfo::kManyInstances,
@@ -40,7 +41,7 @@ namespace live::tritone::vie {
 
 		controller_class_info_w_.fromAscii(controller_class_info_);
 
-		TUID processor_tuid = INLINE_UID_FROM_FUID(processor_uid);
+		TUID processor_tuid = INLINE_UID_FROM_FUID(vst_plugin::processor_uid);
 		processor_class_info_ = PClassInfo2(
 			processor_tuid,
 			PClassInfo::kManyInstances,
@@ -163,7 +164,7 @@ namespace live::tritone::vie {
 	}
 }
 
-using namespace live::tritone::vie;
+using namespace live::tritone::vie::vst;
 
 static vst_plugin_factory* gPluginFactory = nullptr;
 

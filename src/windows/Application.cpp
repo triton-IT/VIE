@@ -1,10 +1,14 @@
 #include <Windows.h>
 
+#include <codecvt>
+
 #include "../application.hpp"
 #include "../logger.hpp"
 
 #include "../boolean_parameter.hpp"
 #include "../float_parameter.hpp"
+
+using namespace live::tritone::vie;
 
 extern "C" {
 	bool InitDll() {
@@ -90,5 +94,60 @@ uint_fast8_t application::get_parameters_count()
 	return nb_parameters_;
 }
 
-parameter* application::parameters_[255] = { nullptr };
-uint_fast8_t application::nb_parameters_ = 0;
+project& application::new_project()
+{
+	//FIXME: Generate a UUID.
+	projects_[nb_projects_] = project{ std::to_wstring(nb_projects_), L"Project " + std::to_wstring(nb_projects_) };
+	nb_projects_++;
+	return projects_[nb_projects_ - 1];
+}
+
+std::array<project, 32> application::get_projects(int* nb_projects)
+{
+	*nb_projects = nb_projects_;
+	return projects_;
+}
+
+project application::load_project(std::wstring project_path)
+{
+	std::ifstream projectStream(project_path);
+	nlohmann::json project_json;
+	projectStream >> project_json;
+
+	vie_processor_.load(project_json);
+	vie_view_->load(project_json);
+
+	nlohmann::json project_info = project_json["project"];
+	
+	std::string id = project_info["id"];
+	std::string name = project_info["name"];
+	std::string description = project_info["description"];
+
+	std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+
+	std::wstring id_w = converter.from_bytes(id);
+	std::wstring name_w = converter.from_bytes(name);
+	std::wstring description_w = converter.from_bytes(description);
+	
+	return project({ id_w, name_w, description_w });
+}
+
+vie_processor& application::get_vie_processor()
+{
+	return vie_processor_;
+}
+
+vie_view* application::create_view(host_callback* callback)
+{
+	vie_view_ = new vie_view(callback);
+	return vie_view_;
+}
+
+vie_view* application::deleteView()
+{
+	delete vie_view_;
+	vie_view_ = nullptr;
+	return nullptr;
+}
+
+application application_;
