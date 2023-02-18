@@ -9,7 +9,7 @@
 #include <sstream>
 
 #include "../application.hpp"
-#include "../processor_component.hpp"
+#include "../processor_module.hpp"
 
 using namespace std;
 using json = nlohmann::json;
@@ -89,16 +89,16 @@ namespace live::tritone::vie
 														}
 													}
 													
-                                                    processor_component& processor_component = application::get_processor_components().get_by_id(module_id);
-												    uint16_t parameter_component_id = processor_component.get_id();
-												    uint16_t parameter_slot_id = processor_component.get_slot_id(parameter_id);
+                                                    processor_module& processor_module = application::get_processor_modules().get_by_id(module_id);
+												    uint16_t parameter_module_id = processor_module.get_id();
+												    uint16_t parameter_slot_id = processor_module.get_slot_id(parameter_id);
 													
-                                                    unsigned long component_parameter_id = (parameter_component_id << 16) | parameter_slot_id;
+                                                    unsigned long module_parameter_id = (parameter_module_id << 16) | parameter_slot_id;
 
     //												//Transmit parameter to host.
-                                                    handler_->beginEdit(component_parameter_id);
-                                                    handler_->performEdit(component_parameter_id, std::stof(parameter_value));
-                                                    handler_->endEdit(component_parameter_id);
+                                                    handler_->beginEdit(module_parameter_id);
+                                                    handler_->performEdit(module_parameter_id, std::stof(parameter_value));
+                                                    handler_->endEdit(module_parameter_id);
                                                 }
 											}
 											return S_OK;

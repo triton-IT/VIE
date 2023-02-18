@@ -8,8 +8,6 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-project(VIE)
-
 #FIXME: Make cycfi Q compile properly on Windows + intel with clang.
 #add_compile_definitions(__INTEL_COMPILER)
 
@@ -30,3 +28,9 @@ add_subdirectory(third_party/libsndfile)
 
 message(STATUS "VIE> Adding main application")
 add_subdirectory(src)
+
+message(STATUS "VIE> Adding catch2")
+add_subdirectory(third_party/catch2)
+
+message(STATUS "VIE> Adding tests application")
+add_subdirectory(tests)

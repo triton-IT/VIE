@@ -4,79 +4,79 @@
 
 #include "application.hpp"
 
-#include "components/oscillator.hpp"
-#include "components/envelope.hpp"
-#include "components/multiplier.hpp"
-#include "components/mixer.hpp"
-#include "components/audio_output.hpp"
+#include "modules/oscillator.hpp"
+#include "modules/envelope.hpp"
+#include "modules/multiplier.hpp"
+#include "modules/mixer.hpp"
+#include "modules/audio_output.hpp"
 
 using namespace std;
 
 using namespace nlohmann;
-using namespace live::tritone::vie::processor::component;
+using namespace live::tritone::vie::processor::module;
 
 namespace live::tritone::vie
 {
-	processor_orchestrator::processor_orchestrator() : nb_components_(0),
-	                                                   processor_components_{}, nb_midi_input_components_(0),
-													   sources_midi_input_components_{},
-													   nb_audio_input_components_(0),
-													   sources_audio_input_components_{},
+	processor_orchestrator::processor_orchestrator() : nb_modules_(0),
+	                                                   processor_modules_{}, nb_midi_input_modules_(0),
+													   sources_midi_input_modules_{},
+													   nb_audio_input_modules_(0),
+													   sources_audio_input_modules_{},
 												       processing_setup_(),
 	                                                   relations_{},
 													   bypass_(false)
 	{
-		memset(nb_component_relations_, 0, 128);
+		memset(nb_module_relations_, 0, 128);
 	}
 
-	void processor_orchestrator::add_processor_component(processor_component* processor)
+	void processor_orchestrator::add_processor_module(processor_module* processor)
 	{
-		if (processor->get_type() == processor_component_type::event_input)
+		if (processor->get_type() == processor_module_type::event_input)
 		{
-			sources_midi_input_components_[nb_midi_input_components_] = static_cast<midi_input*>(processor);
-			nb_midi_input_components_++;
+			sources_midi_input_modules_[nb_midi_input_modules_] = static_cast<midi_input*>(processor);
+			nb_midi_input_modules_++;
 		}
-		if (processor->get_type() == processor_component_type::audio_input)
+		if (processor->get_type() == processor_module_type::audio_input)
 		{
-			sources_audio_input_components_[nb_audio_input_components_] = static_cast<audio_input*>(processor);
-			nb_audio_input_components_++;
+			sources_audio_input_modules_[nb_audio_input_modules_] = static_cast<audio_input*>(processor);
+			nb_audio_input_modules_++;
 		}
 
-		processor_components_[nb_components_] = processor;
+		processor_modules_[nb_modules_] = processor;
 
-		nb_components_++;
+		nb_modules_++;
 	}
 
-	component_relation& processor_orchestrator::add_relation(json relation_definition)
+	module_relation& processor_orchestrator::add_relation(json relation_definition)
 	{
-		const int source_component_id = relation_definition["sourceComponent"];
+		const int source_module_id = relation_definition["sourceComponent"];
 
-		component_relation* component_relations = relations_[source_component_id];
-		const int nb_component_relations = nb_component_relations_[source_component_id];
-		component_relation& component_relation = component_relations[nb_component_relations];
-		nb_component_relations_[source_component_id] = nb_component_relations + 1;
+		module_relation* module_relations = relations_[source_module_id];
+		const int nb_module_relations = nb_module_relations_[source_module_id];
+		module_relation& module_relation = module_relations[nb_module_relations];
+		nb_module_relations_[source_module_id] = nb_module_relations + 1;
 
-		component_relation.source_component = processor_components_[source_component_id];
+		module_relation.source_module = processor_modules_[source_module_id];
 
 		const uint_fast16_t source_output_id = relation_definition["sourceOutputSlot"];
-		component_relation.source_slot_id = source_output_id;
+		module_relation.source_slot_id = source_output_id;
 
-		const int target_component_id = relation_definition["targetComponent"];
-		component_relation.target_component = processor_components_[target_component_id];
+		const int target_module_id = relation_definition["targetComponent"];
+		module_relation.target_module = processor_modules_[target_module_id];
 
 		const uint_fast16_t target_input_id = relation_definition["targetInputSlot"];
-		component_relation.target_slot_id = target_input_id;
+		module_relation.target_slot_id = target_input_id;
 
-		return component_relation;
+		return module_relation;
 	}
 
 	void processor_orchestrator::terminate() const
 	{
-		//Release processor components.
-		for (int i = 0; i < nb_components_; i++)
+		//Release processor modules.
+		for (int i = 0; i < nb_modules_; i++)
 		{
-			const auto* component = processor_components_[i];
-			delete component;
+			const auto* module = processor_modules_[i];
+			delete module;
 		}
 	}
 
@@ -87,34 +87,34 @@ namespace live::tritone::vie
 		processing_setup_.max_samples_per_block = setup.max_samples_per_block;
 		processing_setup_.sample_size = setup.sample_size;
 
-		for (int i = 0; i < nb_components_; i++)
+		for (int i = 0; i < nb_modules_; i++)
 		{
-			auto* component = processor_components_[i];
-			component->set_sample_rate(processing_setup_.sample_rate);
+			auto* module = processor_modules_[i];
+			module->set_sample_rate(processing_setup_.sample_rate);
 		}
 	}
 
 	void processor_orchestrator::process_input_event(event& event) const
 	{
-		midi_input* midi_input_component = get_midi_input_component_for_event(event);
+		midi_input* midi_input_module = get_midi_input_module_for_event(event);
 		switch (event.type)
 		{
 		case event::type::note_on:
 			{
 				note_event& note_on_event = event.core_event.note_on;
-				midi_input_component->note_on(note_on_event);
+				midi_input_module->note_on(note_on_event);
 			}
 			break;
 		case event::type::note_off:
 			{
 				note_event& note_off_event = event.core_event.note_off;
-				midi_input_component->note_off(note_off_event);
+				midi_input_module->note_off(note_off_event);
 			}
 			break;
 		case event::type::data_event:
 		{
 			note_event& note_off_event = event.core_event.note_off;
-			midi_input_component->note_off(note_off_event);
+			midi_input_module->note_off(note_off_event);
 		}
 		break;
 		case event::type::poly_pressure_event:
@@ -129,83 +129,82 @@ namespace live::tritone::vie
 	
 	void processor_orchestrator::process_input_audio(audio_bus_buffers* buffer, int32_t buffer_id) const
 	{
-		auto audio_input = get_audio_input_component_for_buffer(buffer_id);
+		auto audio_input = get_audio_input_module_for_buffer(buffer_id);
 		audio_input->set_buffer(buffer);
 	}
 
 	void processor_orchestrator::process(output_process_data& output_process_data)
 	{
 		if (!bypass_) {
-			for (int i = 0; i < nb_components_; i++)
+			for (int i = 0; i < nb_modules_; i++)
 			{
-				auto* component = processor_components_[i];
-				component->preprocess();
+				auto* module = processor_modules_[i];
+				module->preprocess();
 			}
-			for (int i = 0; i < nb_midi_input_components_; i++)
+			for (int i = 0; i < nb_midi_input_modules_; i++)
 			{
-				auto* midi_input_component = sources_midi_input_components_[i];
+				auto* midi_input_module = sources_midi_input_modules_[i];
 				//TODO: Multi-thread call to this method.
-				process(midi_input_component, output_process_data);
+				process(midi_input_module, output_process_data);
 			}
-			for (int i = 0; i < nb_audio_input_components_; i++)
+			for (int i = 0; i < nb_audio_input_modules_; i++)
 			{
-				auto* audio_input_component = sources_audio_input_components_[i];
+				auto* audio_input_module = sources_audio_input_modules_[i];
 				//TODO: Multi-thread call to this method.
-				process(audio_input_component, output_process_data);
+				process(audio_input_module, output_process_data);
 			}
 		}
 	}
 
-	void processor_orchestrator::process(processor_component* source_component,
+	void processor_orchestrator::process(processor_module* source_module,
 	                                     output_process_data& output_process_data)
 	{
-		// If all input of source component are not filled in by parent component, we cannot process it.
-		// We need to wait for each parent to process before this component.
-		// The last parent of this component triggers the process.
-		if (source_component->can_process())
+		// If all input of source module are not filled in by parent module, we cannot process it.
+		// We need to wait for each parent to process before this module.
+		// The last parent of this module triggers the process.
+		if (source_module->can_process())
 		{
-			//Process source component
-			source_component->process(output_process_data);
+			//Process source module
+			source_module->process(output_process_data);
 
-			//Get all children of source components
-			const component_relation* component_relations = relations_[source_component->get_id()];
+			//Get all children of source modules
+			const module_relation* module_relations = relations_[source_module->get_id()];
 
 			//Process all children.
-			const int nb_relations = nb_component_relations_[source_component->get_id()];
+			const int nb_relations = nb_module_relations_[source_module->get_id()];
 			for (int i = 0; i < nb_relations; i++)
 			{
-				const auto [relation_component, source_slot_id, target_component, target_slot_id] = component_relations[i];
+				const auto [relation_module, source_slot_id, target_module, target_slot_id] = module_relations[i];
 
-				component_output** source_output_values = source_component->get_outputs_pool(source_slot_id);
+				std::array<module_output*, 32> source_output_values;
 				
-				//Because component has been processed, we can get its output values.
-				const uint_fast32_t nb_output_values = source_component->get_output_values(
-					source_slot_id,
-					source_output_values);
+				//Because module has been processed, we can get its output values.
+				uint_fast8_t nb_outputs = source_module->get_output_values(
+					source_slot_id, source_output_values);
 
-				//And then pass output values to input values of next component.
-				target_component->set_input_values(target_slot_id, source_output_values, nb_output_values);
+				//And then pass output values to input values of next module.
+				target_module->set_input_values(target_slot_id, source_output_values, nb_outputs);
 
-				// And process next component.
-				process(target_component, output_process_data);
+				// And process next module.
+				process(target_module, output_process_data);
 			}
 		}
 	}
 
 	void processor_orchestrator::parameter_changed(const unsigned long parameter_id, long sample_offset, double parameter_value)
 	{
-		unsigned int component_id = parameter_id >> 16;
-		unsigned int component_parameter_id = parameter_id & 0xffff;
-		float_component_output input(0, parameter_value);
+		unsigned int module_id = parameter_id >> 16;
+		unsigned int module_parameter_id = parameter_id & 0xffff;
+		float_module_output input(0, parameter_value);
 	}
 
-	midi_input* processor_orchestrator::get_midi_input_component_for_event(const event& event) const
+	midi_input* processor_orchestrator::get_midi_input_module_for_event(const event& event) const
 	{
-		return sources_midi_input_components_[event.bus_index];
+		return sources_midi_input_modules_[event.bus_index];
 	}
 
-	audio_input* processor_orchestrator::get_audio_input_component_for_buffer(int32_t buffer_id) const
+	audio_input* processor_orchestrator::get_audio_input_module_for_buffer(int32_t buffer_id) const
 	{
-		return sources_audio_input_components_[buffer_id];
+		return sources_audio_input_modules_[buffer_id];
 	}
 } // namespace

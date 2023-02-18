@@ -1,0 +1,22 @@
+{
+  "components": [
+    {
+      "id": 0,
+      "name": "Audio in",
+      "type": "audio in"
+    },
+    {
+      "id": 1,
+      "name": "Audio out",
+      "type": "audio out"
+    }
+  ],
+  "relations": [
+    {
+      "sourceComponent": 0,
+      "sourceOutputSlot": 1,
+      "targetComponent": 1,
+      "targetInputSlot": 1
+    }
+  ]
+}

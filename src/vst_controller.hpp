@@ -13,7 +13,7 @@
 #include "vie_view.hpp"
 #include "parameter.hpp"
 
-namespace live::tritone::vie {
+namespace live::tritone::vie::vst {
 	class vst_controller final :
 		public Steinberg::Vst::IEditController,
 		public Steinberg::Vst::IConnectionPoint,

@@ -6,7 +6,7 @@
 #include <cstdint>
 
 #include "processor_definition.hpp"
-#include "processor_component.hpp"
+#include "processor_module.hpp"
 #include "processor_orchestrator.hpp"
 #include "bus.hpp"
 

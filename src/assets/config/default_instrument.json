@@ -1,24 +1,18 @@
 {
-  "components": [
+  "modules": [
     {
       "id": 0,
-      "name": "Midi in",
-      "type": "midi in"
+      "name": "Audio in",
+      "type": "audio in"
     },
     {
       "id": 1,
-      "name": "Sample",
-      "type": "sample",
-      "file_path": "C:\\dev\\triton-IT\\VIE\\src\\assets\\samples\\1.wav"
+      "name": "Low-pass",
+      "type": "low-pass"
     },
     {
       "id": 2,
-      "name": "Mixer 1",
-      "type": "mixer"
-    },
-    {
-      "id": 3,
-      "name": "Audio out",
+      "name": "output",
       "type": "audio out"
     }
   ],
@@ -30,21 +24,9 @@
       "targetInputSlot": 1
     },
     {
-      "sourceComponent": 0,
-      "sourceOutputSlot": 2,
-      "targetComponent": 1,
-      "targetInputSlot": 2
-    },
-    {
       "sourceComponent": 1,
-      "sourceOutputSlot": 5,
+      "sourceOutputSlot": 4,
       "targetComponent": 2,
-      "targetInputSlot": 1
-    },
-    {
-      "sourceComponent": 2,
-      "sourceOutputSlot": 2,
-      "targetComponent": 3,
       "targetInputSlot": 1
     }
   ]

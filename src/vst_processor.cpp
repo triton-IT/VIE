@@ -6,19 +6,17 @@
 
 #include <iostream>
 
+#include "vst_plugin.hpp"
 #include "vst_processor.hpp"
 #include "application.hpp"
 #include "constants.hpp"
 
 #include "pluginterfaces/base/ipluginbase.h"
 
-using namespace cycfi;
-using namespace q;
-using namespace q::literals;
 using namespace std;
 using json = nlohmann::basic_json<std::map, std::vector, std::wstring>;
 
-namespace live::tritone::vie
+namespace live::tritone::vie::vst
 {
 	Steinberg::FUnknown* vst_processor::createInstance(void* /*context*/)
 	{
@@ -114,7 +112,7 @@ namespace live::tritone::vie
 
 	Steinberg::tresult __stdcall vst_processor::getControllerClassId(Steinberg::TUID class_id)
 	{
-		controller_uid.toTUID(class_id);
+		vst_plugin::controller_uid.toTUID(class_id);
 
 		return Steinberg::kResultTrue;
 	}
@@ -232,7 +230,7 @@ namespace live::tritone::vie
 
 	Steinberg::uint32 __stdcall vst_processor::getLatencySamples()
 	{
-		//TODO: Get latency based on components needs.
+		//TODO: Get latency based on modules needs.
 		return 64;
 	}
 
@@ -298,7 +296,7 @@ namespace live::tritone::vie
 
 	Steinberg::uint32 __stdcall vst_processor::getTailSamples()
 	{
-		//TODO: Compute based on middle components needs.
+		//TODO: Compute based on middle modules needs.
 		return Steinberg::Vst::kNoTail;
 	}
 
@@ -306,7 +304,7 @@ namespace live::tritone::vie
 	{
 		Steinberg::uint32 flags = 0;
 
-		//FIXME: Do not request all but compute based on middle components.
+		//FIXME: Do not request all but compute based on middle modules.
 		flags |= kNeedSystemTime;
 		flags |= kNeedContinousTimeSamples;
 		flags |= kNeedProjectTimeMusic;
