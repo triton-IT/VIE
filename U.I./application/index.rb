@@ -65,7 +65,16 @@ box(vie_styles[:inspector_style])
 
 # logo
 logo_color = 'rgba(99, 255, 99, 0.3)'
+
 grab(:action).box({ id: :logo_support, width: 33, height: 33, left: :auto, top: 7, right: 15, attached: :invisible_color })
+
+logo=<<STR
+<svg  xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" >
+<path id="vieCanvas-bezier" stroke="rgb(0, 0, 0)" stroke-width="1" stroke-miterlimit="10" fill="rgb(255, 0, 0)" d="M 73.04,26.41 C 50.57,12.14 15.77,53.39 15.81,85.33 15.83,107.68 23.49,124.45 35.37,139.38 97.06,203.55 73.1,232.52 109.61,231.71 134.09,231.16 181.15,134.57 220.5,138.31 232.63,123.3 240.52,106.7 240.5,85.07 240.5,84.51 240.49,83.95 240.47,83.4 211.52,29.92 146.74,182.8 114.45,179.38 69.64,174.65 90.68,37.61 73.04,26.41 Z M 172.32,76.13 C 172.32,94.63 157.34,109.64 138.85,109.64 120.36,109.64 105.37,94.63 105.37,76.13 105.37,57.62 120.36,42.62 138.85,42.62 157.34,42.62 172.32,57.62 172.32,76.13 Z M 172.32,76.13" />
+</svg>
+STR
+
+    display_svg(logo, logo_color, :logo_support)
 # svg_fetch(:vie, logo_color, :logo_support)
 
 # project title
