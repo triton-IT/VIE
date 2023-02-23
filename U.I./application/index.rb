@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-def webview_receiver(msg)
+def controller_test(msg)
   puts JSON.parse(msg).to_json # => {"val"=>"test","val1"=>"test1","val2"=>"test2"}
 end
 
-def webview_sender(params)
+def controller_sender(params)
   json_msg = params.to_json
 
   `
@@ -19,9 +19,25 @@ console.log('=====>'+typeof json_msg);
 `
 end
 
+def controller_listener
+  `
+
+  if (window.webkit) {
+// write code here:
+    } else {
+     window.chrome.webview.addEventListener('message', arg => {
+     console.log("data received from the controller : "+arg.data);
+       });
+    }
+`
+
+end
+
+
+controller_listener
 
 require 'application/data_for_test'
-require 'application/atome_experimental'
+require 'application/experimental_api'
 require 'application/version'
 require 'application/styles'
 
@@ -177,8 +193,12 @@ def fill_toolzone (ids)
   icon_spacing = vie_styles[:support_style][:height] + margin * 2
   ids.each_with_index do |id_found, index|
     support = grab(:toolbox).box(support_style.merge({ top: (icon_spacing * index) + margin, id: "tool_support_#{index}" }))
-    support.color(:red)
+    #TODO: important for futur use  keep to code below to fetch items
     # svg_fetch(id_found, svg_color, support.id)
+
+#     puts "=> id_found is #{get_icon(id_found)}"
+
+    display_svg(get_icon(id_found), svg_color, support.id)
     support.touch(true) do
       send("action_#{id_found}")
     end
@@ -224,14 +244,15 @@ def list(parent, style, items)
     end
   end
 end
+
 # main methods
 def action_load
 
-`
-  on_message_get_projects("json_msg");
+  `
+  on_message_get_modules("json_msg");
 `
   # we send the command get_projects to the server
-  webview_sender({ action: :get_projects })
+  controller_sender({ action: :get_projects })
   # inspector = grab(:inspector)
   # clear_zone(inspector)
   # text_list_style = vie_styles[:list_style].merge({ classes: :project_list })
@@ -295,8 +316,8 @@ def insert_module(module_id)
       grab(child_found).delete(true) if grab(child_found)
     end
     tool_found = tool_list[module_id][:icon]
-    tool_color= :orange
-    module_found.box({id: "#{module_found.id.value}_svg_support", width: module_found.width.value/2, height: module_found.height.value/2, center: true, attached: :invisible_color})
+    tool_color = :orange
+    module_found.box({ id: "#{module_found.id.value}_svg_support", width: module_found.width.value / 2, height: module_found.height.value / 2, center: true, attached: :invisible_color })
     svg_fetch(tool_found, tool_color, "#{module_found.id.value}_svg_support")
   end
 

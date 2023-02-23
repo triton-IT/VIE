@@ -308,7 +308,7 @@ def action_undo
 end
 
 # alert filer
-# grab(:tool_zone).image({ path: "./medias/images/icons/folder.svg", top: 15, left: 0, size: 24 })
+# grab(:tool_zone).image({ path: "./medias/images/icons/load.svg", top: 15, left: 0, size: 24 })
 
 # files.touch(true) do
 #   grab(:filer).color(:red)
