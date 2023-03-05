@@ -30,10 +30,10 @@ namespace live::tritone::vie
 		audio_bus_buffers outputs[32];
 	};
 
-	typedef struct {
+	struct float_array {
 		uint_fast16_t nb_values;
 		float* values;
-	} float_array;
+	};
 	
 	struct module_output
 	{		
@@ -237,12 +237,17 @@ namespace live::tritone::vie
 		*/
 		virtual void set_parameter(parameter parameter) = 0;
 
+		/**
+		* serialize this processor.
+		*/
+		virtual nlohmann::json serialize() = 0;
+
 	private:
 		/**
 		* Initialize module with specified configuration.
 		*/
 		void initialize(nlohmann::json processor_definition);
 
-		friend class processor_modules;
+		friend class application;
 	};
 } // namespace

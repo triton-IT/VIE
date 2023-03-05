@@ -153,4 +153,13 @@ namespace live::tritone::vie::processor::module
 	{
 
 	}
+
+	nlohmann::json recorder::serialize()
+	{
+		nlohmann::json root;
+		root["id"] = id_;
+		root["name"] = name_;
+
+		return root;
+	}
 } // namespace

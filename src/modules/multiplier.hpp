@@ -2,10 +2,30 @@
 
 #include <json.hpp>
 
+#include "module_descriptor.hpp"
 #include "../processor_module.hpp"
 
 namespace live::tritone::vie::processor::module
 {
+	struct multiplier_descriptor : public module_descriptor {
+		multiplier_descriptor()
+		{
+			id = 9;
+			name = L"multiplier";
+			icon = L"<svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"currentColor\">  <path id=\"mainPath\" d=\"M15 5.5a4.394 4.394 0 0 1-4 4.5 2.955 2.955 0 0 0-.2-1A3.565 3.565 0 0 0 14 5.5a3.507 3.507 0 0 0-7-.3A3.552 3.552 0 0 0 6 5a4.622 4.622 0 0 1 4.5-4A4.481 4.481 0 0 1 15 5.5zM5.5 6a4.5 4.5 0 1 0 0 9.001 4.5 4.5 0 0 0 0-9z\"/></svg>";
+			input_slots = { {
+				{0, L"on/off"},
+				{1, L"multipliers"},
+				{2, L"mutiplicands"}
+			} };
+			nb_input_slots = 3;
+			output_slots = { {
+				{3, L"amplitudes"}
+			} };
+			nb_output_slots = 1;
+		}
+	};
+
 	class multiplier final : public processor_module
 	{
 	public:
@@ -46,6 +66,8 @@ namespace live::tritone::vie::processor::module
 		uint_fast32_t get_max_nb_input_values(uint_fast16_t slot_id) override;
 
 		void set_parameter(parameter parameter) override;
+
+		nlohmann::json serialize() override;
 
 	private:
 		static constexpr const char* onoff_input_name = "on/off input";

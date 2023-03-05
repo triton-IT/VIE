@@ -1,3 +1,4 @@
+#include "../src/application.hpp"
 #include "../src/windows/editor_view.hpp"
 
 #include <WebView2.h>
@@ -219,25 +220,156 @@ private:
     wchar_t last_message[1024];
 };
 
-SCENARIO("Editor_view should return empty response when get projects is called and no project exists.", "[editor view]") {
-	GIVEN("No project is loaded") {
+SCENARIO("get_projects returns no project when no project exists.", "[editor view]") {	
+    live::tritone::vie::editor_view view;
+    MockCoreWebView2 mock_core_web_view;
+
+    SECTION("Initialisation") {
+        application_.clear();
+    }
+	
+	GIVEN("No project exists") {
 		WHEN("on_message_get_projects is called") {
-			THEN("an empty response is returned") {
-				live::tritone::vie::editor_view view;
-                MockCoreWebView2 mock_core_web_view;
-				
-                view.on_message_received(&mock_core_web_view, L"{\"action\":\"get_projects\"}");
+			THEN("an empty response is returned") {				
+                view.on_message_received(&mock_core_web_view, L"{\"action\": \"get_projects\"}");
 				
                 LPCWSTR actual = mock_core_web_view.get_last_message();
-                std::wstring expected;
-                expected += L"{";
-                expected += L"  \"action\": \"get_projects_callback\",";
-                expected += L"  \"response\": [";
-                expected += L"  ]";
-                expected += L"}";
+                std::wstringstream expected;
+                expected << L"{";
+                expected << L" \"action\": \"get_projects_callback\",";
+                expected << L" \"body\": [";
+                expected << L" ]";
+                expected << L" }";
 				
-				REQUIRE(actual == expected);
+				REQUIRE(actual == expected.str());
 			}
 		}
+    }
+}
+
+SCENARIO("Create a project then get_projects returns a project (created project is saved automatically).", "[editor view]") {
+    live::tritone::vie::editor_view view;
+    MockCoreWebView2 mock_core_web_view;
+	
+	SECTION("Initialisation") {
+		application_.clear();
+	}
+	
+    GIVEN("No project exists") {		
+        WHEN("on_message_new_project is called") {
+            THEN("A project id and name is returned") {
+                view.on_message_received(&mock_core_web_view, L"{\"action\": \"new_project\"}");
+
+                LPCWSTR actual = mock_core_web_view.get_last_message();
+                std::wstringstream expected;
+                expected << L"{";
+                expected << L" \"action\": \"new_project_callback\",";
+                expected << L" \"body\": {";
+                expected << L" \"id\": 0,";
+                expected << L" \"name\": \"Project 0\"";
+                expected << L" }";
+                expected << L" }";
+
+                REQUIRE(actual == expected.str());
+            }
+        }
+        WHEN("on_message_get_projects is called") {
+            THEN("New project is returned (project created previously is automatically saved)") {
+                view.on_message_received(&mock_core_web_view, L"{\"action\": \"get_projects\"}");
+
+                LPCWSTR actual = mock_core_web_view.get_last_message();
+                std::wstringstream expected;
+                expected << L"{";
+                expected << L" \"action\": \"get_projects_callback\",";
+                expected << L" \"body\": [";
+                expected << L" {";
+                expected << L" \"id\": 0,";
+                expected << L" \"name\": \"Project 0\",";
+                expected << L" \"description\": \"\"";
+                expected << L" }";
+                expected << L" ]";
+                expected << L" }";
+
+                REQUIRE(actual == expected.str());
+            }
+        }
+    }
+}
+
+SCENARIO("Create a project, add a module, save project then load it and retrieve project and module.", "[editor view]") {
+    live::tritone::vie::editor_view view;
+    MockCoreWebView2 mock_core_web_view;
+
+    SECTION("Initialisation") {
+        application_.clear();
+    }
+
+    GIVEN("No project exists") {
+        WHEN("on_message_new_project is called") {
+            THEN("A project name is returned") {
+                view.on_message_received(&mock_core_web_view, L"{\"action\": \"new_project\"}");
+
+                LPCWSTR actual = mock_core_web_view.get_last_message();
+                std::wstringstream expected;
+                expected << L"{";
+                expected << L" \"action\": \"new_project_callback\",";
+                expected << L" \"body\": {";
+                expected << L" \"id\": 0,";
+                expected << L" \"name\": \"Project 0\"";
+                expected << L" }";
+                expected << L" }";
+
+                REQUIRE(actual == expected.str());
+            }
+        }
+        WHEN("on_add_module is called") {
+            THEN("A module id is returned") {
+                view.on_message_received(&mock_core_web_view, L"{\"action\":\"add_module\", \"body\": { \"type\": \"midi-in\", \"position\": { \"x\": 0, \"y\": 0, \"z\": 0 } }}");
+
+                LPCWSTR actual = mock_core_web_view.get_last_message();
+                std::wstringstream expected;
+                expected << L"{";
+                expected << L" \"action\": \"add_module_callback\",";
+                expected << L" \"body\": {";
+                expected << L" \"module\": { \"id\": 1 }";
+                expected << L" }";
+                expected << L" }";
+
+                REQUIRE(actual == expected.str());
+            }
+        }
+        WHEN("on_message_export_project is called") {
+            THEN("The project is saved to disk.") {
+                view.on_message_received(&mock_core_web_view, L"{\"action\":\"export_project\",  \"body\": {\"path\": \"c:/tmp/project0.json\"}}");
+
+                LPCWSTR actual = mock_core_web_view.get_last_message();
+                std::wstringstream expected;
+                expected << L"{";
+                expected << L" \"action\": \"export_project_callback\",";
+                expected << L" \"body\": {";
+                expected << L" }";
+                expected << L" }";
+
+                REQUIRE(actual == expected.str());
+            }
+        }
+        WHEN("on_message_import_project is called") {
+            THEN("The project is saved to disk.") {
+                view.on_message_received(&mock_core_web_view, L"{\"action\":\"import_project\",  \"body\": {\"path\": \"c:/tmp/project0.json\"}}");
+
+                LPCWSTR actual = mock_core_web_view.get_last_message();
+                std::wstringstream expected;
+                expected << L"{";
+                expected << L" \"action\": \"import_project_callback\",";
+                expected << L" \"body\": {";
+                expected << L" \"id\": 0,";
+                expected << L" \"name\": \"Project 0\",";
+                expected << L" \"description\": \"\"";
+                expected << L" }";
+                expected << L" }";
+
+                REQUIRE(actual == expected.str());
+            }
+        }
     }
 }

@@ -228,4 +228,13 @@ namespace live::tritone::vie::processor::module
 	void low_pass::set_parameter(parameter parameter)
 	{
 	}
+
+	nlohmann::json low_pass::serialize()
+	{
+		nlohmann::json root;
+		root["id"] = id_;
+		root["name"] = name_;
+
+		return root;
+	}
 } // namespace

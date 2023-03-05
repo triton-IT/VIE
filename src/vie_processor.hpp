@@ -18,7 +18,11 @@ namespace live::tritone::vie {
 
 		void initialize();
 
-		void load(nlohmann::json instrument);
+		nlohmann::json serialize();
+		
+		void add_processor(processor_module* processor);
+
+		void add_relation(module_relation* relation);
 
 		void terminate();
 
@@ -47,10 +51,6 @@ namespace live::tritone::vie {
 		bool process_output_data(output_process_data& output_process_data);
 
 	private:
-		void parse_processors(nlohmann::json processors_definitions);
-
-		void parse_relations(nlohmann::json relations_definitions);
-
 		std::vector<bus*>* get_buses(media_type media_type, bus_direction bus_direction);
 
 		bus* get_bus(media_type media_type, bus_direction bus_direction, int index);

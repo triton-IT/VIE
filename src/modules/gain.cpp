@@ -164,4 +164,13 @@ namespace live::tritone::vie::processor::module
 	void gain::set_parameter(parameter parameter)
 	{
 	}
+
+	nlohmann::json gain::serialize()
+	{
+		nlohmann::json root;
+		root["id"] = id_;
+		root["name"] = name_;
+
+		return root;
+	}
 } // namespace

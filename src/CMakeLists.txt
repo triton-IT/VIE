@@ -14,7 +14,6 @@ set(HEADER_FILES
         "parameter.hpp"
         "processor_definition.hpp"
         "processor_module.hpp"
-        "processor_modules.hpp"
         "processor_orchestrator.hpp"
         "project.hpp"
         "vst_controller.hpp"
@@ -25,6 +24,7 @@ set(HEADER_FILES
         "vst_plugin.hpp"
         "vst_plugin_factory.hpp"
         "boolean_parameter.hpp"
+        "modules/module_descriptor.hpp"
         "modules/audio_input.hpp"
         "modules/envelope.hpp"
         "modules/gain.hpp"
@@ -62,7 +62,6 @@ set(SOURCE_FILES
         "note_event.cpp"
         "parameter.cpp"
         "processor_module.cpp"
-        "processor_modules.cpp"
         "processor_orchestrator.cpp"
         "project.cpp"
         "vst_controller.cpp"
@@ -125,8 +124,7 @@ message(STATUS "VIE> Set target C++ standard to 20")
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_20)
 
 message(STATUS "VIE> Adding nlohman's json header directory")
-set(JSON_DIRECTORY "../third_party/nlohman_json")
-target_include_directories(${PROJECT_NAME} PUBLIC ${JSON_DIRECTORY})
+target_include_directories(${PROJECT_NAME} PUBLIC "../third_party/nlohman_json")
 
 message(STATUS "VIE> Linking-up VST interfaces")
 target_link_libraries(${PROJECT_NAME} vst_interfaces)
@@ -142,6 +140,9 @@ target_link_libraries(${PROJECT_NAME} wil)
 
 message(STATUS "VIE> Linking-up libsndfile")
 target_link_libraries(${PROJECT_NAME} sndfile)
+
+message(STATUS "VIE> Linking-up stduuid")
+target_include_directories(${PROJECT_NAME} PUBLIC "../third_party/stduuid")
 
 # Copy built VST to VST3 system folder
 if (DEPLOY_TO_VST_FOLDER)

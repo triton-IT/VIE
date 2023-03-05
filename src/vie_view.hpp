@@ -50,14 +50,20 @@ namespace live::tritone::vie
 
 		void set_host_callback(host_callback* callback);
 
+		nlohmann::json serialize();
+
 		void load(nlohmann::json instrument);
+		
+		void add_module(nlohmann::json module);
 
 		void render();
 
 	private:
-		void parse_processors(nlohmann::json processors_definition);
-		void parse_relations(nlohmann::json processors_definition);
-		void parse_ui(nlohmann::json processors_definition);
+		void parse_modules(nlohmann::json modules_definitions);
+		void parse_module(nlohmann::json module_definition);
+		void parse_relations(nlohmann::json relations_definitions);
+		void parse_relation(nlohmann::json relation_definition);
+		void parse_ui(nlohmann::json ui_definition);
 		
 		Steinberg::uint32 nb_ref_;
 		Steinberg::IPlugFrame* ptr_frame_;
@@ -66,7 +72,5 @@ namespace live::tritone::vie
 
 		int width_;
 		int height_;
-		
-		host_callback* host_callback_;
 	};
 }

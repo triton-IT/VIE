@@ -103,14 +103,11 @@ namespace live::tritone::vie
 		else if (action_name.compare("new_project") == 0) {
 			on_message_new_project(sender, json_message);
 		}
-		else if (action_name.compare("save_project") == 0) {
-			on_message_save_project(sender, json_message);
+		else if (action_name.compare("export_project") == 0) {
+			on_message_export_project(sender, json_message);
 		}
-		else if (action_name.compare("save_project_as") == 0) {
-			on_message_save_project_as(sender, json_message);
-		}
-		else if (action_name.compare("load_project") == 0) {
-			on_message_load_project(sender, json_message);
+		else if (action_name.compare("import_project") == 0) {
+			on_message_import_project(sender, json_message);
 		}
 		else if (action_name.compare("get_modules") == 0) {
 			on_message_get_modules(sender, json_message);
@@ -145,185 +142,179 @@ namespace live::tritone::vie
 
 	void editor_view::on_message_get_projects(ICoreWebView2* sender, json message) {
 		int nb_projects;
-		std::array<project, 32> projects = application_.get_projects(&nb_projects);
+		std::array<project_info, 32> projects = application_.get_projects(&nb_projects);
 
-		std::wstring reply;
-		reply += L"{";
-		reply += L"  \"action\": \"get_projects_callback\",";
-		reply += L"  \"response\": [";
-
+		std::wstringstream reply;
+		reply << L"{";
+		reply << L" \"action\": \"get_projects_callback\", \"body\": [";
+		
 		for (int i = 0; i < nb_projects; i++) {
 			auto project = projects[i];
 
-			reply += L"    {";
-			reply += L"      \"id\": ";
-			reply += L"      \"";
-			reply += project.id;
-			reply += L"\",";
-			reply += L"      \"name\": ";
-			reply += L"      \"";
-			reply += project.name;
-			reply += L"\"";
-			reply += L"    }";
+			reply << L" {";
+			reply << L" \"id\": ";
+			reply << project.id;
+			reply << L", \"name\": \"";
+			reply << project.name;
+			reply << L"\", \"description\": \"";
+			reply << project.description;
+			reply << L"\" }";
 			if(i < nb_projects - 1)
 			{
-				reply += L",";
+				reply << L",";
 			}
 		}
 
-		reply += L"  ]";
-		reply += L"}";
-		sender->PostWebMessageAsJson(reply.c_str());
+		reply << L" ] }";
+		sender->PostWebMessageAsJson(reply.str().c_str());
 	}
 
 	void editor_view::on_message_new_project(ICoreWebView2* sender, json message) {
-		project project = application_.new_project();
+		project_info project = application_.new_project();
 
-		std::wstring reply;
-		reply += L"{";
-		reply += L"  \"action\": \"new_project_callback\",";
-		reply += L"  \"response\": {";
-		reply += L"    \"id\": ";
-		reply += L"      \"";
-		reply += project.id;
-		reply += L"\",";
-		reply += L"    \"name\": ";
-		reply += L"      \"";
-		reply += project.name;
-		reply += L"\"";
-		reply += L"  }";
-		reply += L"}";
-		sender->PostWebMessageAsJson(reply.c_str());
+		std::wstringstream reply;
+		reply << L"{";
+		reply << L" \"action\": \"new_project_callback\", \"body\": { \"id\": ";
+		reply << project.id;
+		reply << L", \"name\": \"";
+		reply << project.name;
+		reply << L"\" }";
+		reply << L" }";
+		sender->PostWebMessageAsJson(reply.str().c_str());
 	}
 
-	void editor_view::on_message_load_project(ICoreWebView2* sender, json message) {
+	void editor_view::on_message_export_project(ICoreWebView2* sender, json message) {
 		std::string project_path = message["body"]["path"];
 
 		std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
 		std::wstring project_path_w = converter.from_bytes(project_path);
 
-		project project = application_.load_project(project_path_w);
+		application_.export_project(project_path_w);
 		
-		std::wstring reply;
-		reply += L"{";
-		reply += L"  \"action\": \"load_project_callback\",";
-		reply += L"  \"response\": {";
-		reply += L"    \"id\": ";
-		reply += L"      \"";
-		reply += project.id;
-		reply += L"\",";
-		reply += L"    \"name\": ";
-		reply += L"      \"";
-		reply += project.name;
-		reply += L"\",";
-		reply += L"    \"description\": ";
-		reply += L"      \"";
-		reply += project.description;
-		reply += L"\"";
-		reply += L"  }";
-		reply += L"}";
-		sender->PostWebMessageAsJson(reply.c_str());
+		std::wstringstream reply;
+		reply << L"{";
+		reply << L" \"action\": \"export_project_callback\",";
+		reply << L" \"body\": {";
+		reply << L" }";
+		reply << L" }";
+		sender->PostWebMessageAsJson(reply.str().c_str());
 	}
 
-	void editor_view::on_message_save_project(ICoreWebView2* sender, json message) {
-		std::wstring reply;
-		reply += L"{";
-		reply += L"  \"action\": \"save_project_callback\",";
-		reply += L"  \"response\": {";
-		reply += L"  }";
-		reply += L"}";
-		sender->PostWebMessageAsJson(reply.c_str());
-	}
+	void editor_view::on_message_import_project(ICoreWebView2* sender, json message) {
+		std::string project_path = message["body"]["path"];
 
-	void editor_view::on_message_save_project_as(ICoreWebView2* sender, json message) {
-		std::wstring reply;
-		reply += L"{";
-		reply += L"  \"action\": \"save_project_as_callback\",";
-		reply += L"  \"response\": {";
-		reply += L"  }";
-		reply += L"}";
-		sender->PostWebMessageAsJson(reply.c_str());
+		std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+		std::wstring project_path_w = converter.from_bytes(project_path);
+
+		project_info project = application_.import_project(project_path_w);
+		
+		std::wstringstream reply;
+		reply << L"{";
+		reply << L" \"action\": \"import_project_callback\",";
+		reply << L" \"body\": {";
+		reply << L" \"id\": ";
+		reply << project.id;
+		reply << L",";
+		reply << L" \"name\": \"";
+		reply << project.name;
+		reply << L"\",";
+		reply << L" \"description\": \"";
+		reply << project.description;
+		reply << L"\"";
+		reply << L" }";
+		reply << L" }";
+		sender->PostWebMessageAsJson(reply.str().c_str());
 	}
 
 	void editor_view::on_message_get_modules(ICoreWebView2* sender, json message) {
-		std::wstring reply;
-		reply += L"{";
-		reply += L"  \"action\": \"get_modules_callback\",";
-		reply += L"  \"response\": ";
-		reply += L"  [";
-		reply += L"  {";
-		reply += L"    \"id\": ";
-		reply += L"    \"424f7df3-9f36-411d-9535-f8323d4f372c\",";
-		reply += L"    \"name\": ";
-		reply += L"    \"Midi in\",";
-		reply += L"    \"type_id\": ";
-		reply += L"    \"midi-in\",";
-		reply += L"    \"input_slots\": ";
-		reply += L"    [";
-		reply += L"      {";
-		reply += L"        \"id\": ";
-		reply += L"        \"378a9a4d-d7d0-4d30-a5f4-0a30e279399e\",";
-		reply += L"        \"name\": ";
-		reply += L"        \"project1\",";
-		reply += L"        \"unit\": ";
-		reply += L"        \"db\",";
-		reply += L"        \"value\": ";
-		reply += L"        1.0";
-		reply += L"      }";
-		reply += L"    ],";
-		reply += L"    \"output_slots\": ";
-		reply += L"    [";
-		reply += L"      {";
-		reply += L"        \"id\": ";
-		reply += L"        \"916b23e7-7da9-4059-b72c-830b38da0fd5\",";
-		reply += L"        \"name\": ";
-		reply += L"        \"project1\",";
-		reply += L"        \"unit\": ";
-		reply += L"        \"db\",";
-		reply += L"        \"value\": ";
-		reply += L"        1.0";
-		reply += L"      }";
-		reply += L"    ],";
-		reply += L"    \"position\": ";
-		reply += L"    {\"x\":0, \"y\" : 0, \"z\" : 0},";
-		reply += L"    \"icon\": ";
-		reply += L"    {\"<svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"currentColor\">  <path id=\"mainPath\" d=\"M15 5.5a4.394 4.394 0 0 1-4 4.5 2.955 2.955 0 0 0-.2-1A3.565 3.565 0 0 0 14 5.5a3.507 3.507 0 0 0-7-.3A3.552 3.552 0 0 0 6 5a4.622 4.622 0 0 1 4.5-4A4.481 4.481 0 0 1 15 5.5zM5.5 6a4.5 4.5 0 1 0 0 9.001 4.5 4.5 0 0 0 0-9z\"/></svg>\"},";
-		reply += L"  }";
-		reply += L"  ]";
-		reply += L"}";
-		sender->PostWebMessageAsJson(reply.c_str());
+		auto modules = application_.get_modules();
+		
+		std::wstringstream reply;
+		reply << L"{";
+		reply << L" \"action\": \"get_modules_callback\",";
+		reply << L" \"body\": [";
+		
+		for (auto module : modules)
+		{
+			reply << L" {";
+			reply << L" \"id\": ";
+			reply << module.id;
+			reply << L", \"name\": ";
+			reply << module.name;
+			reply << L", \"icon\": ";
+			reply << module.icon;
+			reply << L", \"input_slots\": ";
+			reply << L" [";
+			
+			for (auto input_slot : module.input_slots)
+			{
+				reply << L" {";
+				reply << L" \"id\": ";
+				reply << input_slot.id;
+				reply << L", \"name\": ";
+				reply << input_slot.name;
+				reply << L" }";
+			}
+			
+			reply << L" ],";
+			reply << L" \"output_slots\": ";
+			reply << L" [";
+
+			for (auto input_slot : module.output_slots)
+			{
+				reply << L" {";
+				reply << L" \"id\": ";
+				reply << input_slot.id;
+				reply << L", \"name\": ";
+				reply << input_slot.name;
+				reply << L" }";
+			}
+			
+			reply << L" ]";
+			reply << L" }";
+		}
+		
+		reply << L" ]";
+		reply << L" }";
+		sender->PostWebMessageAsJson(reply.str().c_str());
 	}
 
 	void editor_view::on_message_add_module(ICoreWebView2* sender, json message) {
-		std::wstring reply;
-		reply += L"{";
-		reply += L"  \"action\": \"add_module_callback\",";
-		reply += L"  \"response\": {";
-		reply += L"    \"id\": ";
-		reply += L"    \"097afe69-06ec-4dc4-ac34-aa81979cf899\"";
-		reply += L"  }";
-		reply += L"}";
-		sender->PostWebMessageAsJson(reply.c_str());
+		nlohmann::json module_json = message.at("body");
+
+		uint16_t module_id = application_.add_module(module_json);
+		
+		std::wstringstream reply;
+		reply << L"{";
+		reply << L" \"action\": \"add_module_callback\",";
+		reply << L" \"body\": {";
+		reply << L" \"module\": {";
+		reply << L" \"id\": ";
+		reply << std::to_wstring(module_id);
+		reply << L" }";
+		reply << L" }";
+		reply << L" }";
+		sender->PostWebMessageAsJson(reply.str().c_str());
 	}
 
 	void editor_view::on_message_delete_module(ICoreWebView2* sender, json message) {
-		std::wstring reply;
-		reply += L"{";
-		reply += L"  \"action\": \"delete_module_callback\",";
-		reply += L"  \"response\": {";
-		reply += L"  }";
-		reply += L"}";
-		sender->PostWebMessageAsJson(reply.c_str());
+		std::wstringstream reply;
+		reply << L"{";
+		reply << L" \"action\": \"delete_module_callback\",";
+		reply << L" \"body\": {";
+		reply << L" }";
+		reply << L" }";
+		sender->PostWebMessageAsJson(reply.str().c_str());
 	}
 
 	void editor_view::on_message_set_module_name(ICoreWebView2* sender, json message) {
-		std::wstring reply;
-		reply += L"{";
-		reply += L"  \"action\": \"set_module_name_callback\",";
-		reply += L"  \"response\": {";
-		reply += L"  }";
-		reply += L"}";
-		sender->PostWebMessageAsJson(reply.c_str());
+		std::wstringstream reply;
+		reply << L"{";
+		reply << L" \"action\": \"set_module_name_callback\",";
+		reply << L" \"body\": {";
+		reply << L" }";
+		reply << L" }";
+		sender->PostWebMessageAsJson(reply.str().c_str());
 	}
 
 	void editor_view::on_message_set_module_parameter_value(ICoreWebView2* sender, json message) {
@@ -352,7 +343,7 @@ namespace live::tritone::vie
 		}
 
 		if (module_found && parameter_id_found && parameter_value_found) {
-			processor_module& processor_module = application_.get_processor_components().get_by_id(module_id);
+			processor_module& processor_module = application_.get_processor_by_id(module_id);
 			uint16_t parameter_component_id = processor_module.get_id();
 			uint16_t parameter_slot_id = processor_module.get_slot_id(parameter_id);
 
@@ -365,44 +356,44 @@ namespace live::tritone::vie
 		}
 		else {
 			if (!module_found) {
-				sender->PostWebMessageAsJson(L"{\"action\": \"set_module_parameter_value_callback\", \"error\": 0}");
+				sender->PostWebMessageAsJson(L"{ \"action\": \"set_module_parameter_value_callback\", \"error\": 0 }");
 			}
 			if (!parameter_id_found) {
-				sender->PostWebMessageAsJson(L"{\"action\": \"set_module_parameter_value_callback\", \"error\": 1}");
+				sender->PostWebMessageAsJson(L"{ \"action\": \"set_module_parameter_value_callback\", \"error\": 1 }");
 			}
 			if (!parameter_value_found) {
-				sender->PostWebMessageAsJson(L"{\"action\": \"set_module_parameter_value_callback\", \"error\": 2}");
+				sender->PostWebMessageAsJson(L"{ \"action\": \"set_module_parameter_value_callback\", \"error\": 2 }");
 			}
 		}
 	}
 
 	void editor_view::on_message_link_modules(ICoreWebView2* sender, json message) {
-		std::wstring reply;
-		reply += L"{";
-		reply += L"  \"action\": \"link_modules_callback\",";
-		reply += L"  \"response\": {";
-		reply += L"  }";
-		reply += L"}";
-		sender->PostWebMessageAsJson(reply.c_str());
+		std::wstringstream reply;
+		reply << L"{";
+		reply << L" \"action\": \"link_modules_callback\",";
+		reply << L" \"body\": {";
+		reply << L" }";
+		reply << L" }";
+		sender->PostWebMessageAsJson(reply.str().c_str());
 	}
 
 	void editor_view::on_message_undo(ICoreWebView2* sender, json message) {
-		std::wstring reply;
-		reply += L"{";
-		reply += L"  \"action\": \"undo_callback\",";
-		reply += L"  \"response\": {";
-		reply += L"  }";
-		reply += L"}";
-		sender->PostWebMessageAsJson(reply.c_str());
+		std::wstringstream reply;
+		reply << L"{";
+		reply << L" \"action\": \"undo_callback\",";
+		reply << L" \"body\": {";
+		reply << L" }";
+		reply << L" }";
+		sender->PostWebMessageAsJson(reply.str().c_str());
 	}
 
 	void editor_view::on_message_redo(ICoreWebView2* sender, json message) {
-		std::wstring reply;
-		reply += L"{";
-		reply += L"  \"action\": \"redo_callback\",";
-		reply += L"  \"response\": {";
-		reply += L"  }";
-		reply += L"}";
-		sender->PostWebMessageAsJson(reply.c_str());
+		std::wstringstream reply;
+		reply << L"{";
+		reply << L" \"action\": \"redo_callback\",";
+		reply << L" \"body\": {";
+		reply << L" }";
+		reply << L" }";
+		sender->PostWebMessageAsJson(reply.str().c_str());
 	}
 } // namespace

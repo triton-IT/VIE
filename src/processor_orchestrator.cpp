@@ -47,27 +47,23 @@ namespace live::tritone::vie
 		nb_modules_++;
 	}
 
-	module_relation& processor_orchestrator::add_relation(json relation_definition)
+	processor_module** processor_orchestrator::get_processor_modules(int* nb_modules)
 	{
-		const int source_module_id = relation_definition["sourceComponent"];
+		*nb_modules = nb_modules_;
+		return processor_modules_;
+	}
 
-		module_relation* module_relations = relations_[source_module_id];
+	void processor_orchestrator::add_relation(module_relation* relation)
+	{
+		uint16_t source_module_id = relation->source_module->get_id();
+		
+		module_relation** module_relations = relations_[source_module_id];
 		const int nb_module_relations = nb_module_relations_[source_module_id];
-		module_relation& module_relation = module_relations[nb_module_relations];
+		
+		auto module_relation = module_relations[nb_module_relations];
+		module_relation = relation;
+		
 		nb_module_relations_[source_module_id] = nb_module_relations + 1;
-
-		module_relation.source_module = processor_modules_[source_module_id];
-
-		const uint_fast16_t source_output_id = relation_definition["sourceOutputSlot"];
-		module_relation.source_slot_id = source_output_id;
-
-		const int target_module_id = relation_definition["targetComponent"];
-		module_relation.target_module = processor_modules_[target_module_id];
-
-		const uint_fast16_t target_input_id = relation_definition["targetInputSlot"];
-		module_relation.target_slot_id = target_input_id;
-
-		return module_relation;
 	}
 
 	void processor_orchestrator::terminate() const
@@ -168,13 +164,13 @@ namespace live::tritone::vie
 			source_module->process(output_process_data);
 
 			//Get all children of source modules
-			const module_relation* module_relations = relations_[source_module->get_id()];
+			module_relation** module_relations = relations_[source_module->get_id()];
 
 			//Process all children.
 			const int nb_relations = nb_module_relations_[source_module->get_id()];
 			for (int i = 0; i < nb_relations; i++)
 			{
-				const auto [relation_module, source_slot_id, target_module, target_slot_id] = module_relations[i];
+				const auto [relation_module, source_slot_id, target_module, target_slot_id] = *(module_relations[i]);
 
 				std::array<module_output*, 32> source_output_values;
 				

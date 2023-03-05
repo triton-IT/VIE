@@ -4,6 +4,12 @@
 
 #include "../application.hpp"
 #include "../constants.hpp"
+#include <iostream>
+#include <sstream>
+#include <string>
+#include <codecvt>
+#include <random>
+#include <uuid.h>
 
 using namespace std;
 
@@ -11,7 +17,6 @@ namespace live::tritone::vie::processor::module
 {
 	midi_input::midi_input(nlohmann::json midi_definition) : processor_module(),
 		id_(midi_definition["id"]),
-		name_(midi_definition["name"]),
 		nb_values_(0),
 		frequencies_outputs_(),
 		velocities_outputs_(),
@@ -19,7 +24,14 @@ namespace live::tritone::vie::processor::module
 		notes_on_outputs_(),
 		nb_notes_off_values_(0),
 		notes_off_outputs_()
-	{
+	{			
+		if (midi_definition.contains("name")) {
+			name_ = midi_definition["name"];
+		}
+		else {
+			name_ = "MIDI input";
+		}
+		
 		for (int i = 0; i < 32; i++) {
 			frequencies_outputs_[i] = new float_module_output();
 			velocities_outputs_[i] = new float_module_output();
@@ -203,5 +215,14 @@ namespace live::tritone::vie::processor::module
 				is_on = true;
 			}
 		}
+	}
+
+	nlohmann::json midi_input::serialize()
+	{
+		nlohmann::json root;
+		root["id"] = id_;
+		root["name"] = name_;
+
+		return root;
 	}
 } // namespace

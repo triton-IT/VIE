@@ -21,10 +21,49 @@ namespace live::tritone::vie {
 	{
 	}
 
-	void vie_processor::load(json instrument)
+	nlohmann::json vie_processor::serialize()
 	{
-		parse_processors(instrument["modules"]);
-		parse_relations(instrument["relations"]);
+		json root = json();
+		int nb_modules;
+		auto modules = orchestrator_.get_processor_modules(&nb_modules);
+		
+		for (int i = 0; i < nb_modules; i++)
+		{
+			auto module = modules[i];
+			root["modules"].push_back(module->serialize());
+		}
+
+		return root;
+	}
+
+	void vie_processor::add_processor(processor_module* processor)
+	{
+		orchestrator_.add_processor_module(processor);
+		switch (processor->get_type()) {
+		case processor_module_type::event_input: {
+			auto event_input_bus = new bus(std::wstring(L"Event input"), bus_type::main, processor);
+			event_input_buses_.push_back(event_input_bus);
+			break;
+		}
+		case processor_module_type::audio_input: {
+			auto audio_input_bus = new bus(std::wstring(L"Audio input"), bus_type::main, processor);
+			audio_input_buses_.push_back(audio_input_bus);
+			break;
+		}
+		case processor_module_type::audio_output: {
+			//TODO: Create another bus type if this one do not need a module as parameter.
+			auto audio_output_bus = new bus(std::wstring(L"Audio output"), bus_type::main, processor);
+			audio_output_buses_.push_back(audio_output_bus);
+			dynamic_cast<audio_output*>(processor)->set_output_bus_id(static_cast<uint_fast16_t>(audio_output_buses_.size()) - 1);
+			break;
+		}
+		case processor_module_type::middle:
+			break;
+		}
+	}
+
+	void vie_processor::add_relation(module_relation* relation) {
+		orchestrator_.add_relation(relation);
 	}
 
 	void vie_processor::terminate() {
@@ -155,41 +194,6 @@ namespace live::tritone::vie {
 		orchestrator_.process(output_process_data);
 
 		return true;
-	}
-
-	void vie_processor::parse_processors(json processors_definitions) {
-		processor_modules& processors = processor_modules::get_instance();
-		for (auto& [index, processor_definition] : processors_definitions.items()) {
-			auto processor = processors.create(processor_definition);
-			orchestrator_.add_processor_module(processor);
-			switch (processor->get_type()) {
-			case processor_module_type::event_input: {
-				auto event_input_bus = new bus(std::wstring(L"Event input"), bus_type::main, processor);
-				event_input_buses_.push_back(event_input_bus);
-				break;
-			}
-			case processor_module_type::audio_input: {
-				auto audio_input_bus = new bus(std::wstring(L"Audio input"), bus_type::main, processor);
-				audio_input_buses_.push_back(audio_input_bus);
-				break;
-			}
-			case processor_module_type::audio_output: {
-				//TODO: Create another bus type if this one do not need a module as parameter.
-				auto audio_output_bus = new bus(std::wstring(L"Audio output"), bus_type::main, processor);
-				audio_output_buses_.push_back(audio_output_bus);
-				dynamic_cast<audio_output*>(processor)->set_output_bus_id(static_cast<uint_fast16_t>(audio_output_buses_.size()) - 1);
-				break;
-			}
-			case processor_module_type::middle:
-				break;
-			}
-		}
-	}
-
-	void vie_processor::parse_relations(json relations_definitions) {
-		for (auto& [index, relation_definition] : relations_definitions.items()) {
-			orchestrator_.add_relation(relation_definition);
-		}	
 	}
 
 	std::vector<bus*>* vie_processor::get_buses(const media_type media_type, const bus_direction bus_direction) {

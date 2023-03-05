@@ -16,7 +16,6 @@ set(HEADER_FILES
         "../src/parameter.hpp"
         "../src/processor_definition.hpp"
         "../src/processor_module.hpp"
-        "../src/processor_modules.hpp"
         "../src/processor_orchestrator.hpp"
         "../src/project.hpp"
         "../src/vst_controller.hpp"
@@ -51,7 +50,6 @@ set(SOURCE_FILES
         "../src/note_event.cpp"
         "../src/parameter.cpp"
         "../src/processor_module.cpp"
-        "../src/processor_modules.cpp"
         "../src/processor_orchestrator.cpp"
         "../src/project.cpp"
         "../src/vst_controller.cpp"
@@ -117,8 +115,7 @@ message(STATUS "VIE> Set target C++ standard to 20")
 target_compile_features(${TEST_PROJECT_NAME} PRIVATE cxx_std_20)
 
 message(STATUS "VIE> tests> Adding nlohman's json header directory")
-set(JSON_DIRECTORY "../third_party/nlohman_json")
-target_include_directories(${TEST_PROJECT_NAME} PUBLIC ${JSON_DIRECTORY})
+target_include_directories(${TEST_PROJECT_NAME} PUBLIC "../third_party/nlohman_json")
 
 message(STATUS "VIE> tests>  Linking-up cycfi Q")
 target_link_libraries(${TEST_PROJECT_NAME} PRIVATE cycfi_q)
@@ -134,5 +131,8 @@ target_link_libraries(${TEST_PROJECT_NAME} PRIVATE wil)
 
 message(STATUS "VIE> Linking-up libsndfile")
 target_link_libraries(${TEST_PROJECT_NAME} PRIVATE sndfile)
+
+message(STATUS "VIE> Linking-up stduuid")
+target_include_directories(${PROJECT_NAME} PUBLIC "../third_party/stduuid")
 
 target_link_libraries(${TEST_PROJECT_NAME} PRIVATE Catch2::Catch2WithMain)

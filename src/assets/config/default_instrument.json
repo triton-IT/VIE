@@ -3,7 +3,7 @@
     {
       "id": 0,
       "name": "Audio in",
-      "type": "audio in"
+      "type": "audio-in"
     },
     {
       "id": 1,

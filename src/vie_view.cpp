@@ -11,10 +11,9 @@ namespace live::tritone::vie
 		nb_ref_(0),
 		ptr_frame_(nullptr),
 		width_(1024),
-		height_(600),
-		host_callback_(host_callback)
+		height_(600)
 	{
-		editor_view.set_host_callback(host_callback_);
+		editor_view.set_host_callback(host_callback);
 	}
 
 	tresult __stdcall vie_view::queryInterface(const TUID iid, void** obj)
@@ -134,31 +133,51 @@ namespace live::tritone::vie
 
 	void vie_view::set_host_callback(host_callback* callback)
 	{
-		host_callback_ = callback;
+		editor_view.set_host_callback(callback);
+	}
+
+	nlohmann::json vie_view::serialize()
+	{
+		return json();
 	}
 
 	void vie_view::load(nlohmann::json instrument)
 	{
-		parse_processors(instrument["modules"]);
+		parse_modules(instrument["modules"]);
 		parse_relations(instrument["relations"]);
 		parse_ui(instrument["ui"]);
+	}
+
+	void vie_view::add_module(nlohmann::json module)
+	{
+		parse_module(module);
 	}
 
 	void vie_view::render()
 	{
 	}
 
-	void vie_view::parse_processors(json processors_definitions)
+	void vie_view::parse_modules(json modules_definitions)
 	{
-		for (auto& [index, processor_definition] : processors_definitions.items()) {
-			const std::string type = processor_definition["type"];
+		for (auto& [index, module_definition] : modules_definitions.items()) {
+			parse_module(module_definition);
 		}
+	}
+
+	void vie_view::parse_module(json module_definition)
+	{
+		const std::string type = module_definition["type"];
 	}
 
 	void vie_view::parse_relations(json relations_definitions)
 	{
 		for (auto& [index, relation_definition] : relations_definitions.items()) {
+			parse_relation(relation_definition);
 		}
+	}
+
+	void vie_view::parse_relation(json relation_definition)
+	{
 	}
 
 	void vie_view::parse_ui(json ui_definitions)

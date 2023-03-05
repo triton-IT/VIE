@@ -201,4 +201,13 @@ namespace live::tritone::vie::processor::module
 	void noise::set_noise_type(noise_type noise_type) {
 		noise_type_ = noise_type;
 	}
+
+	nlohmann::json noise::serialize()
+	{
+		nlohmann::json root;
+		root["id"] = id_;
+		root["name"] = name_;
+
+		return root;
+	}
 } // namespace

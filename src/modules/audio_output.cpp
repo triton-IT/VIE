@@ -139,4 +139,13 @@ namespace live::tritone::vie::processor::module
 	{
 		output_bus_id_ = bus_id;
 	}
+
+	nlohmann::json audio_output::serialize()
+	{
+		nlohmann::json root;
+		root["id"] = id_;
+		root["name"] = name_;
+
+		return root;
+	}
 } // namespace

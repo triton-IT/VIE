@@ -36,7 +36,9 @@ namespace live::tritone::vie {
 
 		void add_processor_module(processor_module* processor);
 
-		module_relation& add_relation(nlohmann::json relation_definition);
+		processor_module** get_processor_modules(int* nb_modules);
+
+		void add_relation(module_relation* relation);
 
 		void terminate() const;
 
@@ -70,7 +72,7 @@ namespace live::tritone::vie {
 		//Contains an array of output relations for the given module id.
 		//TODO: compute nb of modules when parsing config file instead of using constant.
 		//TODO: compute max nb of relations for modules when parsing config file instead of using constant.
-		module_relation relations_[128][32];
+		module_relation* relations_[128][32];
 
 		void process(processor_module* source_module, output_process_data& output_process_data);
 		

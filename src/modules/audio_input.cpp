@@ -134,4 +134,13 @@ namespace live::tritone::vie::processor::module
 	{
 		buffer_ = buffer;
 	}
+
+	nlohmann::json audio_input::serialize()
+	{
+		nlohmann::json root;
+		root["id"] = id_;
+		root["name"] = name_;
+
+		return root;
+	}
 } // namespace

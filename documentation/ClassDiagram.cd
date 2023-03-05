@@ -1,0 +1,484 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1" GroupingSetting="Alphabetical" MembersFormat="FullSignature">
+  <Class Name="live::tritone::vie::application">
+    <Position X="10.5" Y="21.75" Width="6.75" />
+    <TypeIdentifier>
+      <HashCode>BEAgAIAAAACAAIAIQBYAAgBgEIAABAIgAEAAggBCAAA=</HashCode>
+      <FileName>C:\dev\triton-IT\VIE\src\Application.hpp</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="current_project_" />
+      <Field Name="vie_processor_" />
+      <Field Name="vie_view_" />
+    </ShowAsAssociation>
+    <ShowAsCollectionAssociation>
+      <Field Name="parameters_" />
+      <Field Name="modules_" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="live::tritone::vie::boolean_parameter" Collapsed="true">
+    <Position X="4.75" Y="28" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAgAAAAAAAAAAAAAgAAAABAAEAAAAAAAAAAgAAAAAAA=</HashCode>
+      <FileName>C:\dev\triton-IT\VIE\src\boolean_parameter.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="live::tritone::vie::bus" Collapsed="true">
+    <Position X="35" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAQBAASATAEAAQAAAAAQAAgAAABBAEACAAAgIAAIAA=</HashCode>
+      <FileName>C:\dev\triton-IT\VIE\src\Bus.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="live::tritone::vie::editor_view">
+    <Position X="0.5" Y="3.5" Width="4" />
+    <TypeIdentifier>
+      <HashCode>AAACAICCAACJEBAAQEBAGEAABmAABQAAAAAgAAAAAAQ=</HashCode>
+      <FileName>C:\dev\triton-IT\VIE\src\windows\editor_view.hpp</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="host_callback_" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="live::tritone::vie::float_parameter" Collapsed="true">
+    <Position X="7" Y="28" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAIAAAAAAAgAAAABAAAAAAAAIAAAAgAAAAAAA=</HashCode>
+      <FileName>C:\dev\triton-IT\VIE\src\float_parameter.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="live::tritone::vie::host_callback" Collapsed="true">
+    <Position X="12.25" Y="9.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAgAACAAABAACAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>C:\dev\triton-IT\VIE\src\host_callback.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="live::tritone::vie::parameter">
+    <Position X="4.25" Y="21.25" Width="4.5" />
+    <TypeIdentifier>
+      <HashCode>AgBIAAAAAAACACBAoAAAABAAQAIBAIAEOAAiAAAAQgQ=</HashCode>
+      <FileName>C:\dev\triton-IT\VIE\src\Parameter.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="live::tritone::vie::processor::module::audio_input" Collapsed="true">
+    <Position X="12.25" Y="15" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAkQARAAEAAAAAAAAABAaMIAAAAgAIABAIRgAoAAYwA=</HashCode>
+      <FileName>C:\dev\triton-IT\VIE\src\modules\audio_input.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="live::tritone::vie::processor::module::audio_output" Collapsed="true">
+    <Position X="21.25" Y="15" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ACgQAQAAESACIAAAgAhAZMIAAAAgAYABAAQgAIAAYgA=</HashCode>
+      <FileName>C:\dev\triton-IT\VIE\src\modules\audio_output.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="live::tritone::vie::processor::module::envelope" Collapsed="true">
+    <Position X="5.5" Y="15" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAkQBUAEEKICAQgAkBBAYNIAIAApAogxEEwgQIoAYgA=</HashCode>
+      <FileName>C:\dev\triton-IT\VIE\src\modules\envelope.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="live::tritone::vie::processor::module::gain" Collapsed="true">
+    <Position X="14.5" Y="15" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAkcAQAIECAAgAAAAARA4sJAAAAgAJABAUQQAIAQYgA=</HashCode>
+      <FileName>C:\dev\triton-IT\VIE\src\modules\gain.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="live::tritone::vie::processor::module::high_pass" Collapsed="true">
+    <Position X="23.5" Y="15" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gAkYRRCIGDBAxAAAAABA4sMAAUJgAogBAAUwAYAQYhA=</HashCode>
+      <FileName>C:\dev\triton-IT\VIE\src\modules\high_pass.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="live::tritone::vie::processor::module::low_pass" Collapsed="true">
+    <Position X="30.25" Y="15" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gAkYRRCIGCBAxAAEAABA4sMAAUJgQoABAAUwAYAQYhA=</HashCode>
+      <FileName>C:\dev\triton-IT\VIE\src\modules\low_pass.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="live::tritone::vie::processor::module::midi_input" Collapsed="true">
+    <Position X="7.75" Y="15" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>KAiQAQCEEAAACAgBgBBA4MMAwAQgIIADAAwAAYAAcgA=</HashCode>
+      <FileName>C:\dev\triton-IT\VIE\src\modules\midi_input.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="live::tritone::vie::processor::module::mixer" Collapsed="true">
+    <Position X="16.75" Y="15" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gAgQAQgIECAAAAAAAABA8sIQAAAgAIABAAQAAIAQYgA=</HashCode>
+      <FileName>C:\dev\triton-IT\VIE\src\modules\mixer.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="live::tritone::vie::processor::module::multiplier" Collapsed="true">
+    <Position X="25.75" Y="15" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>BCgyAQAAECAAAAEgAEBAYcYAAAAgFIADAARgDIABYgA=</HashCode>
+      <FileName>C:\dev\triton-IT\VIE\src\modules\multiplier.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="live::tritone::vie::processor::module::noise" Collapsed="true">
+    <Position X="28" Y="15" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAkQAQgAECCCAAAAAJBAYMIEAAAAAIAhAAQgAIAAYgA=</HashCode>
+      <FileName>C:\dev\triton-IT\VIE\src\modules\noise.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="live::tritone::vie::processor::module::oscillator" Collapsed="true">
+    <Position X="32.5" Y="15" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAkQAQAAECACgCAAABBBYMIQAAAgBIAhAAQhIIAAYgE=</HashCode>
+      <FileName>C:\dev\triton-IT\VIE\src\modules\oscillator.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="live::tritone::vie::processor::module::recorder" Collapsed="true">
+    <Position X="10" Y="15" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAkwgQAAGCACAAAAAABAYMIAAADoAIABCAQgAIAAYsA=</HashCode>
+      <FileName>C:\dev\triton-IT\VIE\src\modules\recorder.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="live::tritone::vie::processor::module::sample" Collapsed="true">
+    <Position X="19" Y="15" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QAk0AQAAEgACAEAAAABAYMIYBBAgQIgBCIQgAqAAYoA=</HashCode>
+      <FileName>C:\dev\triton-IT\VIE\src\modules\sample.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="live::tritone::vie::processor_module">
+    <Position X="17.25" Y="9.25" Width="5.25" />
+    <TypeIdentifier>
+      <HashCode>AAgQAQAAEAAAAAAAABFAYMoAAAAgAAAAAAQgAIAAQAA=</HashCode>
+      <FileName>C:\dev\triton-IT\VIE\src\processor_module.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="live::tritone::vie::processor_orchestrator">
+    <Position X="11.75" Y="3.5" Width="6.75" />
+    <TypeIdentifier>
+      <HashCode>AAIABBCAAAEBAhAgAAAAAAIAAhkABAAAAAAASwAABAQ=</HashCode>
+      <FileName>C:\dev\triton-IT\VIE\src\processor_orchestrator.hpp</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="processing_setup_" />
+    </ShowAsAssociation>
+    <ShowAsCollectionAssociation>
+      <Field Name="processor_modules_" />
+      <Field Name="sources_midi_input_modules_" />
+      <Field Name="sources_audio_input_modules_" />
+      <Field Name="relations_" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="live::tritone::vie::vie_processor">
+    <Position X="19.25" Y="2" Width="4.5" />
+    <TypeIdentifier>
+      <HashCode>aAAAAASAQIAFAAAgEEEAMQAAAQIFBBAIgAAAAAQABEA=</HashCode>
+      <FileName>C:\dev\triton-IT\VIE\src\vie_processor.hpp</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="orchestrator_" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="live::tritone::vie::vie_view">
+    <Position X="5.5" Y="1.25" Width="5" />
+    <TypeIdentifier>
+      <HashCode>EAACAIAEAIAAAJEhwEBAMnCEFQAABAEAAgAgQAAQAAA=</HashCode>
+      <FileName>C:\dev\triton-IT\VIE\src\vie_view.hpp</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="editor_view" />
+      <Field Name="host_callback_" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="live::tritone::vie::vst::vst_controller" Collapsed="true">
+    <Position X="36.75" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>UAEABFAEACggCAAAgAEABAiAAEQAAAEghAAIQBAEBAQ=</HashCode>
+      <FileName>C:\dev\triton-IT\VIE\src\vst_controller.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="live::tritone::vie::vst::vst_plugin" Collapsed="true">
+    <Position X="38.5" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAABAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>C:\dev\triton-IT\VIE\src\vst_plugin.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="live::tritone::vie::vst::vst_plugin_factory" Collapsed="true">
+    <Position X="35" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>kgBAAAAEAAgAAAAQAAIABICAAACACAEBgAAgAAQAAAA=</HashCode>
+      <FileName>C:\dev\triton-IT\VIE\src\vst_plugin_factory.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="live::tritone::vie::vst::vst_processor" Collapsed="true">
+    <Position X="36.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>8AAgAAIUIAiABAAQoiEABgKgAYCAQAEAAAAgSEAEBAQ=</HashCode>
+      <FileName>C:\dev\triton-IT\VIE\src\vst_processor.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="live::tritone::vie::vst_host_callback" Collapsed="true">
+    <Position X="12.25" Y="10.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAgAAKAAABgACAAAAAQAAAAAAAAAAAA=</HashCode>
+      <FileName>C:\dev\triton-IT\VIE\src\windows\vst_host_callback.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Struct Name="live::tritone::vie::audio_bus_buffers" Collapsed="true">
+    <Position X="35" Y="3" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgACEAAAI=</HashCode>
+      <FileName>C:\dev\triton-IT\VIE\src\processor_module.hpp</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="live::tritone::vie::bus_info" Collapsed="true">
+    <Position X="36.75" Y="3" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ABAAAAAwAAEAIAAAAAAAAAAAAAAEAAEAAAAAAAAAAAA=</HashCode>
+      <FileName>C:\dev\triton-IT\VIE\src\Bus.hpp</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="live::tritone::vie::data_event" Collapsed="true">
+    <Position X="38.5" Y="3" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAIAEAAAAAAABAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>C:\dev\triton-IT\VIE\src\data_event.hpp</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="live::tritone::vie::event" Collapsed="true">
+    <Position X="35" Y="4" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAEAAAAAAAAAIACAAAABAAIAAAAAAAEAAAA=</HashCode>
+      <FileName>C:\dev\triton-IT\VIE\src\processor_definition.hpp</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="live::tritone::vie::float_array" Collapsed="true">
+    <Position X="36.75" Y="4" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AACAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAA=</HashCode>
+      <FileName>C:\dev\triton-IT\VIE\src\processor_module.hpp</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="live::tritone::vie::float_array_module_output" Collapsed="true">
+    <Position X="4.5" Y="11.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAQAAICAAAAIAAAAAAgA=</HashCode>
+      <FileName>C:\dev\triton-IT\VIE\src\processor_module.hpp</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="live::tritone::vie::float_module_output" Collapsed="true">
+    <Position X="6.75" Y="11.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAQAAICAAAAAAAAAAQgA=</HashCode>
+      <FileName>C:\dev\triton-IT\VIE\src\processor_module.hpp</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="live::tritone::vie::module_output">
+    <Position X="6.75" Y="9.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ACAAAAAAAAAAAACAAAAAAAAAAQAAIAAAAAAAAAAAAgA=</HashCode>
+      <FileName>C:\dev\triton-IT\VIE\src\processor_module.hpp</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="live::tritone::vie::module_relation">
+    <Position X="23.75" Y="9.5" Width="4" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAIAAAAAAAACAAAAAAAAACACAAAA=</HashCode>
+      <FileName>C:\dev\triton-IT\VIE\src\processor_orchestrator.hpp</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="source_module" />
+      <Field Name="target_module" />
+    </ShowAsAssociation>
+  </Struct>
+  <Struct Name="live::tritone::vie::note_event" Collapsed="true">
+    <Position X="38.5" Y="4" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAIAAAAAAAAABAAAAAAEAAAAQAAAAAAgA=</HashCode>
+      <FileName>C:\dev\triton-IT\VIE\src\note_event.hpp</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="live::tritone::vie::novalue_module_output" Collapsed="true">
+    <Position X="9" Y="11.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAACAAAAAAAAAAAQAAIAAAAAAAAAAAAgA=</HashCode>
+      <FileName>C:\dev\triton-IT\VIE\src\processor_module.hpp</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="live::tritone::vie::output_process_data" Collapsed="true">
+    <Position X="35" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAEAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAABA=</HashCode>
+      <FileName>C:\dev\triton-IT\VIE\src\processor_module.hpp</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="live::tritone::vie::processing_setup">
+    <Position X="14.25" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAEAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAgAAI=</HashCode>
+      <FileName>C:\dev\triton-IT\VIE\src\processor_definition.hpp</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="live::tritone::vie::processor::module::audio_input_descriptor" Collapsed="true">
+    <Position X="7.75" Y="19.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAA=</HashCode>
+      <FileName>C:\dev\triton-IT\VIE\src\modules\audio_input.hpp</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="live::tritone::vie::processor::module::audio_output_descriptor" Collapsed="true">
+    <Position X="19" Y="19.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>C:\dev\triton-IT\VIE\src\modules\audio_output.hpp</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="live::tritone::vie::processor::module::envelope_descriptor" Collapsed="true">
+    <Position X="12.25" Y="19.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>C:\dev\triton-IT\VIE\src\modules\envelope.hpp</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="live::tritone::vie::processor::module::gain_descriptor" Collapsed="true">
+    <Position X="14.5" Y="19.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAA=</HashCode>
+      <FileName>C:\dev\triton-IT\VIE\src\modules\gain.hpp</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="live::tritone::vie::processor::module::high_pass_descriptor" Collapsed="true">
+    <Position X="25.75" Y="19.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>C:\dev\triton-IT\VIE\src\modules\high_pass.hpp</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="live::tritone::vie::processor::module::low_pass_descriptor" Collapsed="true">
+    <Position X="5.5" Y="19.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAA=</HashCode>
+      <FileName>C:\dev\triton-IT\VIE\src\modules\low_pass.hpp</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="live::tritone::vie::processor::module::midi_input_descriptor" Collapsed="true">
+    <Position X="21.25" Y="19.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>C:\dev\triton-IT\VIE\src\modules\midi_input.hpp</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="live::tritone::vie::processor::module::mixer_descriptor" Collapsed="true">
+    <Position X="30.25" Y="19.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>C:\dev\triton-IT\VIE\src\modules\mixer.hpp</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="live::tritone::vie::processor::module::module_descriptor">
+    <Position X="18" Y="16.25" Width="3.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAQAEAAAAAQAAAAAAAAAABAEAAAAAQAAAEAAAgA=</HashCode>
+      <FileName>C:\dev\triton-IT\VIE\src\modules\module_descriptor.hpp</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="live::tritone::vie::processor::module::multiplier_descriptor" Collapsed="true">
+    <Position X="23.5" Y="19.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>C:\dev\triton-IT\VIE\src\modules\multiplier.hpp</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="live::tritone::vie::processor::module::noise_descriptor" Collapsed="true">
+    <Position X="32.5" Y="19.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>C:\dev\triton-IT\VIE\src\modules\noise.hpp</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="live::tritone::vie::processor::module::oscillator_descriptor" Collapsed="true">
+    <Position X="16.75" Y="19.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>C:\dev\triton-IT\VIE\src\modules\oscillator.hpp</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="live::tritone::vie::processor::module::recorder_descriptor" Collapsed="true">
+    <Position X="28" Y="19.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>C:\dev\triton-IT\VIE\src\modules\recorder.hpp</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="live::tritone::vie::processor::module::sample_descriptor" Collapsed="true">
+    <Position X="10" Y="19.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>C:\dev\triton-IT\VIE\src\modules\sample.hpp</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="live::tritone::vie::processor::module::slot_descriptor" Collapsed="true">
+    <Position X="36.75" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAgA=</HashCode>
+      <FileName>C:\dev\triton-IT\VIE\src\modules\module_descriptor.hpp</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="live::tritone::vie::project_info">
+    <Position X="12.25" Y="28.75" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAIAAAAAAAAAAEAAAAAAAAAAAAAgA=</HashCode>
+      <FileName>C:\dev\triton-IT\VIE\src\project.hpp</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Enum Name="live::tritone::vie::bus_direction" Collapsed="true">
+    <Position X="35" Y="6.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAACAAAABAAAAAAAAAAAAA=</HashCode>
+      <FileName>C:\dev\triton-IT\VIE\src\Bus.hpp</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="live::tritone::vie::bus_type" Collapsed="true">
+    <Position X="36.75" Y="6.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQ=</HashCode>
+      <FileName>C:\dev\triton-IT\VIE\src\Bus.hpp</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="live::tritone::vie::media_type" Collapsed="true">
+    <Position X="38.5" Y="6.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAABAAAAAAIAAAAAAAAAAAA=</HashCode>
+      <FileName>C:\dev\triton-IT\VIE\src\Bus.hpp</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="live::tritone::vie::processing_mode" Collapsed="true">
+    <Position X="35" Y="7" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAABAAAAAAAAAAAAAAIAAAAACAAAAAAAAAAAAA=</HashCode>
+      <FileName>C:\dev\triton-IT\VIE\src\processor_definition.hpp</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="live::tritone::vie::processor_module_type" Collapsed="true">
+    <Position X="36.75" Y="7" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CCAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAABAAAAAAAA=</HashCode>
+      <FileName>C:\dev\triton-IT\VIE\src\processor_module.hpp</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="live::tritone::vie::sample_size" Collapsed="true">
+    <Position X="38.5" Y="7" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAIAgAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>C:\dev\triton-IT\VIE\src\processor_definition.hpp</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

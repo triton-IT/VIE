@@ -2,15 +2,31 @@
 
 #include <json.hpp>
 
+#include "module_descriptor.hpp"
 #include "../processor_module.hpp"
 
 namespace live::tritone::vie::processor::module
 {
+	struct audio_input_descriptor : public module_descriptor {
+		audio_input_descriptor()
+		{
+			id = 0;
+			name = L"audio-in";
+			icon = L"<svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"currentColor\">  <path id=\"mainPath\" d=\"M15 5.5a4.394 4.394 0 0 1-4 4.5 2.955 2.955 0 0 0-.2-1A3.565 3.565 0 0 0 14 5.5a3.507 3.507 0 0 0-7-.3A3.552 3.552 0 0 0 6 5a4.622 4.622 0 0 1 4.5-4A4.481 4.481 0 0 1 15 5.5zM5.5 6a4.5 4.5 0 1 0 0 9.001 4.5 4.5 0 0 0 0-9z\"/></svg>";
+			input_slots = {
+				{0, L"audio-in"}
+			};
+			nb_input_slots = 1;
+			output_slots = {
+				{0, L"audio-out"}
+			};
+			nb_output_slots = 1;
+		}
+	};
+	
 	class audio_input final : public processor_module
 	{
 	public:
-		//FIXME: Just to test. To remove:
-		  explicit audio_input();
 		explicit audio_input(nlohmann::json audio_input_definition);
 		audio_input(const audio_input&) = default;
 		audio_input(audio_input&&) = default;
@@ -46,6 +62,8 @@ namespace live::tritone::vie::processor::module
 
 		void set_parameter(parameter parameter) override;
 
+		nlohmann::json serialize() override;
+
 		void set_buffer(audio_bus_buffers* buffer);
 
 	private:
@@ -59,7 +77,7 @@ namespace live::tritone::vie::processor::module
 		std::string name_;
 		double sample_rate_;
 
-		struct audio_input_descriptor {
+		struct audio_input_info {
 			uint32_t nb_channels;
 			uint32_t nb_frames;
 			uint32_t rate;
@@ -67,7 +85,7 @@ namespace live::tritone::vie::processor::module
 			float* buffers[8]; //8 channels max for now to handle surround 7.1.
  		};
 
-		std::unordered_map<int, audio_input_descriptor> buffer;
+		std::unordered_map<int, audio_input_info> buffer;
 
 		struct audio_input_state {
 			bool activated;

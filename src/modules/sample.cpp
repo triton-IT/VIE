@@ -271,4 +271,13 @@ namespace live::tritone::vie::processor::module
 
     void sample::set_parameter(parameter parameter) {
     }
+
+	nlohmann::json sample::serialize()
+	{
+		nlohmann::json root;
+		root["id"] = id_;
+		root["name"] = name_;
+
+		return root;
+	}
 } // namespace
