@@ -6,7 +6,7 @@
 #include "vie_processor.hpp"
 #include "vie_view.hpp"
 #include "host_callback.hpp"
-#include "modules/module_descriptor.hpp"
+#include "modules/module_view_descriptor.hpp"
 
 extern void* module_handle;
 extern "C" std::wstring content_path;
@@ -34,13 +34,14 @@ namespace live::tritone::vie {
 		project_info& new_project();
 		std::array<project_info, 32> get_projects(int* nb_projects);
 		void save_project();
-		project_info load_project(std::wstring id);
+		project_info load_project(uint_fast16_t id);
 		void export_project(std::wstring project_path);
 		project_info import_project(std::wstring project_path);
 		void delete_project(std::string id);
 
-		std::array<processor::module::module_descriptor, 64> get_modules();
+		std::array<view::module::module_view_descriptor, 64> get_available_modules(uint_fast8_t* nb_modules);
 		uint16_t add_module(nlohmann::json module);
+		view::module::module_view_instance& get_module_view(uint_fast8_t module_id);
 		uint16_t add_relation(nlohmann::json relation);
 
 		processor_module& get_processor_by_id(uint_fast8_t id);
@@ -62,8 +63,8 @@ namespace live::tritone::vie {
 		/**
 		* Create a processor module from json file.
 		*/
-		processor_module* create_processor(nlohmann::json processor_definition);
-		module_relation* create_relation(nlohmann::json relation_definition);
+		std::unique_ptr<processor_module>& create_processor(nlohmann::json processor_definition);
+		std::unique_ptr<module_relation>& create_relation(nlohmann::json relation_definition);
 		
 		parameter* parameters_[255];
 		uint_fast8_t nb_parameters_;
@@ -72,10 +73,11 @@ namespace live::tritone::vie {
 		std::array<project_info, 32> projects_infos_;
 		uint_fast16_t nb_projects_;
 
-		processor_module* modules_[255];
-		uint_fast8_t nb_modules_ = 0;
+		std::array<std::unique_ptr<processor_module>, 255> processors_;
+		std::array<std::unique_ptr<view::module::module_view_instance>, 255> modules_views_instances_;
+		uint_fast8_t nb_processors_ = 0;
 
-		module_relation* relations_[255];
+		std::array<std::unique_ptr<module_relation>, 255> relations_;
 		uint_fast8_t nb_relations_ = 0;
 
 		vie_processor vie_processor_;

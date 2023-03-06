@@ -34,7 +34,7 @@ namespace live::tritone::vie {
 	public:
 		processor_orchestrator();
 
-		void add_processor_module(processor_module* processor);
+		void add_processor_module(processor_module& processor);
 
 		processor_module** get_processor_modules(int* nb_modules);
 

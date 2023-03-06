@@ -36,10 +36,10 @@ namespace live::tritone::vie {
 		return root;
 	}
 
-	void vie_processor::add_processor(processor_module* processor)
+	void vie_processor::add_processor(processor_module& processor)
 	{
 		orchestrator_.add_processor_module(processor);
-		switch (processor->get_type()) {
+		switch (processor.get_type()) {
 		case processor_module_type::event_input: {
 			auto event_input_bus = new bus(std::wstring(L"Event input"), bus_type::main, processor);
 			event_input_buses_.push_back(event_input_bus);
@@ -54,7 +54,7 @@ namespace live::tritone::vie {
 			//TODO: Create another bus type if this one do not need a module as parameter.
 			auto audio_output_bus = new bus(std::wstring(L"Audio output"), bus_type::main, processor);
 			audio_output_buses_.push_back(audio_output_bus);
-			dynamic_cast<audio_output*>(processor)->set_output_bus_id(static_cast<uint_fast16_t>(audio_output_buses_.size()) - 1);
+			dynamic_cast<audio_output&>(processor).set_output_bus_id(static_cast<uint_fast16_t>(audio_output_buses_.size()) - 1);
 			break;
 		}
 		case processor_module_type::middle:

@@ -48,6 +48,7 @@ namespace live::tritone::vie {
 #endif // UNIT_TESTING
 		void on_message_get_projects(ICoreWebView2* sender, nlohmann::json message);
 		void on_message_new_project(ICoreWebView2* sender, nlohmann::json message);
+		void on_message_load_project(ICoreWebView2* sender, nlohmann::json message);
 		void on_message_export_project(ICoreWebView2* sender, nlohmann::json message);
 		void on_message_import_project(ICoreWebView2* sender, nlohmann::json message);
 		void on_message_get_modules(ICoreWebView2* sender, nlohmann::json message);

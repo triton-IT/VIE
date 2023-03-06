@@ -24,6 +24,7 @@
 
 using namespace live::tritone::vie;
 using namespace live::tritone::vie::processor::module;
+using namespace live::tritone::vie::view::module;
 
 extern "C" {
 	bool InitDll() {
@@ -142,15 +143,17 @@ std::array<project_info, 32> application::get_projects(int* nb_projects)
 
 void application::save_project()
 {
-	std::wstringstream ss;
-	ss << L"c:/tmp/" << current_project_.id << L".json";
-	export_project(ss.str());
+	std::wstringstream path_stream;
+	path_stream << L"c:/tmp/" << current_project_.id << L".json";
+	export_project(path_stream.str());
 }
 
-project_info application::load_project(std::wstring id)
+project_info application::load_project(uint_fast16_t id)
 {
-	const std::wstring path = L"c:/tmp/" + id + L".json";
-	return import_project(path);
+	std::wstringstream path_stream;
+	path_stream << L"c:/tmp/" << id << L".json";
+	
+	return import_project(path_stream.str());
 }
 
 void application::export_project(std::wstring project_path)
@@ -206,9 +209,10 @@ project_info application::import_project(std::wstring project_path)
 	return project_info({ id, name_w, description_w });
 }
 
-std::array<module_descriptor, 64> application::get_modules()
+std::array<module_view_descriptor, 64> application::get_available_modules(uint_fast8_t* nb_modules)
 {
-	return std::array<module_descriptor, 64> {
+	*nb_modules = 13;
+	return std::array<module_view_descriptor, 64> {
 			audio_input_descriptor(),
 			audio_output_descriptor(),
 			envelope_descriptor(),
@@ -227,24 +231,38 @@ std::array<module_descriptor, 64> application::get_modules()
 
 uint16_t application::add_module(nlohmann::json module)
 {
-	//FIXME: Generate id based on free ones.
-	uint16_t module_id = 1;
+	uint16_t module_id = nb_processors_;
 
 	module["id"] = module_id;
-	auto processor = application_.create_processor(module);
-	vie_processor_.add_processor(processor);
+	
+	auto& processor = create_processor(module);
+	vie_processor_.add_processor(*processor);
+	
+	modules_views_instances_[module_id] = std::make_unique<module_view_instance>();
+	modules_views_instances_[module_id]->id = module_id;
+	modules_views_instances_[module_id]->position[0] = module["position"]["x"];
+	modules_views_instances_[module_id]->position[1] = module["position"]["y"];
+	modules_views_instances_[module_id]->position[2] = module["position"]["z"];
+
+	nb_processors_++;
 
 	return module_id;
 }
 
+module_view_instance& application::get_module_view(uint_fast8_t module_id)
+{
+	return *modules_views_instances_[module_id];
+}
+
 uint16_t application::add_relation(nlohmann::json relation)
 {
-	//FIXME: Generate id based on free ones.
-	uint16_t relation_id = 1;
+	uint16_t relation_id = nb_relations_;
 
 	relation["id"] = relation_id;
-	auto module_relation = application_.create_relation(relation);
-	vie_processor_.add_relation(module_relation);
+	auto& module_relation = create_relation(relation);
+	vie_processor_.add_relation(module_relation.get());
+
+	nb_relations_++;
 
 	return relation_id;
 }
@@ -267,96 +285,87 @@ vie_view* application::deleteView()
 	return nullptr;
 }
 
-processor_module* application::create_processor(nlohmann::json processor_definition) {
-	processor_module* processor = nullptr;
+std::unique_ptr<processor_module>& application::create_processor(nlohmann::json processor_definition) {
 
 	const std::string type = processor_definition["type"];
 	if (type == "midi-in")
 	{
-		processor = new midi_input(processor_definition);
+		processors_[nb_processors_] = std::make_unique<midi_input>(processor_definition);
 	}
 	else if (type == "audio-in")
 	{
-		processor = new audio_input(processor_definition);
+		processors_[nb_processors_] = std::make_unique<audio_input>(processor_definition);
 	}
 	else if (type == "oscillator")
 	{
-		processor = new oscillator(processor_definition);
+		processors_[nb_processors_] = std::make_unique<oscillator>(processor_definition);
 	}
 	else if (type == "envelope")
 	{
-		processor = new envelope(processor_definition);
+		processors_[nb_processors_] = std::make_unique<envelope>(processor_definition);
 	}
 	else if (type == "multiplier")
 	{
-		processor = new multiplier(processor_definition);
+		processors_[nb_processors_] = std::make_unique<multiplier>(processor_definition);
 	}
 	else if (type == "mixer")
 	{
-		processor = new mixer(processor_definition);
+		processors_[nb_processors_] = std::make_unique<mixer>(processor_definition);
 	}
 	else if (type == "sample")
 	{
-		processor = new sample(processor_definition);
+		processors_[nb_processors_] = std::make_unique<sample>(processor_definition);
 	}
 	else if (type == "audio out")
 	{
-		processor = new audio_output(processor_definition);
+		processors_[nb_processors_] = std::make_unique<audio_output>(processor_definition);
 	}
 	else if (type == "low-pass")
 	{
-		processor = new low_pass(processor_definition);
+		processors_[nb_processors_] = std::make_unique<low_pass>(processor_definition);
 	}
 	else if (type == "high-pass")
 	{
-		processor = new high_pass(processor_definition);
+		processors_[nb_processors_] = std::make_unique<high_pass>(processor_definition);
 	}
 	else if (type == "gain")
 	{
-		processor = new gain(processor_definition);
+		processors_[nb_processors_] = std::make_unique<gain>(processor_definition);
 	}
 	else if (type == "recorder")
 	{
-		processor = new recorder(processor_definition);
+		processors_[nb_processors_] = std::make_unique<recorder>(processor_definition);
 	}
 
-	processor->initialize(processor_definition);
-
-	modules_[nb_modules_] = processor;
-	nb_modules_++;
+	processors_[nb_processors_]->initialize(processor_definition);
 
 #ifdef VIE_DEBUG
 	debugLogger.write("Added processor: " + processor->get_name());
 #endif
 
-	return processor;
+	return processors_[nb_processors_];
 }
 
-module_relation* application::create_relation(nlohmann::json relation_definition) {
-	module_relation* relation = nullptr;
-
+std::unique_ptr<module_relation>& application::create_relation(nlohmann::json relation_definition) {
 	const int source_module_id = relation_definition["sourceComponent"];
 
-	relation->source_module = modules_[source_module_id];
+	relations_[nb_relations_]->source_module = processors_[source_module_id].get();
 
 	const uint_fast16_t source_output_id = relation_definition["sourceOutputSlot"];
-	relation->source_slot_id = source_output_id;
+	relations_[nb_relations_]->source_slot_id = source_output_id;
 
 	const int target_module_id = relation_definition["targetComponent"];
-	relation->target_module = modules_[target_module_id];
+	relations_[nb_relations_]->target_module = processors_[target_module_id].get();
 
 	const uint_fast16_t target_input_id = relation_definition["targetInputSlot"];
-	relation->target_slot_id = target_input_id;
-	
-	relations_[nb_relations_] = relation;
-	nb_relations_++;
+	relations_[nb_relations_]->target_slot_id = target_input_id;
 
-	return relation;
+	return relations_[nb_relations_];
 }
 
 processor_module& application::get_processor_by_id(uint_fast8_t id)
 {
-	return *modules_[id];
+	return *processors_[id];
 }
 
 module_relation& application::get_relation_by_id(uint_fast8_t id)

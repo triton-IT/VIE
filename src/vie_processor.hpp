@@ -20,7 +20,7 @@ namespace live::tritone::vie {
 
 		nlohmann::json serialize();
 		
-		void add_processor(processor_module* processor);
+		void add_processor(processor_module& processor);
 
 		void add_relation(module_relation* relation);
 

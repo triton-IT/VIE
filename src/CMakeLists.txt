@@ -24,7 +24,7 @@ set(HEADER_FILES
         "vst_plugin.hpp"
         "vst_plugin_factory.hpp"
         "boolean_parameter.hpp"
-        "modules/module_descriptor.hpp"
+        "modules/module_view_descriptor.hpp"
         "modules/audio_input.hpp"
         "modules/envelope.hpp"
         "modules/gain.hpp"

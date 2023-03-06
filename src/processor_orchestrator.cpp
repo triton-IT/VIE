@@ -29,20 +29,20 @@ namespace live::tritone::vie
 		memset(nb_module_relations_, 0, 128);
 	}
 
-	void processor_orchestrator::add_processor_module(processor_module* processor)
+	void processor_orchestrator::add_processor_module(processor_module& processor)
 	{
-		if (processor->get_type() == processor_module_type::event_input)
+		if (processor.get_type() == processor_module_type::event_input)
 		{
-			sources_midi_input_modules_[nb_midi_input_modules_] = static_cast<midi_input*>(processor);
+			sources_midi_input_modules_[nb_midi_input_modules_] = &dynamic_cast<midi_input&>(processor);
 			nb_midi_input_modules_++;
 		}
-		if (processor->get_type() == processor_module_type::audio_input)
+		if (processor.get_type() == processor_module_type::audio_input)
 		{
-			sources_audio_input_modules_[nb_audio_input_modules_] = static_cast<audio_input*>(processor);
+			sources_audio_input_modules_[nb_audio_input_modules_] = &dynamic_cast<audio_input&>(processor);
 			nb_audio_input_modules_++;
 		}
 
-		processor_modules_[nb_modules_] = processor;
+		processor_modules_[nb_modules_] = &processor;
 
 		nb_modules_++;
 	}

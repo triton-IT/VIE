@@ -103,6 +103,9 @@ namespace live::tritone::vie
 		else if (action_name.compare("new_project") == 0) {
 			on_message_new_project(sender, json_message);
 		}
+		else if (action_name.compare("load_project") == 0) {
+			on_message_load_project(sender, json_message);
+		}
 		else if (action_name.compare("export_project") == 0) {
 			on_message_export_project(sender, json_message);
 		}
@@ -183,6 +186,23 @@ namespace live::tritone::vie
 		sender->PostWebMessageAsJson(reply.str().c_str());
 	}
 
+	void editor_view::on_message_load_project(ICoreWebView2* sender, json message) {
+		uint_fast16_t project_id = message["body"]["id"];
+		project_info project = application_.load_project(project_id);
+
+		std::wstringstream reply;
+		reply << L"{";
+		reply << L" \"action\": \"load_project_callback\", \"body\": { \"id\": ";
+		reply << project.id;
+		reply << L", \"name\": \"";
+		reply << project.name;
+		reply << L"\", \"description\": \"";
+		reply << project.description;
+		reply << L"\" }";
+		reply << L" }";
+		sender->PostWebMessageAsJson(reply.str().c_str());
+	}
+
 	void editor_view::on_message_export_project(ICoreWebView2* sender, json message) {
 		std::string project_path = message["body"]["path"];
 
@@ -227,51 +247,67 @@ namespace live::tritone::vie
 	}
 
 	void editor_view::on_message_get_modules(ICoreWebView2* sender, json message) {
-		auto modules = application_.get_modules();
+		uint_fast8_t nb_modules;
+		auto modules = application_.get_available_modules(&nb_modules);
 		
 		std::wstringstream reply;
 		reply << L"{";
 		reply << L" \"action\": \"get_modules_callback\",";
 		reply << L" \"body\": [";
 		
-		for (auto module : modules)
+		for (uint_fast8_t module_id = 0; module_id < nb_modules; module_id++)
 		{
+			auto module = modules[module_id];
+			
 			reply << L" {";
 			reply << L" \"id\": ";
 			reply << module.id;
-			reply << L", \"name\": ";
+			reply << L", \"name\": \"";
 			reply << module.name;
-			reply << L", \"icon\": ";
+			reply << L"\", \"icon\": \"";
 			reply << module.icon;
-			reply << L", \"input_slots\": ";
-			reply << L" [";
-			
-			for (auto input_slot : module.input_slots)
+			reply << L"\", \"input_slots\": ";
+			reply << L"[";
+
+			for (uint_fast8_t input_slot_id = 0; input_slot_id < module.nb_input_slots; input_slot_id++)
 			{
+				auto input_slot = module.input_slots[input_slot_id];
+				
 				reply << L" {";
 				reply << L" \"id\": ";
 				reply << input_slot.id;
-				reply << L", \"name\": ";
+				reply << L", \"name\": \"";
 				reply << input_slot.name;
-				reply << L" }";
+				reply << L"\" }";
+				if (input_slot_id < module.nb_input_slots - 1) {
+					reply << L",";
+				}
 			}
 			
 			reply << L" ],";
 			reply << L" \"output_slots\": ";
-			reply << L" [";
+			reply << L"[";
 
-			for (auto input_slot : module.output_slots)
+			for (uint_fast8_t output_slot_id = 0; output_slot_id < module.nb_output_slots; output_slot_id++)
 			{
+				auto output_slot = module.output_slots[output_slot_id];
+				
 				reply << L" {";
 				reply << L" \"id\": ";
-				reply << input_slot.id;
-				reply << L", \"name\": ";
-				reply << input_slot.name;
-				reply << L" }";
+				reply << output_slot.id;
+				reply << L", \"name\": \"";
+				reply << output_slot.name;
+				reply << L"\" }";
+				if (output_slot_id < module.nb_output_slots - 1) {
+					reply << L",";
+				}
 			}
 			
 			reply << L" ]";
 			reply << L" }";
+			if (module_id < nb_modules - 1) {
+				reply << L",";
+			}
 		}
 		
 		reply << L" ]";
