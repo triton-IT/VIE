@@ -37,7 +37,7 @@ namespace live::tritone::vie::processor::module
 	public:
 		explicit mixer(nlohmann::json mixer_definition);
 
-		~mixer();
+		~mixer() override;
 
 		uint16_t get_id() override;
 

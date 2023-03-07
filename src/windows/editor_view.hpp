@@ -24,6 +24,8 @@ namespace live::tritone::vie {
 
 		~editor_view();
 
+		void initialize();
+
 		void attached(void* parent);
 
 		void removed();

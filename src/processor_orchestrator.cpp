@@ -29,6 +29,11 @@ namespace live::tritone::vie
 		memset(nb_module_relations_, 0, 128);
 	}
 
+	void processor_orchestrator::initialize()
+	{
+		terminate();
+	}
+
 	void processor_orchestrator::add_processor_module(processor_module& processor)
 	{
 		if (processor.get_type() == processor_module_type::event_input)
@@ -66,13 +71,24 @@ namespace live::tritone::vie
 		nb_module_relations_[source_module_id] = nb_module_relations + 1;
 	}
 
-	void processor_orchestrator::terminate() const
+	void processor_orchestrator::terminate()
 	{
 		//Release processor modules.
 		for (int i = 0; i < nb_modules_; i++)
 		{
-			const auto* module = processor_modules_[i];
-			delete module;
+			//orchestrator is not owner of module.
+			//const auto* module = processor_modules_[i];
+			//delete module;
+			processor_modules_[i] = nullptr;
+		}
+
+		nb_modules_ = 0;
+		nb_midi_input_modules_ = 0;
+		nb_audio_input_modules_ = 0;
+		
+		for(int i = 0; i < 32; i++)
+		{
+			nb_module_relations_[i] = 0;
 		}
 	}
 

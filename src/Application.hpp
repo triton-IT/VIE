@@ -28,9 +28,6 @@ namespace live::tritone::vie {
 	
 	class application {
 	public:
-#ifdef UNIT_TESTING
-		void clear();
-#endif
 		project_info& new_project();
 		std::array<project_info, 32> get_projects(int* nb_projects);
 		void save_project();
@@ -41,7 +38,6 @@ namespace live::tritone::vie {
 
 		std::array<view::module::module_view_descriptor, 64> get_available_modules(uint_fast8_t* nb_modules);
 		uint16_t add_module(nlohmann::json module);
-		view::module::module_view_instance& get_module_view(uint_fast8_t module_id);
 		uint16_t add_relation(nlohmann::json relation);
 
 		processor_module& get_processor_by_id(uint_fast8_t id);
@@ -59,14 +55,18 @@ namespace live::tritone::vie {
 		vie_view* create_view(host_callback* callback);
 		vie_view* deleteView();
 
+#ifdef UNIT_TESTING
+	public:
+#else
 	private:
+#endif
 		/**
 		* Create a processor module from json file.
 		*/
-		std::unique_ptr<processor_module>& create_processor(nlohmann::json processor_definition);
-		std::unique_ptr<module_relation>& create_relation(nlohmann::json relation_definition);
+		std::unique_ptr<processor_module>& create_processor_module(nlohmann::json processor_definition);
+		std::unique_ptr<module_relation>& create_module_relation(nlohmann::json relation_definition);
 		
-		parameter* parameters_[255];
+		std::array<parameter*, 255> parameters_;
 		uint_fast8_t nb_parameters_;
 		
 		project_info current_project_;
@@ -75,7 +75,7 @@ namespace live::tritone::vie {
 
 		std::array<std::unique_ptr<processor_module>, 255> processors_;
 		std::array<std::unique_ptr<view::module::module_view_instance>, 255> modules_views_instances_;
-		uint_fast8_t nb_processors_ = 0;
+		uint_fast8_t nb_modules_ = 0;
 
 		std::array<std::unique_ptr<module_relation>, 255> relations_;
 		uint_fast8_t nb_relations_ = 0;

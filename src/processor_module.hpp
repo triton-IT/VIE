@@ -157,7 +157,7 @@ namespace live::tritone::vie
 		processor_module(const processor_module&) = default;
 		processor_module(processor_module&&) = default;
 
-		virtual ~processor_module() = default;
+		virtual ~processor_module();
 
 		processor_module& operator=(const processor_module&) = default;
 		processor_module& operator=(processor_module&&) = default;

@@ -40,7 +40,7 @@ namespace live::tritone::vie::processor::module
 		*/
 		explicit midi_input(nlohmann::json midi_definition);
 
-		~midi_input();
+		~midi_input() override;
 
 		uint16_t get_id() override;
 

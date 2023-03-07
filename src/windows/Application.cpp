@@ -70,12 +70,6 @@ BOOL WINAPI DllMain(HINSTANCE /*h_instance*/, DWORD /*dw_reason*/, LPVOID /*lpv_
 	return TRUE;
 }
 
-#ifdef UNIT_TESTING
-void application::clear() {
-	nb_projects_ = 0;
-}
-#endif
-
 parameter application::add_parameter(uint_fast8_t id, parameter parameter)
 {
 	auto parameter_ptr = new live::tritone::vie::parameter(parameter);
@@ -118,6 +112,14 @@ uint_fast8_t application::get_parameters_count()
 
 project_info& application::new_project()
 {
+	//reinit all components
+	nb_parameters_ = 0;
+	nb_modules_ = 0;
+	nb_relations_ = 0;
+	
+	vie_processor_.initialize();
+	vie_view_->initialize();
+	
 	//Generate empty project.
 	//FIXME: Generate a UUID.
 	current_project_.id = nb_projects_;
@@ -231,11 +233,11 @@ std::array<module_view_descriptor, 64> application::get_available_modules(uint_f
 
 uint16_t application::add_module(nlohmann::json module)
 {
-	uint16_t module_id = nb_processors_;
+	uint16_t module_id = nb_modules_;
 
 	module["id"] = module_id;
 	
-	auto& processor = create_processor(module);
+	auto& processor = create_processor_module(module);
 	vie_processor_.add_processor(*processor);
 	
 	modules_views_instances_[module_id] = std::make_unique<module_view_instance>();
@@ -244,14 +246,11 @@ uint16_t application::add_module(nlohmann::json module)
 	modules_views_instances_[module_id]->position[1] = module["position"]["y"];
 	modules_views_instances_[module_id]->position[2] = module["position"]["z"];
 
-	nb_processors_++;
+	nb_modules_++;
+
+	save_project();
 
 	return module_id;
-}
-
-module_view_instance& application::get_module_view(uint_fast8_t module_id)
-{
-	return *modules_views_instances_[module_id];
 }
 
 uint16_t application::add_relation(nlohmann::json relation)
@@ -259,10 +258,12 @@ uint16_t application::add_relation(nlohmann::json relation)
 	uint16_t relation_id = nb_relations_;
 
 	relation["id"] = relation_id;
-	auto& module_relation = create_relation(relation);
+	auto& module_relation = create_module_relation(relation);
 	vie_processor_.add_relation(module_relation.get());
 
 	nb_relations_++;
+	
+	save_project();
 
 	return relation_id;
 }
@@ -285,68 +286,68 @@ vie_view* application::deleteView()
 	return nullptr;
 }
 
-std::unique_ptr<processor_module>& application::create_processor(nlohmann::json processor_definition) {
+std::unique_ptr<processor_module>& application::create_processor_module(nlohmann::json processor_definition) {
 
 	const std::string type = processor_definition["type"];
 	if (type == "midi-in")
 	{
-		processors_[nb_processors_] = std::make_unique<midi_input>(processor_definition);
+		processors_[nb_modules_] = std::make_unique<midi_input>(processor_definition);
 	}
 	else if (type == "audio-in")
 	{
-		processors_[nb_processors_] = std::make_unique<audio_input>(processor_definition);
+		processors_[nb_modules_] = std::make_unique<audio_input>(processor_definition);
 	}
 	else if (type == "oscillator")
 	{
-		processors_[nb_processors_] = std::make_unique<oscillator>(processor_definition);
+		processors_[nb_modules_] = std::make_unique<oscillator>(processor_definition);
 	}
 	else if (type == "envelope")
 	{
-		processors_[nb_processors_] = std::make_unique<envelope>(processor_definition);
+		processors_[nb_modules_] = std::make_unique<envelope>(processor_definition);
 	}
 	else if (type == "multiplier")
 	{
-		processors_[nb_processors_] = std::make_unique<multiplier>(processor_definition);
+		processors_[nb_modules_] = std::make_unique<multiplier>(processor_definition);
 	}
 	else if (type == "mixer")
 	{
-		processors_[nb_processors_] = std::make_unique<mixer>(processor_definition);
+		processors_[nb_modules_] = std::make_unique<mixer>(processor_definition);
 	}
 	else if (type == "sample")
 	{
-		processors_[nb_processors_] = std::make_unique<sample>(processor_definition);
+		processors_[nb_modules_] = std::make_unique<sample>(processor_definition);
 	}
 	else if (type == "audio out")
 	{
-		processors_[nb_processors_] = std::make_unique<audio_output>(processor_definition);
+		processors_[nb_modules_] = std::make_unique<audio_output>(processor_definition);
 	}
 	else if (type == "low-pass")
 	{
-		processors_[nb_processors_] = std::make_unique<low_pass>(processor_definition);
+		processors_[nb_modules_] = std::make_unique<low_pass>(processor_definition);
 	}
 	else if (type == "high-pass")
 	{
-		processors_[nb_processors_] = std::make_unique<high_pass>(processor_definition);
+		processors_[nb_modules_] = std::make_unique<high_pass>(processor_definition);
 	}
 	else if (type == "gain")
 	{
-		processors_[nb_processors_] = std::make_unique<gain>(processor_definition);
+		processors_[nb_modules_] = std::make_unique<gain>(processor_definition);
 	}
 	else if (type == "recorder")
 	{
-		processors_[nb_processors_] = std::make_unique<recorder>(processor_definition);
+		processors_[nb_modules_] = std::make_unique<recorder>(processor_definition);
 	}
 
-	processors_[nb_processors_]->initialize(processor_definition);
+	processors_[nb_modules_]->initialize(processor_definition);
 
 #ifdef VIE_DEBUG
 	debugLogger.write("Added processor: " + processor->get_name());
 #endif
 
-	return processors_[nb_processors_];
+	return processors_[nb_modules_];
 }
 
-std::unique_ptr<module_relation>& application::create_relation(nlohmann::json relation_definition) {
+std::unique_ptr<module_relation>& application::create_module_relation(nlohmann::json relation_definition) {
 	const int source_module_id = relation_definition["sourceComponent"];
 
 	relations_[nb_relations_]->source_module = processors_[source_module_id].get();

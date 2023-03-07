@@ -30,6 +30,11 @@ namespace live::tritone::vie
 	{
 	}
 
+	void editor_view::initialize()
+	{
+		removed();
+	}
+
 	void editor_view::attached(void* parent) {
 		HWND hWnd = static_cast<HWND>(parent);
 

@@ -220,19 +220,27 @@ private:
     wchar_t last_message[300000];
 };
 
+void reinit()
+{
+    application_.nb_parameters_ = 0;
+    application_.nb_projects_ = 0;
+    application_.nb_modules_ = 0;
+    application_.nb_relations_ = 0;
+}
+
 SCENARIO("Retrieve standard modules.", "[editor view]") {
     live::tritone::vie::editor_view view;
     MockCoreWebView2 mock_core_web_view;
 
     SECTION("Initialisation") {
-        application_.clear();
+        reinit();
     }
 
     GIVEN("Standard modules exists") {
         WHEN("on_message_get_modules is called") {
-            THEN("Modules are retrieved.") {
-                view.on_message_received(&mock_core_web_view, L"{\"action\":\"get_modules\",  \"body\": {}}");
+            view.on_message_received(&mock_core_web_view, L"{\"action\":\"get_modules\",  \"body\": {}}");
 
+            THEN("Modules are retrieved.") {
                 LPCWSTR actual = mock_core_web_view.get_last_message();
                 std::wstringstream expected_stream;
 
@@ -265,14 +273,14 @@ SCENARIO("get_projects returns no project when no project exists.", "[editor vie
     MockCoreWebView2 mock_core_web_view;
 
     SECTION("Initialisation") {
-        application_.clear();
+        reinit();
     }
 	
 	GIVEN("No project exists") {
 		WHEN("on_message_get_projects is called") {
-			THEN("an empty response is returned") {				
-                view.on_message_received(&mock_core_web_view, L"{\"action\": \"get_projects\"}");
-				
+            view.on_message_received(&mock_core_web_view, L"{\"action\": \"get_projects\"}");
+
+			THEN("an empty response is returned") {								
                 LPCWSTR actual = mock_core_web_view.get_last_message();
                 std::wstringstream expected;
                 expected << L"{";
@@ -292,14 +300,14 @@ SCENARIO("Create a project then get_projects returns a project (created project 
     MockCoreWebView2 mock_core_web_view;
 	
 	SECTION("Initialisation") {
-		application_.clear();
+        reinit();
 	}
 	
     GIVEN("No project exists") {		
         WHEN("on_message_new_project is called") {
-            THEN("A project id and name is returned") {
-                view.on_message_received(&mock_core_web_view, L"{\"action\": \"new_project\"}");
+            view.on_message_received(&mock_core_web_view, L"{\"action\": \"new_project\"}");
 
+            THEN("A project id and name is returned") {
                 LPCWSTR actual = mock_core_web_view.get_last_message();
                 std::wstringstream expected;
                 expected << L"{";
@@ -314,9 +322,9 @@ SCENARIO("Create a project then get_projects returns a project (created project 
             }
         }
         WHEN("on_message_get_projects is called") {
-            THEN("New project is returned (project created previously is automatically saved)") {
-                view.on_message_received(&mock_core_web_view, L"{\"action\": \"get_projects\"}");
+            view.on_message_received(&mock_core_web_view, L"{\"action\": \"get_projects\"}");
 
+            THEN("New project is returned (project created previously is automatically saved)") {
                 LPCWSTR actual = mock_core_web_view.get_last_message();
                 std::wstringstream expected;
                 expected << L"{";
@@ -341,14 +349,14 @@ SCENARIO("Create a project, add a module, export project then import it and retr
     MockCoreWebView2 mock_core_web_view;
 
     SECTION("Initialisation") {
-        application_.clear();
+        reinit();
     }
 
     GIVEN("No project exists") {
         WHEN("on_message_new_project is called") {
-            THEN("A project name is returned") {
-                view.on_message_received(&mock_core_web_view, L"{\"action\": \"new_project\"}");
+            view.on_message_received(&mock_core_web_view, L"{\"action\": \"new_project\"}");
 
+            THEN("A project name is returned") {
                 LPCWSTR actual = mock_core_web_view.get_last_message();
                 std::wstringstream expected;
                 expected << L"{";
@@ -363,9 +371,9 @@ SCENARIO("Create a project, add a module, export project then import it and retr
             }
         }
         WHEN("on_add_module is called") {
-            THEN("A module id is returned") {
-                view.on_message_received(&mock_core_web_view, L"{\"action\":\"add_module\", \"body\": { \"type\": \"midi-in\", \"position\": { \"x\": 1, \"y\": 2, \"z\": 3 } }}");
+            view.on_message_received(&mock_core_web_view, L"{\"action\":\"add_module\", \"body\": { \"type\": \"midi-in\", \"position\": { \"x\": 1, \"y\": 2, \"z\": 3 } }}");
 
+            THEN("A module id is returned") {
                 LPCWSTR actual = mock_core_web_view.get_last_message();
                 std::wstringstream expected;
                 expected << L"{";
@@ -380,9 +388,9 @@ SCENARIO("Create a project, add a module, export project then import it and retr
         }
         WHEN("on_message_export_project is called") {
 			//FIXME: do not hardcode path.
-            THEN("The project is saved to disk.") {
-                view.on_message_received(&mock_core_web_view, L"{\"action\":\"export_project\",  \"body\": {\"path\": \"c:/tmp/project0.json\"}}");
+            view.on_message_received(&mock_core_web_view, L"{\"action\":\"export_project\",  \"body\": {\"path\": \"c:/tmp/project0.json\"}}");
 
+            THEN("The project is saved to disk.") {
                 LPCWSTR actual = mock_core_web_view.get_last_message();
                 std::wstringstream expected;
                 expected << L"{";
@@ -395,10 +403,10 @@ SCENARIO("Create a project, add a module, export project then import it and retr
   }
  }
         WHEN("on_message_import_project is called") {
-            THEN("The project is saved to disk.") {
-                //FIXME: do not hardcode path.
-                view.on_message_received(&mock_core_web_view, L"{\"action\":\"import_project\",  \"body\": {\"path\": \"c:/tmp/project0.json\"}}");
-
+            //FIXME: do not hardcode path.
+            view.on_message_received(&mock_core_web_view, L"{\"action\":\"import_project\",  \"body\": {\"path\": \"c:/tmp/project0.json\"}}");
+			
+            THEN("The project is imported from disk.") {
                 LPCWSTR actual = mock_core_web_view.get_last_message();
                 std::wstringstream expected;
                 expected << L"{";
@@ -412,11 +420,12 @@ SCENARIO("Create a project, add a module, export project then import it and retr
 
                 REQUIRE(actual == expected.str());
             }
-            AND_THEN("Module is also saved.") {
-                REQUIRE(application_.get_module_view(0).id == 0);
-                REQUIRE(application_.get_module_view(0).position[0] == 1);
-                REQUIRE(application_.get_module_view(0).position[1] == 2);
-                REQUIRE(application_.get_module_view(0).position[2] == 3);
+            AND_THEN("Module is also imported.") {
+                auto module_view = *(application_.modules_views_instances_)[0];
+                REQUIRE(module_view.id == 0);
+                REQUIRE(module_view.position[0] == 1);
+                REQUIRE(module_view.position[1] == 2);
+                REQUIRE(module_view.position[2] == 3);
             }
         }
     }
@@ -427,18 +436,19 @@ SCENARIO("Create a project, add a module, create another project, then load firs
     MockCoreWebView2 mock_core_web_view;
 
     SECTION("Initialisation") {
-        application_.clear();
- }
+        reinit();
+    }
 
-    GIVEN("No project exists") {
+    GIVEN("A first project is created and a module inserted in it and a second one is created again.") {
         view.on_message_received(&mock_core_web_view, L"{\"action\": \"new_project\"}");
-        view.on_message_received(&mock_core_web_view, L"{\"action\":\"add_module\", \"body\": { \"type\": \"midi-in\", \"position\": { \"x\": 0, \"y\": 0, \"z\": 0 } }}");
+        view.on_message_received(&mock_core_web_view, L"{\"action\":\"add_module\", \"body\": { \"type\": \"midi-in\", \"position\": { \"x\": 2, \"y\": 3, \"z\": 4 } }}");
         view.on_message_received(&mock_core_web_view, L"{\"action\": \"new_project\"}");
-        WHEN("on_message_load_project is called") {
-            THEN("The project is saved to disk.") {
-                //FIXME: do not hardcode path.
-                view.on_message_received(&mock_core_web_view, L"{\"action\":\"load_project\",  \"body\": {\"id\": 0}}");
-
+		
+        WHEN("We load the first project") {
+            //FIXME: do not hardcode path.
+            view.on_message_received(&mock_core_web_view, L"{\"action\":\"load_project\",  \"body\": {\"id\": 0}}");
+			
+            THEN("The first project headers are loaded from disk.") {
                 LPCWSTR actual = mock_core_web_view.get_last_message();
                 std::wstringstream expected;
                 expected << L"{";
@@ -451,6 +461,14 @@ SCENARIO("Create a project, add a module, create another project, then load firs
                 expected << L" }";
 
                 REQUIRE(actual == expected.str());
+
+                AND_THEN("The module previously added is also imported.") {
+                    auto module_view = *(application_.modules_views_instances_)[0];
+                    REQUIRE(module_view.id == 0);
+                    REQUIRE(module_view.position[0] == 2);
+                    REQUIRE(module_view.position[1] == 3);
+                    REQUIRE(module_view.position[2] == 4);
+                }
             }
         }
     }

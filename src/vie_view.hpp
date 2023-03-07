@@ -50,6 +50,8 @@ namespace live::tritone::vie
 
 		void set_host_callback(host_callback* callback);
 
+		void initialize();
+
 		nlohmann::json serialize();
 
 		void load(nlohmann::json instrument);
@@ -68,7 +70,7 @@ namespace live::tritone::vie
 		Steinberg::uint32 nb_ref_;
 		Steinberg::IPlugFrame* ptr_frame_;
 
-		editor_view editor_view;
+		editor_view editor_view_;
 
 		int width_;
 		int height_;

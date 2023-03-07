@@ -38,7 +38,7 @@ namespace live::tritone::vie::processor::module
 	public:
 		explicit gain(nlohmann::json gain_definition);
 
-		~gain();
+		~gain() override;
 
 		uint16_t get_id() override;
 

@@ -19,6 +19,12 @@ namespace live::tritone::vie {
 
 	void vie_processor::initialize()
 	{
+		terminate();
+		
+		orchestrator_.initialize();
+		
+		active_= false;
+		processing_ = false;
 	}
 
 	nlohmann::json vie_processor::serialize()

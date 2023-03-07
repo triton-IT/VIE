@@ -39,7 +39,7 @@ namespace live::tritone::vie::processor::module
 	public:
 		explicit high_pass(nlohmann::json high_pass_definition);
 
-		~high_pass();
+		~high_pass() override;
 
 		uint16_t get_id() override;
 

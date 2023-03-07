@@ -42,7 +42,7 @@ namespace live::tritone::vie::processor::module
 
 		multiplier& operator=(multiplier&&) = default;
 
-		~multiplier();
+		~multiplier() override;
 
 		uint16_t get_id() override;
 

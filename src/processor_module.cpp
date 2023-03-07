@@ -6,6 +6,10 @@ using namespace nlohmann;
 
 namespace live::tritone::vie
 {
+	processor_module::~processor_module()
+	{		
+	}
+	
 	void processor_module::initialize(nlohmann::json processor_definition) {
 		for (auto& [index, parameter_definition] : processor_definition["parameters"].items()) {
 			const unsigned long id = parameter_definition["id"];

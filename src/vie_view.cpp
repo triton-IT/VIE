@@ -13,7 +13,7 @@ namespace live::tritone::vie
 		width_(1024),
 		height_(600)
 	{
-		editor_view.set_host_callback(host_callback);
+		editor_view_.set_host_callback(host_callback);
 	}
 
 	tresult __stdcall vie_view::queryInterface(const TUID iid, void** obj)
@@ -56,14 +56,14 @@ namespace live::tritone::vie
 
 	tresult __stdcall vie_view::attached(void* parent, FIDString /*type*/)
 	{
-		editor_view.attached(parent);
+		editor_view_.attached(parent);
 
 		return kResultTrue;
 	}
 
 	tresult __stdcall vie_view::removed()
 	{
-		editor_view.removed();
+		editor_view_.removed();
 
 		return kResultTrue;
 	}
@@ -133,7 +133,12 @@ namespace live::tritone::vie
 
 	void vie_view::set_host_callback(host_callback* callback)
 	{
-		editor_view.set_host_callback(callback);
+		editor_view_.set_host_callback(callback);
+	}
+	
+	void vie_view::initialize()
+	{
+		editor_view_.initialize();
 	}
 
 	nlohmann::json vie_view::serialize()
