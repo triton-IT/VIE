@@ -21,7 +21,6 @@ end
 
 def controller_listener
   `
-
   if (window.webkit) {
 // write code here:
     } else {
@@ -114,15 +113,15 @@ def create_matrix(id)
   # end
   # resize_matrix(modules, center)
   inspector = grab(:inspector)
-  modules.children.value.each_with_index do |_module_found, index|
+  modules.materials.each_with_index do |_module_found, index|
     modules.cell(index).touch(:down) do
-      puts "down context is: #{grab(:context).data.value}"
+      puts "down context is: #{grab(:context).data}"
       grab(:connection).data[0] = index
     end
     modules.cell(index).touch(:long) do
-      puts "up context is: #{grab(:context).data.value}"
-      if grab(:selected).data.value.include?(self.id.value)
-        grab(:selected).data.value.each do |cell_id|
+      puts "up context is: #{grab(:context).data}"
+      if grab(:selected).data.include?(self.id)
+        grab(:selected).data.each do |cell_id|
 
           selected_cell = grab(cell_id)
           selected_cell.attached([:cell_color])
@@ -130,20 +129,20 @@ def create_matrix(id)
         end
         grab(:selected).data([])
       else
-        grab(:selected).data.value << self.id.value
+        grab(:selected).data << self.id
         attached([:active_color])
         detached(:cell_color)
       end
     end
     modules.cell(index).touch(:up) do
-      # puts "up context is: #{grab(:context)}.data.value"
+      # puts "up context is: #{grab(:context)}.data"
       # puts "======>#{grab(:selected).data}"
       grab(:connection).data[1] = index
-      source_cell = grab(:connection).data.value[0]
-      target_cell = grab(:connection).data.value[1]
+      source_cell = grab(:connection).data[0]
+      target_cell = grab(:connection).data[1]
       unless source_cell == target_cell
         clear_zone(inspector)
-        new_connection = grab(:connection).data.value
+        new_connection = grab(:connection).data
         vivify({ connect: "TODO :add matrix _id  #{new_connection}" })
         grab(:links).data[:toto] = :poilu
         grab(:connection).data << :titi
@@ -218,17 +217,17 @@ fill_toolzone([:load, :clear, :settings, :edition, :select, :group, :copy, :past
 
 def action_clear
   grab(:selected).data.each do |selected_slot|
-    grab(selected_slot).children.each do |child_found|
+    grab(selected_slot).materials.each do |child_found|
       grab(child_found).delete(true) if grab(child_found)
     end
   end
 end
 
 def clear_zone(zone)
-  zone.children.each do |child_found|
+  zone.materials.each do |child_found|
     grab(child_found).delete(true) if grab(child_found)
   end
-  zone.children = []
+  zone.materials = []
 end
 
 def remove_active(items)
@@ -286,8 +285,8 @@ def action_settings
   inspector = grab(:inspector)
   clear_zone(inspector)
   text_list_style = vie_styles[:list_style].merge({ classes: :settings_list })
-  project_name = grab(:current_project).data.value
-  # project_name=project_list[grab(:current_project).data.value][:name] if project_list[grab(:current_project).data.value]
+  project_name = grab(:current_project).data
+  # project_name=project_list[grab(:current_project).data][:name] if project_list[grab(:current_project).data]
   list(inspector, text_list_style, {
     rename: { name: "rename : #{project_name}", data: :item1, action: :rename_project },
     delete: { name: "delete", data: :item2, action: :delete_project },
@@ -321,13 +320,13 @@ end
 def insert_module(module_id)
   grab(:selected).data.each do |module_id_found|
     module_found = grab(module_id_found)
-    module_found.children.each do |child_found|
+    module_found.materials.each do |child_found|
       grab(child_found).delete(true) if grab(child_found)
     end
     tool_found = tool_list[module_id][:icon]
     tool_color = :orange
-    module_found.box({ id: "#{module_found.id.value}_svg_support", width: module_found.width.value / 2, height: module_found.height.value / 2, center: true, attached: :invisible_color })
-    svg_fetch(tool_found, tool_color, "#{module_found.id.value}_svg_support")
+    module_found.box({ id: "#{module_found.id}_svg_support", width: module_found.width / 2, height: module_found.height / 2, center: true, attached: :invisible_color })
+    svg_fetch(tool_found, tool_color, "#{module_found.id}_svg_support")
   end
 
 end
