@@ -227,7 +227,7 @@ def clear_zone(zone)
   zone.materials.each do |child_found|
     grab(child_found).delete(true) if grab(child_found)
   end
-  zone.materials = []
+  zone.delete(:materials)
 end
 
 def remove_active(items)
