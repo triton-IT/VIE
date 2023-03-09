@@ -107,6 +107,7 @@ namespace live::tritone::vie
 		}
 		else if (action_name.compare("new_project") == 0) {
 			on_message_new_project(sender, json_message);
+			application_.save_project();
 		}
 		else if (action_name.compare("load_project") == 0) {
 			on_message_load_project(sender, json_message);
@@ -122,24 +123,31 @@ namespace live::tritone::vie
 		}
 		else if (action_name.compare("add_module") == 0) {
 			on_message_add_module(sender, json_message);
+			application_.save_project();
 		}
 		else if (action_name.compare("set_module_name") == 0) {
 			on_message_set_module_name(sender, json_message);
+			application_.save_project();
 		}
 		else if (action_name.compare("delete_module") == 0) {
 			on_message_delete_module(sender, json_message);
+			application_.save_project();
 		}
 		else if (action_name.compare("set_module_parameter_value") == 0) {
 			on_message_set_module_parameter_value(sender, json_message);
+			application_.save_project();
 		}
 		else if (action_name.compare("link_modules") == 0) {
 			on_message_link_modules(sender, json_message);
+			application_.save_project();
 		}
 		else if (action_name.compare("undo") == 0) {
 			on_message_undo(sender, json_message);
+			application_.save_project();
 		}
 		else if (action_name.compare("redo") == 0) {
 			on_message_redo(sender, json_message);
+			application_.save_project();
 		}
 	}
 
@@ -409,6 +417,10 @@ namespace live::tritone::vie
 	}
 
 	void editor_view::on_message_link_modules(ICoreWebView2* sender, json message) {
+		nlohmann::json link_json = message.at("body");
+
+		uint16_t module_id = application_.link_modules(link_json);
+
 		std::wstringstream reply;
 		reply << L"{";
 		reply << L" \"action\": \"link_modules_callback\",";

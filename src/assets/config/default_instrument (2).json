@@ -69,7 +69,7 @@
       "type": "output"
     }
   ],
-  "relations": [
+  "links": [
     {
       "sourceComponent": 0,
       "sourceOutputSlot": 2,

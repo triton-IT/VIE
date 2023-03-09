@@ -11,7 +11,7 @@ namespace live::tritone::vie {
 	/**
 	* A source module output slot can be linked to multiple target modules input slots.
 	**/
-	struct module_relation {
+	struct modules_link {
 		/**
 		* Pointer to source module.
 		**/
@@ -39,8 +39,10 @@ namespace live::tritone::vie {
 		void add_processor_module(processor_module& processor);
 
 		processor_module** get_processor_modules(int* nb_modules);
+		
+		std::array<std::array<modules_link*, 32>, 128>& get_modules_links(std::array<int_fast8_t, 32>* nb_links);
 
-		void add_relation(module_relation* relation);
+		void link_modules(modules_link& link);
 
 		void terminate();
 
@@ -70,11 +72,11 @@ namespace live::tritone::vie {
 
 		processing_setup processing_setup_;
 		
-		//Contains an array of output relations for the given module id.
+		//Contains an array of output links for the given module id.
 		//TODO: compute nb of modules when parsing config file instead of using constant.
-		//TODO: compute max nb of relations for modules when parsing config file instead of using constant.
-		module_relation* relations_[128][32];
-		int nb_module_relations_[32]{};
+		//TODO: compute max nb of links for modules when parsing config file instead of using constant.
+		std::array<std::array<modules_link*, 32>, 128> links_;
+		std::array<int_fast8_t, 32> nb_module_links_;
 
 		void process(processor_module* source_module, output_process_data& output_process_data);
 		

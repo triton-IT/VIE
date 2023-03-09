@@ -103,7 +103,7 @@ namespace live::tritone::vie::processor::module
 		double sample_rate_;
 		bool can_process_;
 		/**
-		* Because the module has multiple inputs. Multiples relations can be bound to it.
+		* Because the module has multiple inputs. Multiples links can be bound to it.
 		* It means that the "process" method of the module can be called multiple times.
 		* We only want to process the sample once for all "process" calls.
 		*/

@@ -63,8 +63,8 @@ namespace live::tritone::vie
 	private:
 		void parse_modules(nlohmann::json modules_definitions);
 		void parse_module(nlohmann::json module_definition);
-		void parse_relations(nlohmann::json relations_definitions);
-		void parse_relation(nlohmann::json relation_definition);
+		void parse_links(nlohmann::json links_definitions);
+		void parse_link(nlohmann::json link_definition);
 		void parse_ui(nlohmann::json ui_definition);
 		
 		Steinberg::uint32 nb_ref_;

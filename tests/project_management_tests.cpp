@@ -222,10 +222,7 @@ private:
 
 void reinit()
 {
-    application_.nb_parameters_ = 0;
     application_.nb_projects_ = 0;
-    application_.nb_modules_ = 0;
-    application_.nb_relations_ = 0;
 }
 
 SCENARIO("Retrieve standard modules.", "[editor view]") {
@@ -249,7 +246,7 @@ SCENARIO("Retrieve standard modules.", "[editor view]") {
                 expected_stream << " { \"id\": 0, \"name\": \"audio-in\", \"icon\": \"<svg width=\\\"16\\\" height=\\\"16\\\" viewBox=\\\"0 0 16 16\\\" xmlns=\\\"http://www.w3.org/2000/svg\\\" fill=\\\"currentColor\\\">  <path id=\\\"mainPath\\\" d=\\\"M15 5.5a4.394 4.394 0 0 1-4 4.5 2.955 2.955 0 0 0-.2-1A3.565 3.565 0 0 0 14 5.5a3.507 3.507 0 0 0-7-.3A3.552 3.552 0 0 0 6 5a4.622 4.622 0 0 1 4.5-4A4.481 4.481 0 0 1 15 5.5zM5.5 6a4.5 4.5 0 1 0 0 9.001 4.5 4.5 0 0 0 0-9z\\\"/></svg>\", \"input_slots\": [ { \"id\": 0, \"name\": \"audio-in\" } ], \"output_slots\": [ { \"id\": 0, \"name\": \"audio-out\" } ] },";
                 expected_stream << " { \"id\": 1, \"name\": \"audio-out\", \"icon\": \"<svg width=\\\"16\\\" height=\\\"16\\\" viewBox=\\\"0 0 16 16\\\" xmlns=\\\"http://www.w3.org/2000/svg\\\" fill=\\\"currentColor\\\">  <path id=\\\"mainPath\\\" d=\\\"M15 5.5a4.394 4.394 0 0 1-4 4.5 2.955 2.955 0 0 0-.2-1A3.565 3.565 0 0 0 14 5.5a3.507 3.507 0 0 0-7-.3A3.552 3.552 0 0 0 6 5a4.622 4.622 0 0 1 4.5-4A4.481 4.481 0 0 1 15 5.5zM5.5 6a4.5 4.5 0 1 0 0 9.001 4.5 4.5 0 0 0 0-9z\\\"/></svg>\", \"input_slots\": [ { \"id\": 0, \"name\": \"on/off\" }, { \"id\": 1, \"name\": \"amplitudes\" } ], \"output_slots\": [ ] },";
                 expected_stream << " { \"id\": 3, \"name\": \"envelope\", \"icon\": \"<svg width=\\\"16\\\" height=\\\"16\\\" viewBox=\\\"0 0 16 16\\\" xmlns=\\\"http://www.w3.org/2000/svg\\\" fill=\\\"currentColor\\\">  <path id=\\\"mainPath\\\" d=\\\"M15 5.5a4.394 4.394 0 0 1-4 4.5 2.955 2.955 0 0 0-.2-1A3.565 3.565 0 0 0 14 5.5a3.507 3.507 0 0 0-7-.3A3.552 3.552 0 0 0 6 5a4.622 4.622 0 0 1 4.5-4A4.481 4.481 0 0 1 15 5.5zM5.5 6a4.5 4.5 0 1 0 0 9.001 4.5 4.5 0 0 0 0-9z\\\"/></svg>\", \"input_slots\": [ { \"id\": 0, \"name\": \"on/off\" }, { \"id\": 1, \"name\": \"velocities\" }, { \"id\": 2, \"name\": \"notes on\" }, { \"id\": 3, \"name\": \"notes off\" } ], \"output_slots\": [ { \"id\": 4, \"name\": \"amplitudes\" }, { \"id\": 5, \"name\": \"notes off\" }, { \"id\": 6, \"name\": \"sustain start\" }, { \"id\": 7, \"name\": \"sustain end\" }, { \"id\": 8, \"name\": \"sustain loop\" } ] },";
-                expected_stream << " { \"id\": 4, \"name\": \"envelope\", \"icon\": \"<svg width=\\\"16\\\" height=\\\"16\\\" viewBox=\\\"0 0 16 16\\\" xmlns=\\\"http://www.w3.org/2000/svg\\\" fill=\\\"currentColor\\\">  <path id=\\\"mainPath\\\" d=\\\"M15 5.5a4.394 4.394 0 0 1-4 4.5 2.955 2.955 0 0 0-.2-1A3.565 3.565 0 0 0 14 5.5a3.507 3.507 0 0 0-7-.3A3.552 3.552 0 0 0 6 5a4.622 4.622 0 0 1 4.5-4A4.481 4.481 0 0 1 15 5.5zM5.5 6a4.5 4.5 0 1 0 0 9.001 4.5 4.5 0 0 0 0-9z\\\"/></svg>\", \"input_slots\": [ { \"id\": 0, \"name\": \"on/off\" }, { \"id\": 1, \"name\": \"signal\" }, { \"id\": 2, \"name\": \"gain\" } ], \"output_slots\": [ { \"id\": 3, \"name\": \"amplitudes\" } ] },";
+                expected_stream << " { \"id\": 4, \"name\": \"gain\", \"icon\": \"<svg width=\\\"16\\\" height=\\\"16\\\" viewBox=\\\"0 0 16 16\\\" xmlns=\\\"http://www.w3.org/2000/svg\\\" fill=\\\"currentColor\\\">  <path id=\\\"mainPath\\\" d=\\\"M15 5.5a4.394 4.394 0 0 1-4 4.5 2.955 2.955 0 0 0-.2-1A3.565 3.565 0 0 0 14 5.5a3.507 3.507 0 0 0-7-.3A3.552 3.552 0 0 0 6 5a4.622 4.622 0 0 1 4.5-4A4.481 4.481 0 0 1 15 5.5zM5.5 6a4.5 4.5 0 1 0 0 9.001 4.5 4.5 0 0 0 0-9z\\\"/></svg>\", \"input_slots\": [ { \"id\": 0, \"name\": \"on/off\" }, { \"id\": 1, \"name\": \"signal\" }, { \"id\": 2, \"name\": \"gain\" } ], \"output_slots\": [ { \"id\": 3, \"name\": \"amplitudes\" } ] },";
                 expected_stream << " { \"id\": 5, \"name\": \"high-pass\", \"icon\": \"<svg width=\\\"16\\\" height=\\\"16\\\" viewBox=\\\"0 0 16 16\\\" xmlns=\\\"http://www.w3.org/2000/svg\\\" fill=\\\"currentColor\\\">  <path id=\\\"mainPath\\\" d=\\\"M15 5.5a4.394 4.394 0 0 1-4 4.5 2.955 2.955 0 0 0-.2-1A3.565 3.565 0 0 0 14 5.5a3.507 3.507 0 0 0-7-.3A3.552 3.552 0 0 0 6 5a4.622 4.622 0 0 1 4.5-4A4.481 4.481 0 0 1 15 5.5zM5.5 6a4.5 4.5 0 1 0 0 9.001 4.5 4.5 0 0 0 0-9z\\\"/></svg>\", \"input_slots\": [ { \"id\": 0, \"name\": \"on/off\" }, { \"id\": 1, \"name\": \"signal\" }, { \"id\": 2, \"name\": \"cutoff\" }, { \"id\": 3, \"name\": \"resonance\" } ], \"output_slots\": [ { \"id\": 4, \"name\": \"amplitudes\" } ] },";
                 expected_stream << " { \"id\": 6, \"name\": \"low-pass\", \"icon\": \"<svg width=\\\"16\\\" height=\\\"16\\\" viewBox=\\\"0 0 16 16\\\" xmlns=\\\"http://www.w3.org/2000/svg\\\" fill=\\\"currentColor\\\">  <path id=\\\"mainPath\\\" d=\\\"M15 5.5a4.394 4.394 0 0 1-4 4.5 2.955 2.955 0 0 0-.2-1A3.565 3.565 0 0 0 14 5.5a3.507 3.507 0 0 0-7-.3A3.552 3.552 0 0 0 6 5a4.622 4.622 0 0 1 4.5-4A4.481 4.481 0 0 1 15 5.5zM5.5 6a4.5 4.5 0 1 0 0 9.001 4.5 4.5 0 0 0 0-9z\\\"/></svg>\", \"input_slots\": [ { \"id\": 0, \"name\": \"on/off\" }, { \"id\": 1, \"name\": \"signal\" }, { \"id\": 2, \"name\": \"cutoff\" }, { \"id\": 3, \"name\": \"resonance\" } ], \"output_slots\": [ { \"id\": 4, \"name\": \"amplitudes\" } ] },";
                 expected_stream << " { \"id\": 7, \"name\": \"midi-in\", \"icon\": \"<svg width=\\\"16\\\" height=\\\"16\\\" viewBox=\\\"0 0 16 16\\\" xmlns=\\\"http://www.w3.org/2000/svg\\\" fill=\\\"currentColor\\\">  <path id=\\\"mainPath\\\" d=\\\"M15 5.5a4.394 4.394 0 0 1-4 4.5 2.955 2.955 0 0 0-.2-1A3.565 3.565 0 0 0 14 5.5a3.507 3.507 0 0 0-7-.3A3.552 3.552 0 0 0 6 5a4.622 4.622 0 0 1 4.5-4A4.481 4.481 0 0 1 15 5.5zM5.5 6a4.5 4.5 0 1 0 0 9.001 4.5 4.5 0 0 0 0-9z\\\"/></svg>\", \"input_slots\": [ { \"id\": 0, \"name\": \"on/off\" } ], \"output_slots\": [ { \"id\": 1, \"name\": \"notes on\" }, { \"id\": 2, \"name\": \"notes off\" }, { \"id\": 3, \"name\": \"frequencies\" }, { \"id\": 4, \"name\": \"velocities\" } ] },";
@@ -400,8 +397,8 @@ SCENARIO("Create a project, add a module, export project then import it and retr
                 expected << L" }";
 
                 REQUIRE(actual == expected.str());
-  }
- }
+            }
+        }
         WHEN("on_message_import_project is called") {
             //FIXME: do not hardcode path.
             view.on_message_received(&mock_core_web_view, L"{\"action\":\"import_project\",  \"body\": {\"path\": \"c:/tmp/project0.json\"}}");
@@ -443,11 +440,11 @@ SCENARIO("Create a project, add a module, create another project, then load firs
         view.on_message_received(&mock_core_web_view, L"{\"action\": \"new_project\"}");
         view.on_message_received(&mock_core_web_view, L"{\"action\":\"add_module\", \"body\": { \"type\": \"midi-in\", \"position\": { \"x\": 2, \"y\": 3, \"z\": 4 } }}");
         view.on_message_received(&mock_core_web_view, L"{\"action\": \"new_project\"}");
-		
+
         WHEN("We load the first project") {
             //FIXME: do not hardcode path.
             view.on_message_received(&mock_core_web_view, L"{\"action\":\"load_project\",  \"body\": {\"id\": 0}}");
-			
+
             THEN("The first project headers are loaded from disk.") {
                 LPCWSTR actual = mock_core_web_view.get_last_message();
                 std::wstringstream expected;
@@ -468,6 +465,63 @@ SCENARIO("Create a project, add a module, create another project, then load firs
                     REQUIRE(module_view.position[0] == 2);
                     REQUIRE(module_view.position[1] == 3);
                     REQUIRE(module_view.position[2] == 4);
+                }
+            }
+        }
+    }
+}
+
+SCENARIO("Create a project, add 2 modules and a link between them, save then load it to verify saving.", "[editor view]") {
+    live::tritone::vie::editor_view view;
+    MockCoreWebView2 mock_core_web_view;
+
+    SECTION("Initialisation") {
+        reinit();
+    }
+
+    GIVEN("A project is created, 2 modules are inserted and a link is created between them.") {
+        view.on_message_received(&mock_core_web_view, L"{\"action\": \"new_project\"}");
+        view.on_message_received(&mock_core_web_view, L"{\"action\":\"add_module\", \"body\": { \"type\": \"midi-in\", \"position\": { \"x\": 0, \"y\": 1, \"z\": 2 } }}");
+        view.on_message_received(&mock_core_web_view, L"{\"action\":\"add_module\", \"body\": { \"type\": \"audio-out\", \"position\": { \"x\": 3, \"y\": 4, \"z\": 5 } }}");
+        view.on_message_received(&mock_core_web_view, L"{\"action\":\"link_modules\", \"body\": { \"source_module\": 0, \"source_slot\": 3, \"target_module\": 1, \"target_slot\": 1 }}");
+
+        WHEN("We load the project") {
+            reinit();
+            //FIXME: do not hardcode path.
+            view.on_message_received(&mock_core_web_view, L"{\"action\":\"load_project\",  \"body\": {\"id\": 0}}");
+
+            THEN("The project headers are loaded from disk.") {
+                LPCWSTR actual = mock_core_web_view.get_last_message();
+                std::wstringstream expected;
+                expected << L"{";
+                expected << L" \"action\": \"load_project_callback\",";
+                expected << L" \"body\": {";
+                expected << L" \"id\": 0,";
+                expected << L" \"name\": \"Project 0\",";
+                expected << L" \"description\": \"\"";
+                expected << L" }";
+                expected << L" }";
+
+                REQUIRE(actual == expected.str());
+
+                AND_THEN("The modules previously added are also loaded.") {
+                    REQUIRE(application_.nb_modules_ == 2);
+                    REQUIRE(application_.nb_links_ == 1);
+                    
+                    auto module_view = *(application_.modules_views_instances_)[0];
+                    REQUIRE(module_view.id == 0);
+                    REQUIRE(module_view.position[0] == 0);
+                    REQUIRE(module_view.position[1] == 1);
+                    REQUIRE(module_view.position[2] == 2);
+                    module_view = *(application_.modules_views_instances_)[1];
+                    REQUIRE(module_view.position[0] == 3);
+                    REQUIRE(module_view.position[1] == 4);
+                    REQUIRE(module_view.position[2] == 5);
+                    auto link = application_.links_[0];
+                    REQUIRE(link.source_module->get_id() == 0);
+                    REQUIRE(link.target_module->get_id() == 1);
+                    REQUIRE(link.source_slot_id == 3);
+                    REQUIRE(link.target_slot_id == 1);
                 }
             }
         }

@@ -6,13 +6,19 @@ namespace live::tritone::vie::processor::module
 {
 	multiplier::multiplier(nlohmann::json multiplier_definition) : processor_module(),
 		id_(multiplier_definition["id"]),
-		name_(multiplier_definition["name"]),
 		nb_inputs_multipliers_(0),
 		nb_inputs_multiplicands_(0),
 		multipliers_filled_(false),
 		multiplicands_filled_(false),
 		nb_products_(0)
 	{
+		if (multiplier_definition.contains("name")) {
+			name_ = multiplier_definition["name"];
+		}
+		else {
+			name_ = "Audio output";
+		}
+		
 		for (uint_fast8_t i = 0; i < 32; i++) {
 			products_[i] = new float_array_module_output();
 		}
@@ -190,6 +196,7 @@ namespace live::tritone::vie::processor::module
 		nlohmann::json root;
 		root["id"] = id_;
 		root["name"] = name_;
+		root["type"] = "multiplier";
 
 		return root;
 	}

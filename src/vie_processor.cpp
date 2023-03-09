@@ -29,17 +29,41 @@ namespace live::tritone::vie {
 
 	nlohmann::json vie_processor::serialize()
 	{
-		json root = json();
+		json root_json = json();
+		json modules_json = json();
 		int nb_modules;
 		auto modules = orchestrator_.get_processor_modules(&nb_modules);
 		
 		for (int i = 0; i < nb_modules; i++)
 		{
 			auto module = modules[i];
-			root["modules"].push_back(module->serialize());
+			modules_json.push_back(module->serialize());
 		}
+		root_json["modules"] = modules_json;
 
-		return root;
+		json links_json = json();
+		std::array<int_fast8_t, 32> nb_links_per_module;
+		std::array<std::array<modules_link*, 32>, 128>& links = orchestrator_.get_modules_links(&nb_links_per_module);
+
+		for (int i = 0; i < nb_modules; i++)
+		{
+			int_fast8_t nb_links = nb_links_per_module[i];
+			for (int_fast8_t j = 0; j < nb_links; j++)
+			{
+				auto modules_link = links[i][j];
+				
+				json link_json = json();
+				link_json["source_module"] = modules_link->source_module->get_id();
+				link_json["source_slot"] = modules_link->source_slot_id;
+				link_json["target_module"] = modules_link->target_module->get_id();
+				link_json["target_slot"] = modules_link->target_slot_id;
+				
+				links_json.push_back(link_json);
+			}
+		}
+		root_json["links"] = links_json;
+		
+		return root_json;
 	}
 
 	void vie_processor::add_processor(processor_module& processor)
@@ -68,8 +92,8 @@ namespace live::tritone::vie {
 		}
 	}
 
-	void vie_processor::add_relation(module_relation* relation) {
-		orchestrator_.add_relation(relation);
+	void vie_processor::link_modules(modules_link& link) {
+		orchestrator_.link_modules(link);
 	}
 
 	void vie_processor::terminate() {

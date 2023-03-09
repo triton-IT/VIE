@@ -6,9 +6,15 @@ namespace live::tritone::vie::processor::module
 {
 	sample::sample(nlohmann::json sample_definition) :
 		id_(sample_definition["id"]),
-		name_(sample_definition["name"]),
 		can_process_(false)
 	{
+		if (sample_definition.contains("name")) {
+			name_ = sample_definition["name"];
+		}
+		else {
+			name_ = "Sample";
+		}
+		
 		std::string file_path = sample_definition["file_path"];
 
 		for (int i = 0; i < 32; i++) {
@@ -277,6 +283,7 @@ namespace live::tritone::vie::processor::module
 		nlohmann::json root;
 		root["id"] = id_;
 		root["name"] = name_;
+		root["type"] = "sample";
 
 		return root;
 	}

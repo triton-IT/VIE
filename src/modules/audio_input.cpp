@@ -6,10 +6,16 @@ namespace live::tritone::vie::processor::module
 {	
 	audio_input::audio_input(nlohmann::json audio_input_definition) :
 		id_(audio_input_definition["id"]),
-		name_(audio_input_definition["name"]),
 		buffer_(nullptr),
 		sample_rate_(44100)
 	{
+		if (audio_input_definition.contains("name")) {
+			name_ = audio_input_definition["name"];
+		}
+		else {
+			name_ = "Audio input";
+		}
+		
 		for (int i = 0; i < 32; i++) {
 			outputs_[i] = new float_array_module_output();
 		}
@@ -140,6 +146,7 @@ namespace live::tritone::vie::processor::module
 		nlohmann::json root;
 		root["id"] = id_;
 		root["name"] = name_;
+		root["type"] = "audio-in";
 
 		return root;
 	}

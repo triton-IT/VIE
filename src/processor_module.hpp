@@ -202,9 +202,9 @@ namespace live::tritone::vie
 		/**
 		* Pre-process the module.
 		* Called only once per process loop.
-		* If the module has multiple inputs relations, 
-		* the "process" method and the "get_output_values" are called once by input relation.
-		* The "preprocess" method is called only once whatever the number of input relations.
+		* If the module has multiple inputs links, 
+		* the "process" method and the "get_output_values" are called once by input link.
+		* The "preprocess" method is called only once whatever the number of input links.
 		*/
 		virtual void preprocess() = 0;
 

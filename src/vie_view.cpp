@@ -149,7 +149,7 @@ namespace live::tritone::vie
 	void vie_view::load(nlohmann::json instrument)
 	{
 		parse_modules(instrument["modules"]);
-		parse_relations(instrument["relations"]);
+		parse_links(instrument["links"]);
 		parse_ui(instrument["ui"]);
 	}
 
@@ -174,14 +174,14 @@ namespace live::tritone::vie
 		const std::string type = module_definition["type"];
 	}
 
-	void vie_view::parse_relations(json relations_definitions)
+	void vie_view::parse_links(json links_definitions)
 	{
-		for (auto& [index, relation_definition] : relations_definitions.items()) {
-			parse_relation(relation_definition);
+		for (auto& [index, link_definition] : links_definitions.items()) {
+			parse_link(link_definition);
 		}
 	}
 
-	void vie_view::parse_relation(json relation_definition)
+	void vie_view::parse_link(json link_definition)
 	{
 	}
 

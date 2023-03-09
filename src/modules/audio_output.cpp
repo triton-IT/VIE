@@ -6,11 +6,16 @@ namespace live::tritone::vie::processor::module
 {
 	audio_output::audio_output(nlohmann::json audio_output_definition) : processor_module(),
 		id_(audio_output_definition["id"]),
-		name_(audio_output_definition["name"]),
 		nb_outputs_(0),
 		can_process_(false),
 		output_bus_id_(0)
 	{
+		if (audio_output_definition.contains("name")) {
+			name_ = audio_output_definition["name"];
+		}
+		else {
+			name_ = "Audio output";
+		}
 	}
 
 	audio_output::~audio_output() = default;
@@ -145,6 +150,7 @@ namespace live::tritone::vie::processor::module
 		nlohmann::json root;
 		root["id"] = id_;
 		root["name"] = name_;
+		root["type"] = "audio-out";
 
 		return root;
 	}

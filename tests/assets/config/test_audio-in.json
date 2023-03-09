@@ -11,7 +11,7 @@
       "type": "audio out"
     }
   ],
-  "relations": [
+  "links": [
     {
       "sourceComponent": 0,
       "sourceOutputSlot": 1,

@@ -172,7 +172,7 @@
       <Field Name="processor_modules_" />
       <Field Name="sources_midi_input_modules_" />
       <Field Name="sources_audio_input_modules_" />
-      <Field Name="relations_" />
+      <Field Name="links_" />
     </ShowAsCollectionAssociation>
   </Class>
   <Class Name="live::tritone::vie::vie_processor">
@@ -287,7 +287,7 @@
       <FileName>C:\dev\triton-IT\VIE\src\processor_module.hpp</FileName>
     </TypeIdentifier>
   </Struct>
-  <Struct Name="live::tritone::vie::module_relation">
+  <Struct Name="live::tritone::vie::modules_link">
     <Position X="23.75" Y="9.5" Width="4" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAIAAAAAAAACAAAAAAAAACACAAAA=</HashCode>

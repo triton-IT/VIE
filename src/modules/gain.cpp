@@ -9,12 +9,18 @@ namespace live::tritone::vie::processor::module
 {
 	gain::gain(nlohmann::json gain_definition) : processor_module(),
 		id_(gain_definition["id"]),
-		name_(gain_definition["name"]),
 		nb_inputs_(0),
 		gain_(1.1),
 		sample_rate_(44100),
 		inputs_set_(false)
 	{
+		if (gain_definition.contains("name")) {
+			name_ = gain_definition["name"];
+		}
+		else {
+			name_ = "Gain";
+		}
+		
 		for (int i = 0; i < 32; i++) {
 			amplified_output_[i] = new float_array_module_output();
 		}
@@ -170,6 +176,7 @@ namespace live::tritone::vie::processor::module
 		nlohmann::json root;
 		root["id"] = id_;
 		root["name"] = name_;
+		root["type"] = "gain";
 
 		return root;
 	}

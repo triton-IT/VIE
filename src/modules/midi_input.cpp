@@ -24,7 +24,7 @@ namespace live::tritone::vie::processor::module
 		notes_on_outputs_(),
 		nb_notes_off_values_(0),
 		notes_off_outputs_()
-	{			
+	{
 		if (midi_definition.contains("name")) {
 			name_ = midi_definition["name"];
 		}
@@ -222,6 +222,7 @@ namespace live::tritone::vie::processor::module
 		nlohmann::json root;
 		root["id"] = id_;
 		root["name"] = name_;
+		root["type"] = "midi-in";
 
 		return root;
 	}

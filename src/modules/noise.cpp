@@ -12,7 +12,6 @@ namespace live::tritone::vie::processor::module
 {
 	noise::noise(nlohmann::json noise_definition) :
 		id_(noise_definition["id"]),
-		name_(noise_definition["name"]),
 		current_noises_descriptors_(new std::unordered_map<uint_fast16_t, noise_descriptor<void>>),
 		next_noises_descriptors_(new std::unordered_map<uint_fast16_t, noise_descriptor<void>>),
 		sample_rate_(0.0),
@@ -20,6 +19,13 @@ namespace live::tritone::vie::processor::module
 		can_process_(false),
 		nb_outputs_(0)
 	{
+		if (noise_definition.contains("name")) {
+			name_ = noise_definition["name"];
+		}
+		else {
+			name_ = "Noise";
+		}
+		
 		for (uint_fast8_t i = 0; i < 32; i++) {
 			outputs_[i] = new float_array_module_output();
 		}
@@ -207,6 +213,7 @@ namespace live::tritone::vie::processor::module
 		nlohmann::json root;
 		root["id"] = id_;
 		root["name"] = name_;
+		root["type"] = "noise";
 
 		return root;
 	}

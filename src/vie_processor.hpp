@@ -22,7 +22,7 @@ namespace live::tritone::vie {
 		
 		void add_processor(processor_module& processor);
 
-		void add_relation(module_relation* relation);
+		void link_modules(modules_link& link);
 
 		void terminate();
 

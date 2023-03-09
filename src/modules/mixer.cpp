@@ -10,6 +10,13 @@ namespace live::tritone::vie::processor::module
 		nb_inputs_(0),
 		can_process_(true)
 	{
+		if (mixer_definition.contains("name")) {
+			name_ = mixer_definition["name"];
+		}
+		else {
+			name_ = "Mixer";
+		}
+		
 		for (uint_fast8_t i = 0; i < 32; i++) {
 			average_[i] = new float_array_module_output();
 		}
@@ -165,6 +172,7 @@ namespace live::tritone::vie::processor::module
 		nlohmann::json root;
 		root["id"] = id_;
 		root["name"] = name_;
+		root["type"] = "mixer";
 
 		return root;
 	}

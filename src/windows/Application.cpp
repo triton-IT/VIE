@@ -112,10 +112,8 @@ uint_fast8_t application::get_parameters_count()
 
 project_info& application::new_project()
 {
-	//reinit all components
-	nb_parameters_ = 0;
-	nb_modules_ = 0;
-	nb_relations_ = 0;
+	//reinit all properties
+	clear_current_project();
 	
 	vie_processor_.initialize();
 	vie_view_->initialize();
@@ -125,9 +123,6 @@ project_info& application::new_project()
 	current_project_.id = nb_projects_;
 	//FIXME: Generate a random name.
 	current_project_.name = L"Project " + std::to_wstring(nb_projects_);
-	
-	//Save project.
-	save_project();
 	
 	//Update list of projects.
 	projects_infos_[nb_projects_] = current_project_;
@@ -151,7 +146,7 @@ void application::save_project()
 }
 
 project_info application::load_project(uint_fast16_t id)
-{
+{	
 	std::wstringstream path_stream;
 	path_stream << L"c:/tmp/" << id << L".json";
 	
@@ -168,11 +163,29 @@ void application::export_project(std::wstring project_path)
 	project_json["description"] = converter.to_bytes(current_project_.description);
 
 	nlohmann::json processor_json = vie_processor_.serialize();
-	nlohmann::json view_json = vie_view_->serialize();
+	//nlohmann::json view_json = vie_view_->serialize();
+
+	nlohmann::json view_json = nlohmann::json();
+
+	for (uint_fast8_t i = 0; i < nb_modules_; i++)
+	{
+		nlohmann::json module_view_json = nlohmann::json();
+
+		module_view_json["id"] = modules_views_instances_[i]->id;
+		
+		nlohmann::json position_json = nlohmann::json();
+		position_json["x"] = modules_views_instances_[i]->position[0];
+		position_json["y"] = modules_views_instances_[i]->position[1];
+		position_json["z"] = modules_views_instances_[i]->position[2];
+
+		module_view_json["position"] = position_json;
+
+		view_json.push_back(module_view_json);
+	}
 
 	nlohmann::json root = nlohmann::json();
 	root["project"] = project_json;
-	root["processor"] = processor_json;
+	root["instrument"] = processor_json;
 	root["view"] = view_json;
 
 	std::ofstream projectStream(project_path);
@@ -181,21 +194,35 @@ void application::export_project(std::wstring project_path)
 
 project_info application::import_project(std::wstring project_path)
 {
+	//reinit all properties
+	clear_current_project();
+	
 	std::ifstream projectStream(project_path);
 	nlohmann::json project_json;
 	projectStream >> project_json;
 
-	//Load processor.
-	for (auto& [index, processor] : project_json["modules"].items()) {
-		add_module(processor);
+	//Load instrument.
+	auto instrument_json = project_json["instrument"];
+	for (auto& [index, module] : instrument_json["modules"].items()) {
+		import_module(module);
 	}
-	for (auto& [index, relation] : project_json["relations"].items()) {
-		add_relation(relation);
+	for (auto& [index, link] : instrument_json["links"].items()) {
+		link_modules(link);
 	}
 
 	//Load view.
-	vie_view_->load(project_json);
-
+	//vie_view_->load(project_json);
+	auto view = project_json["view"];
+	for (uint_fast8_t i = 0; i < nb_modules_; i++)
+	{
+		auto view_module = view[i];
+		modules_views_instances_[i] = std::make_unique<module_view_instance>();
+		modules_views_instances_[i]->id = processors_[i]->get_id();
+		modules_views_instances_[i]->position[0] = view_module["position"]["x"];
+		modules_views_instances_[i]->position[1] = view_module["position"]["y"];
+		modules_views_instances_[i]->position[2] = view_module["position"]["z"];
+	}
+	
 	//Load project infos.
 	nlohmann::json project_info_json = project_json["project"];
 
@@ -239,33 +266,29 @@ uint16_t application::add_module(nlohmann::json module)
 	
 	auto& processor = create_processor_module(module);
 	vie_processor_.add_processor(*processor);
+		
+	modules_views_instances_[nb_modules_] = std::make_unique<module_view_instance>();
+	modules_views_instances_[nb_modules_]->id = module["id"];
+	modules_views_instances_[nb_modules_]->position[0] = module["position"]["x"];
+	modules_views_instances_[nb_modules_]->position[1] = module["position"]["y"];
+	modules_views_instances_[nb_modules_]->position[2] = module["position"]["z"];
 	
-	modules_views_instances_[module_id] = std::make_unique<module_view_instance>();
-	modules_views_instances_[module_id]->id = module_id;
-	modules_views_instances_[module_id]->position[0] = module["position"]["x"];
-	modules_views_instances_[module_id]->position[1] = module["position"]["y"];
-	modules_views_instances_[module_id]->position[2] = module["position"]["z"];
-
 	nb_modules_++;
-
-	save_project();
 
 	return module_id;
 }
 
-uint16_t application::add_relation(nlohmann::json relation)
+uint16_t application::link_modules(nlohmann::json link)
 {
-	uint16_t relation_id = nb_relations_;
+	uint16_t link_id = nb_links_;
 
-	relation["id"] = relation_id;
-	auto& module_relation = create_module_relation(relation);
-	vie_processor_.add_relation(module_relation.get());
+	link["id"] = link_id;
+	auto& modules_link = create_modules_link(link);
+	vie_processor_.link_modules(modules_link);
 
-	nb_relations_++;
-	
-	save_project();
+	nb_links_++;
 
-	return relation_id;
+	return link_id;
 }
 
 vie_processor& application::get_vie_processor()
@@ -284,6 +307,13 @@ vie_view* application::deleteView()
 	delete vie_view_;
 	vie_view_ = nullptr;
 	return nullptr;
+}
+
+void application::clear_current_project()
+{
+	nb_parameters_ = 0;
+	nb_modules_ = 0;
+	nb_links_ = 0;
 }
 
 std::unique_ptr<processor_module>& application::create_processor_module(nlohmann::json processor_definition) {
@@ -317,7 +347,7 @@ std::unique_ptr<processor_module>& application::create_processor_module(nlohmann
 	{
 		processors_[nb_modules_] = std::make_unique<sample>(processor_definition);
 	}
-	else if (type == "audio out")
+	else if (type == "audio-out")
 	{
 		processors_[nb_modules_] = std::make_unique<audio_output>(processor_definition);
 	}
@@ -347,21 +377,21 @@ std::unique_ptr<processor_module>& application::create_processor_module(nlohmann
 	return processors_[nb_modules_];
 }
 
-std::unique_ptr<module_relation>& application::create_module_relation(nlohmann::json relation_definition) {
-	const int source_module_id = relation_definition["sourceComponent"];
+modules_link& application::create_modules_link(nlohmann::json link_definition) {
+	const int source_module_id = link_definition["source_module"];
 
-	relations_[nb_relations_]->source_module = processors_[source_module_id].get();
+	links_[nb_links_].source_module = processors_[source_module_id].get();
 
-	const uint_fast16_t source_output_id = relation_definition["sourceOutputSlot"];
-	relations_[nb_relations_]->source_slot_id = source_output_id;
+	const uint_fast16_t source_output_id = link_definition["source_slot"];
+	links_[nb_links_].source_slot_id = source_output_id;
 
-	const int target_module_id = relation_definition["targetComponent"];
-	relations_[nb_relations_]->target_module = processors_[target_module_id].get();
+	const int target_module_id = link_definition["target_module"];
+	links_[nb_links_].target_module = processors_[target_module_id].get();
 
-	const uint_fast16_t target_input_id = relation_definition["targetInputSlot"];
-	relations_[nb_relations_]->target_slot_id = target_input_id;
+	const uint_fast16_t target_input_id = link_definition["target_slot"];
+	links_[nb_links_].target_slot_id = target_input_id;
 
-	return relations_[nb_relations_];
+	return links_[nb_links_];
 }
 
 processor_module& application::get_processor_by_id(uint_fast8_t id)
@@ -369,9 +399,23 @@ processor_module& application::get_processor_by_id(uint_fast8_t id)
 	return *processors_[id];
 }
 
-module_relation& application::get_relation_by_id(uint_fast8_t id)
+modules_link& application::get_link_by_id(uint_fast8_t id)
 {
-	return *relations_[id];
+	return links_[id];
+}
+
+uint16_t application::import_module(nlohmann::json module)
+{
+	uint16_t module_id = nb_modules_;
+
+	module["id"] = module_id;
+
+	auto& processor = create_processor_module(module);
+	vie_processor_.add_processor(*processor);
+
+	nb_modules_++;
+
+	return module_id;
 }
 
 application application_;

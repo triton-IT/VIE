@@ -9,7 +9,6 @@ namespace live::tritone::vie::processor::module
 {
 	high_pass::high_pass(nlohmann::json high_pass_definition) : processor_module(),
 		id_(high_pass_definition["id"]),
-		name_(high_pass_definition["name"]),
 		nb_inputs_(0),
 		cutoff_set_(false),
 		resonance_set_(false),
@@ -24,6 +23,13 @@ namespace live::tritone::vie::processor::module
 		cos_omega(0),
 		input_modified_(true)
 	{
+		if (high_pass_definition.contains("name")) {
+			name_ = high_pass_definition["name"];
+		}
+		else {
+			name_ = "High-pass filter";
+		}
+		
 		for (int i = 0; i < 32; i++) {
 			filtered_[i] = new float_array_module_output();
 		}
@@ -234,6 +240,7 @@ namespace live::tritone::vie::processor::module
 		nlohmann::json root;
 		root["id"] = id_;
 		root["name"] = name_;
+		root["type"] = "high-pass";
 
 		return root;
 	}

@@ -84,7 +84,7 @@ endif ()
 
 set(TESTS_SOURCE_FILES
         "audio_in_tests.cpp"
-        "editor_view_tests.cpp"
+        "project_management_tests.cpp"
         )
 source_group("Test source Files" FILES ${TESTS_SOURCE_FILES})
 

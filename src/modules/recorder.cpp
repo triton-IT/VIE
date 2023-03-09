@@ -6,12 +6,18 @@ namespace live::tritone::vie::processor::module
 {
 	recorder::recorder(nlohmann::json recorder_definition) : processor_module(),
 		id_(recorder_definition["id"]),
-		name_(recorder_definition["name"]),
 		sample_rate_(.0),
 		can_process_(false),
 		on_(true),
 		nb_outputs_(0)
 	{
+		if (recorder_definition.contains("name")) {
+			name_ = recorder_definition["name"];
+		}
+		else {
+			name_ = "Recorder";
+		}
+		
 		//auto& parameters_definition = recorder_definition["parameters"];
 
 		std::string file_path = recorder_definition["file_path"];
@@ -159,6 +165,7 @@ namespace live::tritone::vie::processor::module
 		nlohmann::json root;
 		root["id"] = id_;
 		root["name"] = name_;
+		root["type"] = "recorder";
 
 		return root;
 	}

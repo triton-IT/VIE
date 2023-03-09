@@ -23,10 +23,16 @@ namespace live::tritone::vie
 													   nb_audio_input_modules_(0),
 													   sources_audio_input_modules_{},
 												       processing_setup_(),
-	                                                   relations_{},
+	                                                   links_{},
 													   bypass_(false)
 	{
-		memset(nb_module_relations_, 0, 128);
+		links_ = {};
+		for (auto& row : links_) {
+			for (auto element : row) {
+				element = nullptr;
+			}
+		}
+		nb_module_links_ = {};
 	}
 
 	void processor_orchestrator::initialize()
@@ -57,18 +63,23 @@ namespace live::tritone::vie
 		*nb_modules = nb_modules_;
 		return processor_modules_;
 	}
-
-	void processor_orchestrator::add_relation(module_relation* relation)
+	
+	std::array<std::array<modules_link*, 32>, 128>& processor_orchestrator::get_modules_links(std::array<int_fast8_t, 32>* nb_links)
 	{
-		uint16_t source_module_id = relation->source_module->get_id();
+		*nb_links = nb_module_links_;
+		return links_;
+	}
+
+	void processor_orchestrator::link_modules(modules_link& link)
+	{
+		uint16_t source_module_id = link.source_module->get_id();
 		
-		module_relation** module_relations = relations_[source_module_id];
-		const int nb_module_relations = nb_module_relations_[source_module_id];
+		std::array<modules_link*, 32>& modules_links = links_[source_module_id];
+		const int nb_module_links = nb_module_links_[source_module_id];
 		
-		auto module_relation = module_relations[nb_module_relations];
-		module_relation = relation;
+		modules_links[nb_module_links] = &link;
 		
-		nb_module_relations_[source_module_id] = nb_module_relations + 1;
+		nb_module_links_[source_module_id] = nb_module_links + 1;
 	}
 
 	void processor_orchestrator::terminate()
@@ -88,7 +99,7 @@ namespace live::tritone::vie
 		
 		for(int i = 0; i < 32; i++)
 		{
-			nb_module_relations_[i] = 0;
+			nb_module_links_[i] = 0;
 		}
 	}
 
@@ -180,13 +191,13 @@ namespace live::tritone::vie
 			source_module->process(output_process_data);
 
 			//Get all children of source modules
-			module_relation** module_relations = relations_[source_module->get_id()];
+			std::array<modules_link*, 32>& module_links = links_[source_module->get_id()];
 
 			//Process all children.
-			const int nb_relations = nb_module_relations_[source_module->get_id()];
-			for (int i = 0; i < nb_relations; i++)
+			const int nb_links = nb_module_links_[source_module->get_id()];
+			for (int i = 0; i < nb_links; i++)
 			{
-				const auto [relation_module, source_slot_id, target_module, target_slot_id] = *(module_relations[i]);
+				const auto [link_module, source_slot_id, target_module, target_slot_id] = *(module_links[i]);
 
 				std::array<module_output*, 32> source_output_values;
 				

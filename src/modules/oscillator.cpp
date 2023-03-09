@@ -11,13 +11,19 @@ namespace live::tritone::vie::processor::module
 {
 	oscillator::oscillator(nlohmann::json oscillator_definition) : processor_module(),
 		id_(oscillator_definition["id"]),
-		name_(oscillator_definition["name"]),
 		sample_rate_(.0),
 		current_phases_descriptors_(new std::unordered_map<uint_fast16_t, phase_descriptor>),
 		next_phases_descriptors_(new std::unordered_map<uint_fast16_t, phase_descriptor>),
 		can_process_(false),
 		nb_outputs_(0)
 	{
+		if (oscillator_definition.contains("name")) {
+			name_ = oscillator_definition["name"];
+		}
+		else {
+			name_ = "Oscillator";
+		}
+		
 		auto& parameters_definition = oscillator_definition["parameters"];
 
 		if (parameters_definition != nullptr) {
@@ -237,6 +243,7 @@ namespace live::tritone::vie::processor::module
 		nlohmann::json root;
 		root["id"] = id_;
 		root["name"] = name_;
+		root["type"] = "oscillator";
 
 		return root;
 	}

@@ -11,7 +11,6 @@ namespace live::tritone::vie::processor::module
 {
 	envelope::envelope(nlohmann::json envelope_definition) : processor_module(),
 		id_(envelope_definition["id"]),
-		name_(envelope_definition["name"]),
 		sample_rate_(0.0),
 		nb_velocities_inputs_(0),
 		velocities_filled_(false),
@@ -20,6 +19,13 @@ namespace live::tritone::vie::processor::module
 		nb_outputs_(0),
 		outputs_()
 	{
+		if (envelope_definition.contains("name")) {
+			name_ = envelope_definition["name"];
+		}
+		else {
+			name_ = "Audio outputEnvelope";
+		}
+		
 		for (int i = 0; i < 32; i++) {
 			velocities_[i] = new float_module_output();
 			notes_off_[i] = new novalue_module_output();
@@ -312,6 +318,7 @@ namespace live::tritone::vie::processor::module
 		nlohmann::json root;
 		root["id"] = id_;
 		root["name"] = name_;
+		root["type"] = "envelope";
 
 		return root;
 	}
