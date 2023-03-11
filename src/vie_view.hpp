@@ -54,13 +54,17 @@ namespace live::tritone::vie
 
 		nlohmann::json serialize();
 
-		void load(nlohmann::json instrument);
+		void deserialize(nlohmann::json definition);
 		
 		void add_module(nlohmann::json module);
 
 		void render();
 
+#ifdef UNIT_TESTING
+	public:
+#else
 	private:
+#endif
 		void parse_modules(nlohmann::json modules_definitions);
 		void parse_module(nlohmann::json module_definition);
 		void parse_links(nlohmann::json links_definitions);

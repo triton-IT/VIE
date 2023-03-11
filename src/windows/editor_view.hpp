@@ -8,6 +8,7 @@
 #include "wil/com.h"
 
 #include "../host_callback.hpp"
+#include "../modules/module_view_descriptor.hpp"
 
 namespace live::tritone::vie {
 	class editor_view {
@@ -31,8 +32,18 @@ namespace live::tritone::vie {
 		void removed();
 
 		void set_host_callback(host_callback* host_callback);
+		
+		nlohmann::json serialize();
 
+		void deserialize(nlohmann::json definition);
+
+		void add_module(nlohmann::json module_definition);
+
+#ifdef UNIT_TESTING
+	public:
+#else
 	private:
+#endif
 		wchar_t appdata_path[4096];
 
 		ICoreWebView2Controller* ptr_web_view_controller_;
@@ -40,6 +51,9 @@ namespace live::tritone::vie {
 		EventRegistrationToken web_message_received_token_;
 
 		host_callback* host_callback_;
+		
+		std::array<std::unique_ptr<view::module::module_view_instance>, 255> modules_views_instances_;
+		uint_fast8_t nb_modules_;
 
 #ifdef UNIT_TESTING //Because "attached" method contains a lot of non testable elements (webview2), we plug our tests to this method.
 	public:

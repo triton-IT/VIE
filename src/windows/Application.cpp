@@ -163,25 +163,7 @@ void application::export_project(std::wstring project_path)
 	project_json["description"] = converter.to_bytes(current_project_.description);
 
 	nlohmann::json processor_json = vie_processor_.serialize();
-	//nlohmann::json view_json = vie_view_->serialize();
-
-	nlohmann::json view_json = nlohmann::json();
-
-	for (uint_fast8_t i = 0; i < nb_modules_; i++)
-	{
-		nlohmann::json module_view_json = nlohmann::json();
-
-		module_view_json["id"] = modules_views_instances_[i]->id;
-		
-		nlohmann::json position_json = nlohmann::json();
-		position_json["x"] = modules_views_instances_[i]->position[0];
-		position_json["y"] = modules_views_instances_[i]->position[1];
-		position_json["z"] = modules_views_instances_[i]->position[2];
-
-		module_view_json["position"] = position_json;
-
-		view_json.push_back(module_view_json);
-	}
+	nlohmann::json view_json = vie_view_->serialize();
 
 	nlohmann::json root = nlohmann::json();
 	root["project"] = project_json;
@@ -211,17 +193,8 @@ project_info application::import_project(std::wstring project_path)
 	}
 
 	//Load view.
-	//vie_view_->load(project_json);
-	auto view = project_json["view"];
-	for (uint_fast8_t i = 0; i < nb_modules_; i++)
-	{
-		auto view_module = view[i];
-		modules_views_instances_[i] = std::make_unique<module_view_instance>();
-		modules_views_instances_[i]->id = processors_[i]->get_id();
-		modules_views_instances_[i]->position[0] = view_module["position"]["x"];
-		modules_views_instances_[i]->position[1] = view_module["position"]["y"];
-		modules_views_instances_[i]->position[2] = view_module["position"]["z"];
-	}
+	auto view_json = project_json["view"];
+	vie_view_->deserialize(view_json);
 	
 	//Load project infos.
 	nlohmann::json project_info_json = project_json["project"];
@@ -266,12 +239,7 @@ uint16_t application::add_module(nlohmann::json module)
 	
 	auto& processor = create_processor_module(module);
 	vie_processor_.add_processor(*processor);
-		
-	modules_views_instances_[nb_modules_] = std::make_unique<module_view_instance>();
-	modules_views_instances_[nb_modules_]->id = module["id"];
-	modules_views_instances_[nb_modules_]->position[0] = module["position"]["x"];
-	modules_views_instances_[nb_modules_]->position[1] = module["position"]["y"];
-	modules_views_instances_[nb_modules_]->position[2] = module["position"]["z"];
+	vie_view_->add_module(module);
 	
 	nb_modules_++;
 

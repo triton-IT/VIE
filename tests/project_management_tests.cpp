@@ -345,14 +345,14 @@ public:
     uint32_t last_edition_ended_;
 };
 
+mock_host_callback mock_callback_;
 void reinit()
 {
+    application_.create_view(&mock_callback_);
     application_.nb_projects_ = 0;
 }
 
-live::tritone::vie::editor_view editor_view_;
 MockCoreWebView2 mock_core_web_view_;
-mock_host_callback mock_callback_;
 mock_parameter_changes parameter_changes;
 
 SCENARIO("Retrieve standard modules.", "[editor view]") {
@@ -362,7 +362,8 @@ SCENARIO("Retrieve standard modules.", "[editor view]") {
 
     GIVEN("Standard modules exists") {
         WHEN("on_message_get_modules is called") {
-            editor_view_.on_message_received(&mock_core_web_view_, L"{\"action\":\"get_modules\",  \"body\": {}}");
+            auto editor_view = &application_.vie_view_->editor_view_;
+            editor_view->on_message_received(&mock_core_web_view_, L"{\"action\":\"get_modules\",  \"body\": {}}");
 
             THEN("Modules are retrieved.") {
                 LPCWSTR actual = mock_core_web_view_.get_last_message();
@@ -399,7 +400,8 @@ SCENARIO("get_projects returns no project when no project exists.", "[editor vie
 	
 	GIVEN("No project exists") {
 		WHEN("on_message_get_projects is called") {
-            editor_view_.on_message_received(&mock_core_web_view_, L"{\"action\": \"get_projects\"}");
+            auto editor_view = &application_.vie_view_->editor_view_;
+            editor_view->on_message_received(&mock_core_web_view_, L"{\"action\": \"get_projects\"}");
 
 			THEN("an empty response is returned") {								
                 LPCWSTR actual = mock_core_web_view_.get_last_message();
@@ -423,7 +425,8 @@ SCENARIO("Create a project then get_projects returns a project (created project 
 	
     GIVEN("No project exists") {		
         WHEN("on_message_new_project is called") {
-            editor_view_.on_message_received(&mock_core_web_view_, L"{\"action\": \"new_project\"}");
+            auto editor_view = &application_.vie_view_->editor_view_;
+            editor_view->on_message_received(&mock_core_web_view_, L"{\"action\": \"new_project\"}");
 
             THEN("A project id and name is returned") {
                 LPCWSTR actual = mock_core_web_view_.get_last_message();
@@ -440,7 +443,8 @@ SCENARIO("Create a project then get_projects returns a project (created project 
             }
         }
         WHEN("on_message_get_projects is called") {
-            editor_view_.on_message_received(&mock_core_web_view_, L"{\"action\": \"get_projects\"}");
+            auto editor_view = &application_.vie_view_->editor_view_;
+            editor_view->on_message_received(&mock_core_web_view_, L"{\"action\": \"get_projects\"}");
 
             THEN("New project is returned (project created previously is automatically saved)") {
                 LPCWSTR actual = mock_core_web_view_.get_last_message();
@@ -469,7 +473,8 @@ SCENARIO("Create a project, add a module, export project then import it and retr
 
     GIVEN("No project exists") {
         WHEN("on_message_new_project is called") {
-            editor_view_.on_message_received(&mock_core_web_view_, L"{\"action\": \"new_project\"}");
+            auto editor_view = &application_.vie_view_->editor_view_;
+            editor_view->on_message_received(&mock_core_web_view_, L"{\"action\": \"new_project\"}");
 
             THEN("A project name is returned") {
                 LPCWSTR actual = mock_core_web_view_.get_last_message();
@@ -486,7 +491,8 @@ SCENARIO("Create a project, add a module, export project then import it and retr
             }
         }
         WHEN("on_add_module is called") {
-            editor_view_.on_message_received(&mock_core_web_view_, L"{\"action\":\"add_module\", \"body\": { \"type\": \"midi-in\", \"position\": { \"x\": 1, \"y\": 2, \"z\": 3 } }}");
+            auto editor_view = &application_.vie_view_->editor_view_;
+            editor_view->on_message_received(&mock_core_web_view_, L"{\"action\":\"add_module\", \"body\": { \"type\": \"midi-in\", \"position\": { \"x\": 1, \"y\": 2, \"z\": 3 } }}");
 
             THEN("A module id is returned") {
                 LPCWSTR actual = mock_core_web_view_.get_last_message();
@@ -502,8 +508,9 @@ SCENARIO("Create a project, add a module, export project then import it and retr
             }
         }
         WHEN("on_message_export_project is called") {
+            auto editor_view = &application_.vie_view_->editor_view_;
 			//FIXME: do not hardcode path.
-            editor_view_.on_message_received(&mock_core_web_view_, L"{\"action\":\"export_project\",  \"body\": {\"path\": \"c:/tmp/project0.json\"}}");
+            editor_view->on_message_received(&mock_core_web_view_, L"{\"action\":\"export_project\",  \"body\": {\"path\": \"c:/tmp/project0.json\"}}");
 
             THEN("The project is saved to disk.") {
                 LPCWSTR actual = mock_core_web_view_.get_last_message();
@@ -518,8 +525,9 @@ SCENARIO("Create a project, add a module, export project then import it and retr
             }
         }
         WHEN("on_message_import_project is called") {
+            auto editor_view = &application_.vie_view_->editor_view_;
             //FIXME: do not hardcode path.
-            editor_view_.on_message_received(&mock_core_web_view_, L"{\"action\":\"import_project\",  \"body\": {\"path\": \"c:/tmp/project0.json\"}}");
+            editor_view->on_message_received(&mock_core_web_view_, L"{\"action\":\"import_project\",  \"body\": {\"path\": \"c:/tmp/project0.json\"}}");
 			
             THEN("The project is imported from disk.") {
                 LPCWSTR actual = mock_core_web_view_.get_last_message();
@@ -536,7 +544,7 @@ SCENARIO("Create a project, add a module, export project then import it and retr
                 REQUIRE(actual == expected.str());
             }
             AND_THEN("Module is also imported.") {
-                auto module_view = *(application_.modules_views_instances_)[0];
+                auto module_view = *(editor_view->modules_views_instances_)[0];
                 REQUIRE(module_view.id == 0);
                 REQUIRE(module_view.position[0] == 1);
                 REQUIRE(module_view.position[1] == 2);
@@ -552,13 +560,14 @@ SCENARIO("Create a project, add a module, create another project, then load firs
     }
 
     GIVEN("A first project is created and a module inserted in it and a second one is created again.") {
-        editor_view_.on_message_received(&mock_core_web_view_, L"{\"action\": \"new_project\"}");
-        editor_view_.on_message_received(&mock_core_web_view_, L"{\"action\":\"add_module\", \"body\": { \"type\": \"midi-in\", \"position\": { \"x\": 2, \"y\": 3, \"z\": 4 } }}");
-        editor_view_.on_message_received(&mock_core_web_view_, L"{\"action\": \"new_project\"}");
+        auto editor_view = &application_.vie_view_->editor_view_;
+        editor_view->on_message_received(&mock_core_web_view_, L"{\"action\": \"new_project\"}");
+        editor_view->on_message_received(&mock_core_web_view_, L"{\"action\":\"add_module\", \"body\": { \"type\": \"midi-in\", \"position\": { \"x\": 2, \"y\": 3, \"z\": 4 } }}");
+        editor_view->on_message_received(&mock_core_web_view_, L"{\"action\": \"new_project\"}");
 
         WHEN("We load the first project") {
             //FIXME: do not hardcode path.
-            editor_view_.on_message_received(&mock_core_web_view_, L"{\"action\":\"load_project\",  \"body\": {\"id\": 0}}");
+            editor_view->on_message_received(&mock_core_web_view_, L"{\"action\":\"load_project\",  \"body\": {\"id\": 0}}");
 
             THEN("The first project headers are loaded from disk.") {
                 LPCWSTR actual = mock_core_web_view_.get_last_message();
@@ -575,7 +584,7 @@ SCENARIO("Create a project, add a module, create another project, then load firs
                 REQUIRE(actual == expected.str());
 
                 AND_THEN("The module previously added is also imported.") {
-                    auto module_view = *(application_.modules_views_instances_)[0];
+                    auto module_view = *(editor_view->modules_views_instances_)[0];
                     REQUIRE(module_view.id == 0);
                     REQUIRE(module_view.position[0] == 2);
                     REQUIRE(module_view.position[1] == 3);
@@ -589,16 +598,17 @@ SCENARIO("Create a project, add a module, create another project, then load firs
 SCENARIO("Create a project, add 1 module and set a parameter value.", "[editor view]") {
     SECTION("Initialisation") {
         reinit();
-        editor_view_.set_host_callback(&mock_callback_);
+        auto editor_view = &application_.vie_view_->editor_view_;
     }
 
     GIVEN("A project is created and a module is inserted.") {
-        editor_view_.on_message_received(&mock_core_web_view_, L"{\"action\": \"new_project\"}");
-        editor_view_.on_message_received(&mock_core_web_view_, L"{\"action\":\"add_module\", \"body\": { \"type\": \"midi-in\", \"position\": { \"x\": 0, \"y\": 1, \"z\": 2 } }}");
+        auto editor_view = &application_.vie_view_->editor_view_;
+        editor_view->on_message_received(&mock_core_web_view_, L"{\"action\": \"new_project\"}");
+        editor_view->on_message_received(&mock_core_web_view_, L"{\"action\":\"add_module\", \"body\": { \"type\": \"midi-in\", \"position\": { \"x\": 0, \"y\": 1, \"z\": 2 } }}");
 
         WHEN("We add a parameter.") {
             reinit();
-            editor_view_.on_message_received(&mock_core_web_view_, L"{\"action\":\"set_module_parameter_value\",  \"body\": {\"module_id\": 0, \"parameter_id\": 0, \"value\": \"0\"}}");
+            editor_view->on_message_received(&mock_core_web_view_, L"{\"action\":\"set_module_parameter_value\",  \"body\": {\"module_id\": 0, \"parameter_id\": 0, \"value\": \"0\"}}");
 
             THEN("The parameter value is set to its new value.") {
                 auto midi_in = reinterpret_cast<processor::module::midi_input*>(&(application_.get_processor_by_id(0)));
@@ -616,14 +626,15 @@ SCENARIO("Create a project, add 2 modules and a link between them, save then loa
     }
 
     GIVEN("A project is created, 2 modules are inserted and a link is created between them.") {
-        editor_view_.on_message_received(&mock_core_web_view_, L"{\"action\": \"new_project\"}");
-        editor_view_.on_message_received(&mock_core_web_view_, L"{\"action\":\"add_module\", \"body\": { \"type\": \"midi-in\", \"position\": { \"x\": 0, \"y\": 1, \"z\": 2 } }}");
-        editor_view_.on_message_received(&mock_core_web_view_, L"{\"action\":\"add_module\", \"body\": { \"type\": \"audio-out\", \"position\": { \"x\": 3, \"y\": 4, \"z\": 5 } }}");
-        editor_view_.on_message_received(&mock_core_web_view_, L"{\"action\":\"link_modules\", \"body\": { \"source_module\": 0, \"source_slot\": 3, \"target_module\": 1, \"target_slot\": 1 }}");
+        auto editor_view = &application_.vie_view_->editor_view_;
+        editor_view->on_message_received(&mock_core_web_view_, L"{\"action\": \"new_project\"}");
+        editor_view->on_message_received(&mock_core_web_view_, L"{\"action\":\"add_module\", \"body\": { \"type\": \"midi-in\", \"position\": { \"x\": 0, \"y\": 1, \"z\": 2 } }}");
+        editor_view->on_message_received(&mock_core_web_view_, L"{\"action\":\"add_module\", \"body\": { \"type\": \"audio-out\", \"position\": { \"x\": 3, \"y\": 4, \"z\": 5 } }}");
+        editor_view->on_message_received(&mock_core_web_view_, L"{\"action\":\"link_modules\", \"body\": { \"source_module\": 0, \"source_slot\": 3, \"target_module\": 1, \"target_slot\": 1 }}");
 
         WHEN("We load the project") {
             reinit();
-            editor_view_.on_message_received(&mock_core_web_view_, L"{\"action\":\"load_project\",  \"body\": {\"id\": 0}}");
+            editor_view->on_message_received(&mock_core_web_view_, L"{\"action\":\"load_project\",  \"body\": {\"id\": 0}}");
 
             THEN("The project headers are loaded from disk.") {
                 LPCWSTR actual = mock_core_web_view_.get_last_message();
@@ -643,12 +654,12 @@ SCENARIO("Create a project, add 2 modules and a link between them, save then loa
                     REQUIRE(application_.nb_modules_ == 2);
                     REQUIRE(application_.nb_links_ == 1);
                     
-                    auto module_view = *(application_.modules_views_instances_)[0];
+                    auto module_view = *(editor_view->modules_views_instances_)[0];
                     REQUIRE(module_view.id == 0);
                     REQUIRE(module_view.position[0] == 0);
                     REQUIRE(module_view.position[1] == 1);
                     REQUIRE(module_view.position[2] == 2);
-                    module_view = *(application_.modules_views_instances_)[1];
+                    module_view = *(editor_view->modules_views_instances_)[1];
                     REQUIRE(module_view.position[0] == 3);
                     REQUIRE(module_view.position[1] == 4);
                     REQUIRE(module_view.position[2] == 5);
@@ -658,6 +669,31 @@ SCENARIO("Create a project, add 2 modules and a link between them, save then loa
                     REQUIRE(link.source_slot_id == 3);
                     REQUIRE(link.target_slot_id == 1);
                 }
+            }
+        }
+    }
+}
+
+SCENARIO("Create a project, add a module and set its name then load the project.", "[editor view]") {
+    SECTION("Initialisation") {
+        reinit();
+    }
+
+    GIVEN("A project is created, a modules is inserted and its name is set.") {
+        auto editor_view = &application_.vie_view_->editor_view_;
+        editor_view->on_message_received(&mock_core_web_view_, L"{\"action\": \"new_project\"}");
+        editor_view->on_message_received(&mock_core_web_view_, L"{\"action\":\"add_module\", \"body\": { \"type\": \"midi-in\", \"position\": { \"x\": 0, \"y\": 1, \"z\": 2 } }}");
+        editor_view->on_message_received(&mock_core_web_view_, L"{\"action\":\"set_module_name\", \"body\": { \"module_id\": 0, \"module_name\": \"new_module_name\" }}");
+
+        WHEN("We load the project") {
+            reinit();
+            editor_view->on_message_received(&mock_core_web_view_, L"{\"action\":\"load_project\",  \"body\": {\"id\": 0}}");
+
+            THEN("The module name is loaded correctly.") {
+                REQUIRE(application_.nb_modules_ == 1);
+
+                auto module_view = *(editor_view->modules_views_instances_)[0];
+                REQUIRE(module_view.name == L"new_module_name");
             }
         }
     }

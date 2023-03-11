@@ -24,6 +24,7 @@ namespace live::tritone::vie::view::module
 
 	struct module_view_instance {
 		uint_fast16_t id;
+		std::wstring name;
 
 		uint_fast16_t position[3];
 	};

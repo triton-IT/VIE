@@ -6,7 +6,6 @@
 #include "vie_processor.hpp"
 #include "vie_view.hpp"
 #include "host_callback.hpp"
-#include "modules/module_view_descriptor.hpp"
 
 extern void* module_handle;
 extern "C" std::wstring content_path;
@@ -79,7 +78,6 @@ namespace live::tritone::vie {
 		uint_fast16_t nb_projects_;
 
 		std::array<std::unique_ptr<processor_module>, 255> processors_;
-		std::array<std::unique_ptr<view::module::module_view_instance>, 255> modules_views_instances_;
 		uint_fast8_t nb_modules_ = 0;
 
 		//TODO: Remove links from here to let them in orchestrator.

@@ -142,52 +142,21 @@ namespace live::tritone::vie
 	}
 
 	nlohmann::json vie_view::serialize()
-	{
-		return json();
+	{		
+		return editor_view_.serialize();
 	}
 
-	void vie_view::load(nlohmann::json instrument)
+	void vie_view::deserialize(nlohmann::json definition)
 	{
-		parse_modules(instrument["modules"]);
-		parse_links(instrument["links"]);
-		parse_ui(instrument["ui"]);
+		editor_view_.deserialize(definition);
 	}
-
+	
 	void vie_view::add_module(nlohmann::json module)
 	{
-		parse_module(module);
+		editor_view_.add_module(module);
 	}
 
 	void vie_view::render()
 	{
-	}
-
-	void vie_view::parse_modules(json modules_definitions)
-	{
-		for (auto& [index, module_definition] : modules_definitions.items()) {
-			parse_module(module_definition);
-		}
-	}
-
-	void vie_view::parse_module(json module_definition)
-	{
-		const std::string type = module_definition["type"];
-	}
-
-	void vie_view::parse_links(json links_definitions)
-	{
-		for (auto& [index, link_definition] : links_definitions.items()) {
-			parse_link(link_definition);
-		}
-	}
-
-	void vie_view::parse_link(json link_definition)
-	{
-	}
-
-	void vie_view::parse_ui(json ui_definitions)
-	{
-		for (auto& [index, ui_definition] : ui_definitions.items()) {
-		}
 	}
 } // namespace
