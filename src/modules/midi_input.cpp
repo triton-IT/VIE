@@ -96,7 +96,19 @@ namespace live::tritone::vie::processor::module
 
 	void midi_input::set_input_values(uint_fast16_t slot_id, std::array<module_output*, 32>& values, uint_fast8_t nb_values)
 	{
-		throw std::invalid_argument("Invalid slot id");
+		if (nb_values == 1) {
+			switch (slot_id) {
+			case onoff_input_id:
+				float_module_output* float_output = static_cast<float_module_output*>(values[0]);
+				if (float_output->to_float() > 0.5f) {
+					is_on = true;
+				}
+				else {
+					is_on = false;
+				}
+				break;
+			}
+		}
 	}
 
 	uint_fast32_t midi_input::get_max_nb_input_values(uint_fast16_t slot_id)

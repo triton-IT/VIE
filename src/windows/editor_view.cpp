@@ -367,53 +367,21 @@ namespace live::tritone::vie
 	}
 
 	void editor_view::on_message_set_module_parameter_value(ICoreWebView2* sender, json message) {
-		nlohmann::json parameters = message["parameters"];
-		uint_fast8_t module_id;
-		string parameter_id;
-		string parameter_value;
-		bool module_found = false;
-		bool parameter_id_found = false;
-		bool parameter_value_found = false;
+		nlohmann::json body = message.at("body");
+		uint_fast8_t module_id = body["module_id"];
+		uint16_t parameter_id = body["parameter_id"];
+		string parameter_value = body["value"];
 
-		for (auto& it : parameters.items()) {
-			const std::string parameter_name = it.value()["id"];
-			if (parameter_name.compare("module_id") == 0) {
-				module_found = true;
-				module_id = it.value().at("value");
-			}
-			else if (parameter_name.compare("parameter_id") == 0) {
-				parameter_id_found = true;
-				parameter_id = it.value().at("value");
-			}
-			else if (parameter_name.compare("parameter_value") == 0) {
-				parameter_value_found = true;
-				parameter_value = it.value().at("value");
-			}
-		}
+		processor_module& processor_module = application_.get_processor_by_id(module_id);
+		uint16_t parameter_component_id = processor_module.get_id();
+		uint16_t parameter_slot_id = parameter_id;
 
-		if (module_found && parameter_id_found && parameter_value_found) {
-			processor_module& processor_module = application_.get_processor_by_id(module_id);
-			uint16_t parameter_component_id = processor_module.get_id();
-			uint16_t parameter_slot_id = processor_module.get_slot_id(parameter_id);
+		unsigned long module_parameter_id = (parameter_component_id << 16) | parameter_slot_id;
 
-			unsigned long module_parameter_id = (parameter_component_id << 16) | parameter_slot_id;
-
-			//Transmit parameter to host.
-			host_callback_->beginEdit(module_parameter_id);
-			host_callback_->performEdit(module_parameter_id, std::stof(parameter_value));
-			host_callback_->endEdit(module_parameter_id);
-		}
-		else {
-			if (!module_found) {
-				sender->PostWebMessageAsJson(L"{ \"action\": \"set_module_parameter_value_callback\", \"error\": 0 }");
-			}
-			if (!parameter_id_found) {
-				sender->PostWebMessageAsJson(L"{ \"action\": \"set_module_parameter_value_callback\", \"error\": 1 }");
-			}
-			if (!parameter_value_found) {
-				sender->PostWebMessageAsJson(L"{ \"action\": \"set_module_parameter_value_callback\", \"error\": 2 }");
-			}
-		}
+		//Transmit parameter to host.
+		host_callback_->beginEdit(module_parameter_id);
+		host_callback_->performEdit(module_parameter_id, std::stof(parameter_value));
+		host_callback_->endEdit(module_parameter_id);
 	}
 
 	void editor_view::on_message_link_modules(ICoreWebView2* sender, json message) {

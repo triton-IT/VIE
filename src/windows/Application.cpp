@@ -82,7 +82,7 @@ parameter application::add_parameter(uint_fast8_t id, parameter parameter)
 
 parameter application::add_parameter(uint_fast8_t id, std::string name, std::string short_name, std::string type, std::string unit, float value) {
 	if (type == "boolean") {
-		//FIXME: use wstring in parameters and fund a way to parse wstring with json.
+		//FIXME: use wstring in parameters and find a way to parse wstring with json.
 		boolean_parameter parameter(id,
 			std::wstring(name.begin(), name.end()).c_str(),
 			std::wstring(short_name.begin(), short_name.end()).c_str(),

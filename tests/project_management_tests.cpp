@@ -1,5 +1,8 @@
 #include "../src/application.hpp"
 #include "../src/windows/editor_view.hpp"
+#include "../src/vst_processor.hpp"
+
+#include "pluginterfaces/vst/ivstparameterchanges.h"
 
 #include <WebView2.h>
 
@@ -114,8 +117,7 @@ public:
 
     HRESULT STDMETHODCALLTYPE Reload(void) override { return 0; }
 
-    HRESULT STDMETHODCALLTYPE PostWebMessageAsJson(
-        LPCWSTR webMessageAsJson) override { 
+    HRESULT STDMETHODCALLTYPE PostWebMessageAsJson(LPCWSTR webMessageAsJson) override { 
         wcscpy_s(last_message, webMessageAsJson);
         return 0;
     }
@@ -220,25 +222,150 @@ private:
     wchar_t last_message[300000];
 };
 
+class mock_param_value_queue : public Steinberg::Vst::IParamValueQueue
+{
+public:
+    Steinberg::int32 sample_offset_;
+    Steinberg::Vst::ParamValue value_;
+
+    Steinberg::tresult PLUGIN_API queryInterface(const char _iid[16], void** obj)
+    {
+        return Steinberg::kResultTrue;
+    }
+
+    Steinberg::uint32 PLUGIN_API addRef()
+    {
+        return 0;
+    }
+
+    Steinberg::uint32 PLUGIN_API release()
+    {
+        return 0;
+    }
+
+    Steinberg::Vst::ParamID PLUGIN_API getParameterId()
+    {
+        return 0;
+    }
+
+    Steinberg::int32 PLUGIN_API getPointCount()
+    {
+        return 1;
+    }
+
+    Steinberg::tresult PLUGIN_API getPoint(Steinberg::int32 index, Steinberg::int32& sampleOffset /*out*/, Steinberg::Vst::ParamValue& value /*out*/)
+    {
+        sampleOffset = sample_offset_;
+        value = value_;
+        return Steinberg::kResultTrue;
+    }
+
+    Steinberg::tresult PLUGIN_API addPoint(Steinberg::int32 sampleOffset, Steinberg::Vst::ParamValue value, Steinberg::int32& index /*out*/)
+    {
+        index = 0;
+        sample_offset_ = sampleOffset;
+        value_ = value;
+        return Steinberg::kResultTrue;
+    }
+};
+
+class mock_parameter_changes : public Steinberg::Vst::IParameterChanges
+{
+public:
+    mock_param_value_queue param_value_queue_;
+
+    Steinberg::tresult PLUGIN_API queryInterface(const char _iid[16], void** obj) override
+    {
+        return Steinberg::kResultTrue;
+    }
+
+    Steinberg::uint32 PLUGIN_API addRef() override
+    {
+        return 0;
+    }
+
+    Steinberg::uint32 PLUGIN_API release() override
+    {
+        return 0;
+    }
+
+    Steinberg::int32 PLUGIN_API getParameterCount() override
+    {
+        return 1;
+    }
+
+    Steinberg::Vst::IParamValueQueue* PLUGIN_API getParameterData(Steinberg::int32 index) override
+    {
+        return &param_value_queue_;
+    }
+
+    Steinberg::Vst::IParamValueQueue* PLUGIN_API addParameterData(const Steinberg::Vst::ParamID& id, Steinberg::int32& index /*out*/) override
+    {
+        index = 0;
+        return &param_value_queue_;
+    }
+};
+
+live::tritone::vie::vst::vst_processor vst_processor;
+
+class mock_host_callback : public host_callback
+{
+public:
+    void beginEdit(uint32_t id)
+    {
+        last_edition_started_ = id;
+    }
+
+    void performEdit(uint32_t id, double value_normalized)
+    {
+        last_value_ = value_normalized;
+    }
+
+    void endEdit(uint32_t id)
+    {
+        //Test acts as a host: Propagate message from view to processor.
+        Steinberg::Vst::ProcessData data;
+        mock_parameter_changes parameter_changes;
+        Steinberg::Vst::IParamValueQueue* param_value_queue = parameter_changes.getParameterData(0);
+        Steinberg::Vst::ParamValue param_value = last_value_;
+        param_value_queue->addPoint(0, param_value, index_);
+        data.inputParameterChanges = &parameter_changes;
+        vst_processor.process(data);
+
+        last_edition_ended_ = id;
+    }
+
+    void restartComponent(int32_t flags)
+    {
+    }
+
+    Steinberg::int32 index_ = 0;
+    uint32_t last_edition_started_;
+    double last_value_;
+    uint32_t last_edition_ended_;
+};
+
 void reinit()
 {
     application_.nb_projects_ = 0;
 }
 
-SCENARIO("Retrieve standard modules.", "[editor view]") {
-    live::tritone::vie::editor_view view;
-    MockCoreWebView2 mock_core_web_view;
+live::tritone::vie::editor_view editor_view_;
+MockCoreWebView2 mock_core_web_view_;
+mock_host_callback mock_callback_;
+mock_parameter_changes parameter_changes;
 
+SCENARIO("Retrieve standard modules.", "[editor view]") {
     SECTION("Initialisation") {
         reinit();
     }
 
     GIVEN("Standard modules exists") {
         WHEN("on_message_get_modules is called") {
-            view.on_message_received(&mock_core_web_view, L"{\"action\":\"get_modules\",  \"body\": {}}");
+            editor_view_.on_message_received(&mock_core_web_view_, L"{\"action\":\"get_modules\",  \"body\": {}}");
 
             THEN("Modules are retrieved.") {
-                LPCWSTR actual = mock_core_web_view.get_last_message();
+                LPCWSTR actual = mock_core_web_view_.get_last_message();
                 std::wstringstream expected_stream;
 
                 expected_stream << L"{ \"action\": \"get_modules_callback\", ";
@@ -265,20 +392,17 @@ SCENARIO("Retrieve standard modules.", "[editor view]") {
     }
 }
 
-SCENARIO("get_projects returns no project when no project exists.", "[editor view]") {	
-    live::tritone::vie::editor_view view;
-    MockCoreWebView2 mock_core_web_view;
-
+SCENARIO("get_projects returns no project when no project exists.", "[editor view]") {
     SECTION("Initialisation") {
         reinit();
     }
 	
 	GIVEN("No project exists") {
 		WHEN("on_message_get_projects is called") {
-            view.on_message_received(&mock_core_web_view, L"{\"action\": \"get_projects\"}");
+            editor_view_.on_message_received(&mock_core_web_view_, L"{\"action\": \"get_projects\"}");
 
 			THEN("an empty response is returned") {								
-                LPCWSTR actual = mock_core_web_view.get_last_message();
+                LPCWSTR actual = mock_core_web_view_.get_last_message();
                 std::wstringstream expected;
                 expected << L"{";
                 expected << L" \"action\": \"get_projects_callback\",";
@@ -293,19 +417,16 @@ SCENARIO("get_projects returns no project when no project exists.", "[editor vie
 }
 
 SCENARIO("Create a project then get_projects returns a project (created project is saved automatically).", "[editor view]") {
-    live::tritone::vie::editor_view view;
-    MockCoreWebView2 mock_core_web_view;
-	
 	SECTION("Initialisation") {
         reinit();
 	}
 	
     GIVEN("No project exists") {		
         WHEN("on_message_new_project is called") {
-            view.on_message_received(&mock_core_web_view, L"{\"action\": \"new_project\"}");
+            editor_view_.on_message_received(&mock_core_web_view_, L"{\"action\": \"new_project\"}");
 
             THEN("A project id and name is returned") {
-                LPCWSTR actual = mock_core_web_view.get_last_message();
+                LPCWSTR actual = mock_core_web_view_.get_last_message();
                 std::wstringstream expected;
                 expected << L"{";
                 expected << L" \"action\": \"new_project_callback\",";
@@ -319,10 +440,10 @@ SCENARIO("Create a project then get_projects returns a project (created project 
             }
         }
         WHEN("on_message_get_projects is called") {
-            view.on_message_received(&mock_core_web_view, L"{\"action\": \"get_projects\"}");
+            editor_view_.on_message_received(&mock_core_web_view_, L"{\"action\": \"get_projects\"}");
 
             THEN("New project is returned (project created previously is automatically saved)") {
-                LPCWSTR actual = mock_core_web_view.get_last_message();
+                LPCWSTR actual = mock_core_web_view_.get_last_message();
                 std::wstringstream expected;
                 expected << L"{";
                 expected << L" \"action\": \"get_projects_callback\",";
@@ -342,19 +463,16 @@ SCENARIO("Create a project then get_projects returns a project (created project 
 }
 
 SCENARIO("Create a project, add a module, export project then import it and retrieve project and module.", "[editor view]") {
-    live::tritone::vie::editor_view view;
-    MockCoreWebView2 mock_core_web_view;
-
     SECTION("Initialisation") {
         reinit();
     }
 
     GIVEN("No project exists") {
         WHEN("on_message_new_project is called") {
-            view.on_message_received(&mock_core_web_view, L"{\"action\": \"new_project\"}");
+            editor_view_.on_message_received(&mock_core_web_view_, L"{\"action\": \"new_project\"}");
 
             THEN("A project name is returned") {
-                LPCWSTR actual = mock_core_web_view.get_last_message();
+                LPCWSTR actual = mock_core_web_view_.get_last_message();
                 std::wstringstream expected;
                 expected << L"{";
                 expected << L" \"action\": \"new_project_callback\",";
@@ -368,10 +486,10 @@ SCENARIO("Create a project, add a module, export project then import it and retr
             }
         }
         WHEN("on_add_module is called") {
-            view.on_message_received(&mock_core_web_view, L"{\"action\":\"add_module\", \"body\": { \"type\": \"midi-in\", \"position\": { \"x\": 1, \"y\": 2, \"z\": 3 } }}");
+            editor_view_.on_message_received(&mock_core_web_view_, L"{\"action\":\"add_module\", \"body\": { \"type\": \"midi-in\", \"position\": { \"x\": 1, \"y\": 2, \"z\": 3 } }}");
 
             THEN("A module id is returned") {
-                LPCWSTR actual = mock_core_web_view.get_last_message();
+                LPCWSTR actual = mock_core_web_view_.get_last_message();
                 std::wstringstream expected;
                 expected << L"{";
                 expected << L" \"action\": \"add_module_callback\",";
@@ -385,10 +503,10 @@ SCENARIO("Create a project, add a module, export project then import it and retr
         }
         WHEN("on_message_export_project is called") {
 			//FIXME: do not hardcode path.
-            view.on_message_received(&mock_core_web_view, L"{\"action\":\"export_project\",  \"body\": {\"path\": \"c:/tmp/project0.json\"}}");
+            editor_view_.on_message_received(&mock_core_web_view_, L"{\"action\":\"export_project\",  \"body\": {\"path\": \"c:/tmp/project0.json\"}}");
 
             THEN("The project is saved to disk.") {
-                LPCWSTR actual = mock_core_web_view.get_last_message();
+                LPCWSTR actual = mock_core_web_view_.get_last_message();
                 std::wstringstream expected;
                 expected << L"{";
                 expected << L" \"action\": \"export_project_callback\",";
@@ -401,10 +519,10 @@ SCENARIO("Create a project, add a module, export project then import it and retr
         }
         WHEN("on_message_import_project is called") {
             //FIXME: do not hardcode path.
-            view.on_message_received(&mock_core_web_view, L"{\"action\":\"import_project\",  \"body\": {\"path\": \"c:/tmp/project0.json\"}}");
+            editor_view_.on_message_received(&mock_core_web_view_, L"{\"action\":\"import_project\",  \"body\": {\"path\": \"c:/tmp/project0.json\"}}");
 			
             THEN("The project is imported from disk.") {
-                LPCWSTR actual = mock_core_web_view.get_last_message();
+                LPCWSTR actual = mock_core_web_view_.get_last_message();
                 std::wstringstream expected;
                 expected << L"{";
                 expected << L" \"action\": \"import_project_callback\",";
@@ -429,24 +547,21 @@ SCENARIO("Create a project, add a module, export project then import it and retr
 }
 
 SCENARIO("Create a project, add a module, create another project, then load first one and retrieve project and module.", "[editor view]") {
-    live::tritone::vie::editor_view view;
-    MockCoreWebView2 mock_core_web_view;
-
     SECTION("Initialisation") {
         reinit();
     }
 
     GIVEN("A first project is created and a module inserted in it and a second one is created again.") {
-        view.on_message_received(&mock_core_web_view, L"{\"action\": \"new_project\"}");
-        view.on_message_received(&mock_core_web_view, L"{\"action\":\"add_module\", \"body\": { \"type\": \"midi-in\", \"position\": { \"x\": 2, \"y\": 3, \"z\": 4 } }}");
-        view.on_message_received(&mock_core_web_view, L"{\"action\": \"new_project\"}");
+        editor_view_.on_message_received(&mock_core_web_view_, L"{\"action\": \"new_project\"}");
+        editor_view_.on_message_received(&mock_core_web_view_, L"{\"action\":\"add_module\", \"body\": { \"type\": \"midi-in\", \"position\": { \"x\": 2, \"y\": 3, \"z\": 4 } }}");
+        editor_view_.on_message_received(&mock_core_web_view_, L"{\"action\": \"new_project\"}");
 
         WHEN("We load the first project") {
             //FIXME: do not hardcode path.
-            view.on_message_received(&mock_core_web_view, L"{\"action\":\"load_project\",  \"body\": {\"id\": 0}}");
+            editor_view_.on_message_received(&mock_core_web_view_, L"{\"action\":\"load_project\",  \"body\": {\"id\": 0}}");
 
             THEN("The first project headers are loaded from disk.") {
-                LPCWSTR actual = mock_core_web_view.get_last_message();
+                LPCWSTR actual = mock_core_web_view_.get_last_message();
                 std::wstringstream expected;
                 expected << L"{";
                 expected << L" \"action\": \"load_project_callback\",";
@@ -471,27 +586,47 @@ SCENARIO("Create a project, add a module, create another project, then load firs
     }
 }
 
-SCENARIO("Create a project, add 2 modules and a link between them, save then load it to verify saving.", "[editor view]") {
-    live::tritone::vie::editor_view view;
-    MockCoreWebView2 mock_core_web_view;
+SCENARIO("Create a project, add 1 module and set a parameter value.", "[editor view]") {
+    SECTION("Initialisation") {
+        reinit();
+        editor_view_.set_host_callback(&mock_callback_);
+    }
 
+    GIVEN("A project is created and a module is inserted.") {
+        editor_view_.on_message_received(&mock_core_web_view_, L"{\"action\": \"new_project\"}");
+        editor_view_.on_message_received(&mock_core_web_view_, L"{\"action\":\"add_module\", \"body\": { \"type\": \"midi-in\", \"position\": { \"x\": 0, \"y\": 1, \"z\": 2 } }}");
+
+        WHEN("We add a parameter.") {
+            reinit();
+            editor_view_.on_message_received(&mock_core_web_view_, L"{\"action\":\"set_module_parameter_value\",  \"body\": {\"module_id\": 0, \"parameter_id\": 0, \"value\": \"0\"}}");
+
+            THEN("The parameter value is set to its new value.") {
+                auto midi_in = reinterpret_cast<processor::module::midi_input*>(&(application_.get_processor_by_id(0)));
+                bool actual = midi_in->is_on;
+
+                REQUIRE(actual == false);
+            }
+        }
+    }
+}
+
+SCENARIO("Create a project, add 2 modules and a link between them, save then load it to verify saving.", "[editor view]") {
     SECTION("Initialisation") {
         reinit();
     }
 
     GIVEN("A project is created, 2 modules are inserted and a link is created between them.") {
-        view.on_message_received(&mock_core_web_view, L"{\"action\": \"new_project\"}");
-        view.on_message_received(&mock_core_web_view, L"{\"action\":\"add_module\", \"body\": { \"type\": \"midi-in\", \"position\": { \"x\": 0, \"y\": 1, \"z\": 2 } }}");
-        view.on_message_received(&mock_core_web_view, L"{\"action\":\"add_module\", \"body\": { \"type\": \"audio-out\", \"position\": { \"x\": 3, \"y\": 4, \"z\": 5 } }}");
-        view.on_message_received(&mock_core_web_view, L"{\"action\":\"link_modules\", \"body\": { \"source_module\": 0, \"source_slot\": 3, \"target_module\": 1, \"target_slot\": 1 }}");
+        editor_view_.on_message_received(&mock_core_web_view_, L"{\"action\": \"new_project\"}");
+        editor_view_.on_message_received(&mock_core_web_view_, L"{\"action\":\"add_module\", \"body\": { \"type\": \"midi-in\", \"position\": { \"x\": 0, \"y\": 1, \"z\": 2 } }}");
+        editor_view_.on_message_received(&mock_core_web_view_, L"{\"action\":\"add_module\", \"body\": { \"type\": \"audio-out\", \"position\": { \"x\": 3, \"y\": 4, \"z\": 5 } }}");
+        editor_view_.on_message_received(&mock_core_web_view_, L"{\"action\":\"link_modules\", \"body\": { \"source_module\": 0, \"source_slot\": 3, \"target_module\": 1, \"target_slot\": 1 }}");
 
         WHEN("We load the project") {
             reinit();
-            //FIXME: do not hardcode path.
-            view.on_message_received(&mock_core_web_view, L"{\"action\":\"load_project\",  \"body\": {\"id\": 0}}");
+            editor_view_.on_message_received(&mock_core_web_view_, L"{\"action\":\"load_project\",  \"body\": {\"id\": 0}}");
 
             THEN("The project headers are loaded from disk.") {
-                LPCWSTR actual = mock_core_web_view.get_last_message();
+                LPCWSTR actual = mock_core_web_view_.get_last_message();
                 std::wstringstream expected;
                 expected << L"{";
                 expected << L" \"action\": \"load_project_callback\",";

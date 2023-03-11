@@ -75,8 +75,12 @@ namespace live::tritone::vie::processor::module
 		void note_off(note_event& note_off_event);
 
 		nlohmann::json serialize() override;
-
+		
+#ifdef UNIT_TESTING
+	public:
+#else
 	private:
+#endif
 		static constexpr const char* onoff_input_name = "on/off input";
 		static constexpr int onoff_input_id = 0;
 		static constexpr const char* notes_on_output_name = "notes on output";

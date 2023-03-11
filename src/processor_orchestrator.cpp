@@ -218,8 +218,11 @@ namespace live::tritone::vie
 	{
 		unsigned int component_id = parameter_id >> 16;
 		unsigned int component_parameter_id = parameter_id & 0xffff;
-		//FIXME: use component_parameter_id
+		
 		float_module_output input(0, parameter_value);
+		std::array<module_output*, 32> input_values = { &input };
+		
+		processor_modules_[component_id]->set_input_values(component_parameter_id, input_values, 1);
 	}
 
 	midi_input* processor_orchestrator::get_midi_input_module_for_event(const event& event) const
