@@ -156,6 +156,16 @@ namespace live::tritone::vie
 		editor_view_.add_module(module);
 	}
 
+	void vie_view::delete_module(int id)
+	{
+		editor_view_.delete_module(id);
+	}
+
+	void vie_view::clear()
+	{
+		editor_view_.clear();
+	}
+
 	void vie_view::render()
 	{
 	}

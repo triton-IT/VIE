@@ -55,8 +55,12 @@ namespace live::tritone::vie
 		nlohmann::json serialize();
 
 		void deserialize(nlohmann::json definition);
-		
+
+		void clear();
+
 		void add_module(nlohmann::json module);
+
+		void delete_module(int id);
 
 		void render();
 

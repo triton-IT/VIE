@@ -233,30 +233,35 @@ std::array<module_view_descriptor, 64> application::get_available_modules(uint_f
 
 uint16_t application::add_module(nlohmann::json module)
 {
-	uint16_t module_id = nb_modules_;
+	uint16_t module_id = vie_processor_.get_nb_processors();
 
 	module["id"] = module_id;
 	
-	auto& processor = create_processor_module(module);
-	vie_processor_.add_processor(*processor);
+	vie_processor_.add_processor(module);
 	vie_view_->add_module(module);
-	
-	nb_modules_++;
 
 	return module_id;
 }
 
+void application::delete_module(uint16_t module_id)
+{
+	vie_view_->delete_module(module_id);
+	vie_processor_.delete_processor(module_id);
+}
+
+uint_fast8_t application::get_nb_modules()
+{
+	return vie_processor_.get_nb_processors();
+}
+
 uint16_t application::link_modules(nlohmann::json link)
 {
-	uint16_t link_id = nb_links_;
+	return vie_processor_.link_modules(link);
+}
 
-	link["id"] = link_id;
-	auto& modules_link = create_modules_link(link);
-	vie_processor_.link_modules(modules_link);
-
-	nb_links_++;
-
-	return link_id;
+std::shared_ptr<processor_module> application::get_processor_by_id(uint_fast8_t id)
+{
+	return vie_processor_.get_processor(id);
 }
 
 vie_processor& application::get_vie_processor()
@@ -277,113 +282,22 @@ vie_view* application::deleteView()
 	return nullptr;
 }
 
-void application::clear_current_project()
-{
-	nb_parameters_ = 0;
-	nb_modules_ = 0;
-	nb_links_ = 0;
-}
-
-std::unique_ptr<processor_module>& application::create_processor_module(nlohmann::json processor_definition) {
-
-	const std::string type = processor_definition["type"];
-	if (type == "midi-in")
-	{
-		processors_[nb_modules_] = std::make_unique<midi_input>(processor_definition);
-	}
-	else if (type == "audio-in")
-	{
-		processors_[nb_modules_] = std::make_unique<audio_input>(processor_definition);
-	}
-	else if (type == "oscillator")
-	{
-		processors_[nb_modules_] = std::make_unique<oscillator>(processor_definition);
-	}
-	else if (type == "envelope")
-	{
-		processors_[nb_modules_] = std::make_unique<envelope>(processor_definition);
-	}
-	else if (type == "multiplier")
-	{
-		processors_[nb_modules_] = std::make_unique<multiplier>(processor_definition);
-	}
-	else if (type == "mixer")
-	{
-		processors_[nb_modules_] = std::make_unique<mixer>(processor_definition);
-	}
-	else if (type == "sample")
-	{
-		processors_[nb_modules_] = std::make_unique<sample>(processor_definition);
-	}
-	else if (type == "audio-out")
-	{
-		processors_[nb_modules_] = std::make_unique<audio_output>(processor_definition);
-	}
-	else if (type == "low-pass")
-	{
-		processors_[nb_modules_] = std::make_unique<low_pass>(processor_definition);
-	}
-	else if (type == "high-pass")
-	{
-		processors_[nb_modules_] = std::make_unique<high_pass>(processor_definition);
-	}
-	else if (type == "gain")
-	{
-		processors_[nb_modules_] = std::make_unique<gain>(processor_definition);
-	}
-	else if (type == "recorder")
-	{
-		processors_[nb_modules_] = std::make_unique<recorder>(processor_definition);
-	}
-
-	processors_[nb_modules_]->initialize(processor_definition);
-
-#ifdef VIE_DEBUG
-	debugLogger.write("Added processor: " + processor->get_name());
-#endif
-
-	return processors_[nb_modules_];
-}
-
-modules_link& application::create_modules_link(nlohmann::json link_definition) {
-	const int source_module_id = link_definition["source_module"];
-
-	links_[nb_links_].source_module = processors_[source_module_id].get();
-
-	const uint_fast16_t source_output_id = link_definition["source_slot"];
-	links_[nb_links_].source_slot_id = source_output_id;
-
-	const int target_module_id = link_definition["target_module"];
-	links_[nb_links_].target_module = processors_[target_module_id].get();
-
-	const uint_fast16_t target_input_id = link_definition["target_slot"];
-	links_[nb_links_].target_slot_id = target_input_id;
-
-	return links_[nb_links_];
-}
-
-processor_module& application::get_processor_by_id(uint_fast8_t id)
-{
-	return *processors_[id];
-}
-
-modules_link& application::get_link_by_id(uint_fast8_t id)
-{
-	return links_[id];
-}
-
 uint16_t application::import_module(nlohmann::json module)
 {
-	uint16_t module_id = nb_modules_;
+	uint16_t module_id = vie_processor_.get_nb_processors();
 
 	module["id"] = module_id;
 
-	auto& processor = create_processor_module(module);
-	vie_processor_.add_processor(*processor);
-
-	nb_modules_++;
+	vie_processor_.add_processor(module);
 
 	return module_id;
+}
+
+void application::clear_current_project()
+{
+	nb_parameters_ = 0;
+	vie_processor_.clear();
+	vie_view_->clear();
 }
 
 application application_;

@@ -37,10 +37,11 @@ namespace live::tritone::vie {
 
 		std::array<view::module::module_view_descriptor, 64> get_available_modules(uint_fast8_t* nb_modules);
 		uint16_t add_module(nlohmann::json module);
+		void delete_module(uint16_t module_id);
+		uint_fast8_t get_nb_modules();
 		uint16_t link_modules(nlohmann::json link);
 
-		processor_module& get_processor_by_id(uint_fast8_t id);
-		modules_link& get_link_by_id(uint_fast8_t id);
+		std::shared_ptr<processor_module> get_processor_by_id(uint_fast8_t id);
 
 		vie_processor& get_vie_processor();
 
@@ -63,11 +64,8 @@ namespace live::tritone::vie {
 		* Unload current project.
 		*/
 		void clear_current_project();
-		/**
-		* Create a processor module from json file.
-		*/
-		std::unique_ptr<processor_module>& create_processor_module(nlohmann::json processor_definition);
-		modules_link& create_modules_link(nlohmann::json link_definition);
+		
+		module_link& create_modules_link(nlohmann::json link_definition);
 		uint16_t import_module(nlohmann::json module);
 		
 		std::array<parameter*, 255> parameters_;
@@ -76,13 +74,6 @@ namespace live::tritone::vie {
 		project_info current_project_;
 		std::array<project_info, 32> projects_infos_;
 		uint_fast16_t nb_projects_;
-
-		std::array<std::unique_ptr<processor_module>, 255> processors_;
-		uint_fast8_t nb_modules_ = 0;
-
-		//TODO: Remove links from here to let them in orchestrator.
-		std::array<modules_link, 255> links_;
-		uint_fast8_t nb_links_ = 0;
 
 		vie_processor vie_processor_;
 		vie_view* vie_view_;

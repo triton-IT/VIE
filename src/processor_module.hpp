@@ -147,6 +147,27 @@ namespace live::tritone::vie
 		middle
 	};
 
+	class processor_module;
+	struct module_link
+	{
+		/**
+		* Id of output slot in source module.
+		**/
+		uint_fast8_t source_slot_id;
+		/**
+		* Pointer to target module.
+		**/
+		std::shared_ptr<processor_module> target_module;
+		/**
+		* Id of input slot in target module.
+		**/
+		uint_fast8_t target_slot_id;
+	};
+
+	/**
+	* A module is a processor that can be linked to other modules.
+	* It can be an input, an output or a middle module.
+	**/
 	class processor_module
 	{
 	public:
@@ -241,13 +262,41 @@ namespace live::tritone::vie
 		* serialize this processor.
 		*/
 		virtual nlohmann::json serialize() = 0;
-
-	private:
+		
 		/**
 		* Initialize module with specified configuration.
 		*/
 		void initialize(nlohmann::json processor_definition);
 
-		friend class application;
+		/**
+		* Link a slot id of this processor to a target slot of a processor.
+		*/
+		uint_fast8_t link(uint_fast8_t source_slot_id, std::shared_ptr<processor_module> target_module, uint_fast8_t target_slot_id);
+
+		/**
+		* Unlink a slot id of this processor from a target slot of a processor.
+		*/
+		uint_fast8_t unlink(uint_fast8_t source_slot_id, std::shared_ptr<processor_module> target_module, uint_fast8_t target_slot_id);
+
+		/**
+		* Unlink all slots pointing to the target processor.
+		*/
+		void unlink(std::shared_ptr<processor_module> target_module);
+		
+		/**
+		* Get links to output_modules.
+		*/
+		std::array<std::shared_ptr<module_link>, 32>& get_modules_links(uint_fast8_t& nb_module_links);
+
+#ifdef UNIT_TESTING
+	public:
+#else
+	private:
+#endif
+		/**
+		* List of target module input slots linked to this module output slots.
+		**/
+		std::array<std::shared_ptr<module_link>, 32> modules_links_;
+		uint_fast8_t nb_modules_links_;
 	};
 } // namespace
