@@ -1,6 +1,7 @@
 #include "vie_processor.hpp"
 
 #include "application.hpp"
+
 #include "modules/audio_output.hpp"
 
 #include <cstdint>
@@ -31,8 +32,8 @@ namespace live::tritone::vie {
 	{
 		json root_json = json();
 		json modules_json = json();
-		int nb_modules;
-		auto modules = orchestrator_.get_processor_modules(&nb_modules);
+		uint_fast8_t nb_modules;
+		auto modules = orchestrator_.get_processor_modules(nb_modules);
 		
 		for (int i = 0; i < nb_modules; i++)
 		{
@@ -42,15 +43,15 @@ namespace live::tritone::vie {
 		root_json["modules"] = modules_json;
 
 		json links_json = json();
-		std::array<int_fast8_t, 32> nb_links_per_module;
-		std::array<std::array<modules_link*, 32>, 128>& links = orchestrator_.get_modules_links(&nb_links_per_module);
+		std::array<uint_fast8_t, 32> nb_links_per_module;
+		std::array<std::array<std::shared_ptr<modules_link>, 32>, 128>& modules_links = orchestrator_.get_modules_links(nb_modules, nb_links_per_module);
 
 		for (int i = 0; i < nb_modules; i++)
 		{
 			int_fast8_t nb_links = nb_links_per_module[i];
 			for (int_fast8_t j = 0; j < nb_links; j++)
 			{
-				auto modules_link = links[i][j];
+				auto modules_link = modules_links[i][j];
 				
 				json link_json = json();
 				link_json["source_module"] = modules_link->source_module->get_id();
@@ -66,34 +67,59 @@ namespace live::tritone::vie {
 		return root_json;
 	}
 
-	void vie_processor::add_processor(processor_module& processor)
+	void vie_processor::add_processor(json processor_definition)
 	{
-		orchestrator_.add_processor_module(processor);
-		switch (processor.get_type()) {
+		auto processor = orchestrator_.add_processor_module(processor_definition);
+		add_processor(processor);		
+	}
+
+	void vie_processor::add_processor(std::shared_ptr<processor_module> processor)
+	{
+		switch (processor->get_type()) {
 		case processor_module_type::event_input: {
-			auto event_input_bus = new bus(std::wstring(L"Event input"), bus_type::main, processor);
+			auto event_input_bus = new bus(std::wstring(L"Event input"), bus_type::main, *processor);
 			event_input_buses_.push_back(event_input_bus);
 			break;
 		}
 		case processor_module_type::audio_input: {
-			auto audio_input_bus = new bus(std::wstring(L"Audio input"), bus_type::main, processor);
+			auto audio_input_bus = new bus(std::wstring(L"Audio input"), bus_type::main, *processor);
 			audio_input_buses_.push_back(audio_input_bus);
 			break;
 		}
 		case processor_module_type::audio_output: {
 			//TODO: Create another bus type if this one do not need a module as parameter.
-			auto audio_output_bus = new bus(std::wstring(L"Audio output"), bus_type::main, processor);
+			auto audio_output_bus = new bus(std::wstring(L"Audio output"), bus_type::main, *processor);
 			audio_output_buses_.push_back(audio_output_bus);
-			dynamic_cast<audio_output&>(processor).set_output_bus_id(static_cast<uint_fast16_t>(audio_output_buses_.size()) - 1);
+			std::dynamic_pointer_cast<audio_output>(processor)->set_output_bus_id(static_cast<uint_fast16_t>(audio_output_buses_.size()) - 1);
 			break;
 		}
 		case processor_module_type::middle:
 			break;
 		}
 	}
+	
+	void vie_processor::delete_processor(int id)
+	{
+		orchestrator_.delete_processor(id);
+	}
 
-	void vie_processor::link_modules(modules_link& link) {
-		orchestrator_.link_modules(link);
+	int vie_processor::get_nb_processors()
+	{
+		return orchestrator_.get_nb_processors();
+	}
+	
+	void vie_processor::clear()
+	{
+		orchestrator_.clear();
+	}
+
+	std::shared_ptr<processor_module> vie_processor::get_processor(int id)
+	{
+		return orchestrator_.get_processor(id);
+	}
+
+	uint8_t vie_processor::link_modules(nlohmann::json json) {
+		return orchestrator_.link_modules(json);
 	}
 
 	void vie_processor::terminate() {

@@ -241,13 +241,10 @@ namespace live::tritone::vie
 		* serialize this processor.
 		*/
 		virtual nlohmann::json serialize() = 0;
-
-	private:
+		
 		/**
 		* Initialize module with specified configuration.
 		*/
 		void initialize(nlohmann::json processor_definition);
-
-		friend class application;
 	};
 } // namespace

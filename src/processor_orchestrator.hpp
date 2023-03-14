@@ -15,7 +15,7 @@ namespace live::tritone::vie {
 		/**
 		* Pointer to source module.
 		**/
-		processor_module* source_module;
+		std::shared_ptr<processor_module> source_module;
 		/**
 		* Id of slot in source module.
 		**/
@@ -23,7 +23,7 @@ namespace live::tritone::vie {
 		/**
 		* Pointer to target module.
 		**/
-		processor_module* target_module;
+		std::shared_ptr<processor_module> target_module;
 		/**
 		* Id of slot in target module.
 		**/
@@ -36,13 +36,21 @@ namespace live::tritone::vie {
 
 		void initialize();
 
-		void add_processor_module(processor_module& processor);
+		const std::shared_ptr<processor_module> add_processor_module(nlohmann::json processor_definition);
 
-		processor_module** get_processor_modules(int* nb_modules);
+		void delete_processor(uint_fast8_t processor_id);
+
+		int get_nb_processors();
+
+		void clear();
+
+		std::shared_ptr<processor_module> get_processor(int id);
+
+		std::array<std::shared_ptr<processor_module>, 128> get_processor_modules(uint_fast8_t& nb_modules /*out*/);
 		
-		std::array<std::array<modules_link*, 32>, 128>& get_modules_links(std::array<int_fast8_t, 32>* nb_links);
+		std::array<std::array<std::shared_ptr<modules_link>, 32>, 128>& get_modules_links(uint_fast8_t& nb_modules /*out*/, std::array<uint_fast8_t, 32>& nb_links /* out */);
 
-		void link_modules(modules_link& link);
+		uint_fast8_t link_modules(nlohmann::json link_definition);
 
 		void terminate();
 
@@ -56,18 +64,21 @@ namespace live::tritone::vie {
 
 		void parameter_changed(const unsigned long parameter_id, long sample_offset, double parameter_value);
 
-
+#ifdef UNIT_TESTING
+	public:
+#else
 	private:
+#endif
 		//TODO: compute nb of modules when parsing config file instead of using constant.
-		processor_module* processor_modules_[128];
+		std::array<std::shared_ptr<processor_module>, 128> processor_modules_;
 		int nb_modules_;
 
 		//TODO: compute nb of midi modules when parsing config file instead of using constant.
-		processor::module::midi_input* sources_midi_input_modules_[16];
+		std::array<std::shared_ptr<processor::module::midi_input>, 16> sources_midi_input_modules_;
 		int nb_midi_input_modules_;
 
 		//TODO: compute nb of audio input modules when parsing config file instead of using constant.
-		processor::module::audio_input* sources_audio_input_modules_[16];
+		std::array<std::shared_ptr<processor::module::audio_input>, 16> sources_audio_input_modules_;
 		int nb_audio_input_modules_;
 
 		processing_setup processing_setup_;
@@ -75,14 +86,16 @@ namespace live::tritone::vie {
 		//Contains an array of output links for the given module id.
 		//TODO: compute nb of modules when parsing config file instead of using constant.
 		//TODO: compute max nb of links for modules when parsing config file instead of using constant.
-		std::array<std::array<modules_link*, 32>, 128> links_;
-		std::array<int_fast8_t, 32> nb_module_links_;
-
-		void process(processor_module* source_module, output_process_data& output_process_data);
-		
-		[[nodiscard]] processor::module::midi_input* get_midi_input_module_for_event(const event& event) const;
-		[[nodiscard]] processor::module::audio_input* get_audio_input_module_for_buffer(int32_t buffer_id) const;
+		std::array<std::array<std::shared_ptr<modules_link>, 32>, 128> modules_links_;
+		std::array<uint_fast8_t, 32> nb_module_links_;
 
 		bool bypass_;
+
+		void add_processor_module(std::shared_ptr<processor_module> processor);
+		
+		void process(std::shared_ptr<processor_module>, output_process_data& output_process_data);
+		
+		[[nodiscard]] std::shared_ptr<processor::module::midi_input> get_midi_input_module_for_event(const event& event) const;
+		[[nodiscard]] std::shared_ptr<processor::module::audio_input> get_audio_input_module_for_buffer(int32_t buffer_id) const;
 	};
 } // namespace

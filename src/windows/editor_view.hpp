@@ -36,8 +36,12 @@ namespace live::tritone::vie {
 		nlohmann::json serialize();
 
 		void deserialize(nlohmann::json definition);
+		
+		void clear();
 
 		void add_module(nlohmann::json module_definition);
+
+		void delete_module(int id);
 
 #ifdef UNIT_TESTING
 	public:
@@ -58,22 +62,22 @@ namespace live::tritone::vie {
 #ifdef UNIT_TESTING //Because "attached" method contains a lot of non testable elements (webview2), we plug our tests to this method.
 	public:
 #endif // UNIT_TESTING
-		void on_message_received(ICoreWebView2* sender, std::wstring json_wstring);
+		void on_message_received(std::wstring json_wstring);
 #ifdef UNIT_TESTING
 	private:
 #endif // UNIT_TESTING
-		void on_message_get_projects(ICoreWebView2* sender, nlohmann::json message);
-		void on_message_new_project(ICoreWebView2* sender, nlohmann::json message);
-		void on_message_load_project(ICoreWebView2* sender, nlohmann::json message);
-		void on_message_export_project(ICoreWebView2* sender, nlohmann::json message);
-		void on_message_import_project(ICoreWebView2* sender, nlohmann::json message);
-		void on_message_get_modules(ICoreWebView2* sender, nlohmann::json message);
-		void on_message_add_module(ICoreWebView2* sender, nlohmann::json message);
-		void on_message_link_modules(ICoreWebView2* sender, nlohmann::json message);
-		void on_message_delete_module(ICoreWebView2* sender, nlohmann::json message);
-		void on_message_set_module_name(ICoreWebView2* sender, nlohmann::json message);
-		void on_message_set_module_parameter_value(ICoreWebView2* sender, nlohmann::json message);
-		void on_message_undo(ICoreWebView2* sender, nlohmann::json message);
-		void on_message_redo(ICoreWebView2* sender, nlohmann::json message);
+		void on_message_get_projects(nlohmann::json message);
+		void on_message_new_project(nlohmann::json message);
+		void on_message_load_project(nlohmann::json message);
+		void on_message_export_project(nlohmann::json message);
+		void on_message_import_project(nlohmann::json message);
+		void on_message_get_modules(nlohmann::json message);
+		void on_message_add_module(nlohmann::json message);
+		void on_message_link_modules(nlohmann::json message);
+		void on_message_delete_module(nlohmann::json message);
+		void on_message_set_module_name(nlohmann::json message);
+		void on_message_set_module_parameter_value(nlohmann::json message);
+		void on_message_undo(nlohmann::json message);
+		void on_message_redo(nlohmann::json message);
 	};
 }
