@@ -20,7 +20,6 @@ set(HEADER_FILES
         "../src/project.hpp"
 		"../src/host_callback.hpp"
 		"../src/vie_processor.hpp"
-        "../src/vie_view.hpp"
         "../src/boolean_parameter.hpp"
         "../src/modules/module_view_descriptor.hpp"
         "../src/modules/audio_input.hpp"
@@ -40,6 +39,7 @@ set(HEADER_FILES
         "../src/vst/vst_processor.hpp"
         "../src/vst/vst_plugin.hpp"
         "../src/vst/vst_plugin_factory.hpp"
+        "../src/vst/vst_view.hpp"
         )
 source_group("Header Files" FILES ${HEADER_FILES})
 
@@ -54,7 +54,6 @@ set(SOURCE_FILES
         "../src/processor_orchestrator.cpp"
         "../src/project.cpp"
         "../src/vie_processor.cpp"
-        "../src/vie_view.cpp"
         "../src/boolean_parameter.cpp"
         "../src/modules/audio_input.cpp"
         "../src/modules/envelope.cpp"
@@ -73,6 +72,7 @@ set(SOURCE_FILES
         "../src/vst/vst_processor.cpp"
         "../src/vst/vst_plugin.cpp"
         "../src/vst/vst_plugin_factory.cpp"
+        "../src/vst/vst_view.cpp"
         )
 source_group("Source Files" FILES ${SOURCE_FILES})
 

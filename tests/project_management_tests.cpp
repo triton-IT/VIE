@@ -372,7 +372,7 @@ void reinit()
     application_.nb_projects_ = 0;
 	
     application_.create_view(&mock_callback_);
-    edit_view = &application_.vie_view_->editor_view_;
+    edit_view = &application_.vst_view_->editor_view_;
     edit_view->ptr_web_view_window_ = &mock_core_web_view_;
 }
 
@@ -415,11 +415,11 @@ SCENARIO("Retrieve standard modules.", "[editor view]") {
 
 SCENARIO("get_projects returns no project when no project exists.", "[editor view]") {
     editor_view* editor_view;
-    editor_view = &application_.vie_view_->editor_view_;
+    editor_view = &application_.vst_view_->editor_view_;
 
     SECTION("Initialisation") {
         reinit();
-        editor_view = &application_.vie_view_->editor_view_;
+        editor_view = &application_.vst_view_->editor_view_;
         editor_view->ptr_web_view_window_ = &mock_core_web_view_;
     }
 	
@@ -491,7 +491,7 @@ SCENARIO("Create a project then get_projects returns a project (created project 
 SCENARIO("Create a project, add a module, export project then import it and retrieve project and module.", "[editor view]") {
     SECTION("Initialisation") {
         reinit();
-        edit_view = &application_.vie_view_->editor_view_;
+        edit_view = &application_.vst_view_->editor_view_;
         edit_view->ptr_web_view_window_ = &mock_core_web_view_;
     }
 

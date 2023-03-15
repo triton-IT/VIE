@@ -4,7 +4,7 @@
 #include "logger.hpp"
 #include "project.hpp"
 #include "vie_processor.hpp"
-#include "vie_view.hpp"
+#include "vst/vst_view.hpp"
 #include "host_callback.hpp"
 
 extern void* module_handle;
@@ -52,8 +52,8 @@ namespace live::tritone::vie {
 
 		uint_fast8_t get_parameters_count();
 
-		vie_view* create_view(host_callback* callback);
-		vie_view* deleteView();
+		vst::vst_view* create_view(host_callback* callback);
+		vst::vst_view* deleteView();
 
 #ifdef UNIT_TESTING
 	public:
@@ -76,7 +76,7 @@ namespace live::tritone::vie {
 		uint_fast16_t nb_projects_;
 
 		vie_processor vie_processor_;
-		vie_view* vie_view_;
+		vst::vst_view* vst_view_;
 	};
 }
 

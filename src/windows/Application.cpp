@@ -23,6 +23,7 @@
 #include "../modules/sample.hpp"
 
 using namespace live::tritone::vie;
+using namespace live::tritone::vie::vst;
 using namespace live::tritone::vie::processor::module;
 using namespace live::tritone::vie::view::module;
 
@@ -116,7 +117,7 @@ project_info& application::new_project()
 	clear_current_project();
 	
 	vie_processor_.initialize();
-	vie_view_->initialize();
+	vst_view_->initialize();
 	
 	//Generate empty project.
 	//FIXME: Generate a UUID.
@@ -163,7 +164,7 @@ void application::export_project(std::wstring project_path)
 	project_json["description"] = converter.to_bytes(current_project_.description);
 
 	nlohmann::json processor_json = vie_processor_.serialize();
-	nlohmann::json view_json = vie_view_->serialize();
+	nlohmann::json view_json = vst_view_->serialize();
 
 	nlohmann::json root = nlohmann::json();
 	root["project"] = project_json;
@@ -194,7 +195,7 @@ project_info application::import_project(std::wstring project_path)
 
 	//Load view.
 	auto view_json = project_json["view"];
-	vie_view_->deserialize(view_json);
+	vst_view_->deserialize(view_json);
 	
 	//Load project infos.
 	nlohmann::json project_info_json = project_json["project"];
@@ -238,14 +239,14 @@ uint16_t application::add_module(nlohmann::json module)
 	module["id"] = module_id;
 	
 	vie_processor_.add_processor(module);
-	vie_view_->add_module(module);
+	vst_view_->add_module(module);
 
 	return module_id;
 }
 
 void application::delete_module(uint16_t module_id)
 {
-	vie_view_->delete_module(module_id);
+	vst_view_->delete_module(module_id);
 	vie_processor_.delete_processor(module_id);
 }
 
@@ -269,16 +270,16 @@ vie_processor& application::get_vie_processor()
 	return vie_processor_;
 }
 
-vie_view* application::create_view(host_callback* callback)
+vst_view* application::create_view(host_callback* callback)
 {
-	vie_view_ = new vie_view(callback);
-	return vie_view_;
+	vst_view_ = new vst_view(callback);
+	return vst_view_;
 }
 
-vie_view* application::deleteView()
+vst_view* application::deleteView()
 {
-	delete vie_view_;
-	vie_view_ = nullptr;
+	delete vst_view_;
+	vst_view_ = nullptr;
 	return nullptr;
 }
 
@@ -297,7 +298,7 @@ void application::clear_current_project()
 {
 	nb_parameters_ = 0;
 	vie_processor_.clear();
-	vie_view_->clear();
+	vst_view_->clear();
 }
 
 application application_;

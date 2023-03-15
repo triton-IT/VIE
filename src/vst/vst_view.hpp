@@ -10,24 +10,24 @@
 
 #include <json.hpp>
 
-#include "parameter.hpp"
+#include "../parameter.hpp"
 
-#include "host_callback.hpp"
+#include "../host_callback.hpp"
 
 #ifdef _WIN32
 
-#include "windows/editor_view.hpp"
+#include "../windows/editor_view.hpp"
 
 #endif
 
-namespace live::tritone::vie
+namespace live::tritone::vie::vst
 {
-	class vie_view final : public Steinberg::IPlugView
+	class vst_view final : public Steinberg::IPlugView
 	{
 	public:
-		explicit vie_view(host_callback* host_callback);
+		explicit vst_view(host_callback* host_callback);
 
-		virtual ~vie_view() = default;
+		virtual ~vst_view() = default;
 
 		Steinberg::tresult __stdcall queryInterface(const Steinberg::TUID iid, void** obj) override;
 		Steinberg::uint32 __stdcall addRef() override;

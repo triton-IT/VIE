@@ -10,7 +10,7 @@
 #include <unordered_map>
 #include <vector>
 
-#include "../vie_view.hpp"
+#include "vst_view.hpp"
 #include "../parameter.hpp"
 #include "../windows/vst_host_callback.hpp"
 
@@ -59,7 +59,7 @@ namespace live::tritone::vie::vst {
 	private:
 		Steinberg::IPtr <Steinberg::FUnknown> host_context_;
 		Steinberg::uint32 nb_ref_;
-		vie_view* view_;
+		vst_view* view_;
 		vst_host_callback* vst_host_callback_;
 	};
 } // namespace
