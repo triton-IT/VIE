@@ -8,8 +8,8 @@
 
 #include "vst_plugin.hpp"
 #include "vst_processor.hpp"
-#include "application.hpp"
-#include "constants.hpp"
+#include "../application.hpp"
+#include "../constants.hpp"
 
 #include "pluginterfaces/base/ipluginbase.h"
 

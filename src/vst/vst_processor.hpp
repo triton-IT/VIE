@@ -6,9 +6,9 @@
 #include <pluginterfaces/base/iupdatehandler.h>
 #include <pluginterfaces/vst/ivstevents.h>
 
-#include "processor_definition.hpp"
-#include "processor_module.hpp"
-#include "vie_processor.hpp"
+#include "../processor_definition.hpp"
+#include "../processor_module.hpp"
+#include "../vie_processor.hpp"
 
 namespace live::tritone::vie::vst {
 	class vst_processor final :

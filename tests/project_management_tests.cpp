@@ -1,6 +1,6 @@
 #include "../src/application.hpp"
 #include "../src/windows/editor_view.hpp"
-#include "../src/vst_processor.hpp"
+#include "../src/vst/vst_processor.hpp"
 
 #include "pluginterfaces/vst/ivstparameterchanges.h"
 

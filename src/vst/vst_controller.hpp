@@ -10,9 +10,9 @@
 #include <unordered_map>
 #include <vector>
 
-#include "vie_view.hpp"
-#include "parameter.hpp"
-#include "windows/vst_host_callback.hpp"
+#include "../vie_view.hpp"
+#include "../parameter.hpp"
+#include "../windows/vst_host_callback.hpp"
 
 namespace live::tritone::vie::vst {
 	class vst_controller final :

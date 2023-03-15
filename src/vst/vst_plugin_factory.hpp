@@ -2,7 +2,7 @@
 
 #include <pluginterfaces/base/ipluginbase.h>
 
-#include "constants.hpp"
+#include "../constants.hpp"
 
 namespace live::tritone::vie::vst {
 	class vst_plugin_factory : public Steinberg::IPluginFactory3 {

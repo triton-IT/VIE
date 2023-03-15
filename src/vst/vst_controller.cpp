@@ -3,7 +3,7 @@
 #include <pluginterfaces/vst/ivstunits.h>
 
 #include "vst_controller.hpp"
-#include "application.hpp"
+#include "../application.hpp"
 
 using namespace Steinberg;
 using namespace Vst;

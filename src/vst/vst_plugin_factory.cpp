@@ -3,7 +3,7 @@
 
 #include "vst_controller.hpp"
 #include "vst_processor.hpp"
-#include "constants.hpp"
+#include "../constants.hpp"
 
 using namespace Steinberg;
 using namespace Steinberg::Vst;
