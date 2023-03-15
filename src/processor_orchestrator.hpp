@@ -27,6 +27,8 @@ namespace live::tritone::vie {
 		std::array<std::shared_ptr<processor_module>, 128> get_processor_modules(uint_fast8_t& nb_modules /*out*/);
 
 		uint_fast8_t link_modules(nlohmann::json link_definition);
+		
+		std::array<std::array<std::shared_ptr<module_link>, 32>, 128>& get_modules_links(uint_fast8_t& nb_modules /*out*/, std::array<uint_fast8_t, 32>& nb_links /* out */);
 
 		void terminate();
 

@@ -26,12 +26,12 @@ using namespace live::tritone::vie::processor::module;
 namespace live::tritone::vie
 {
 	processor_orchestrator::processor_orchestrator() : nb_modules_(0),
-	                                                   processor_modules_{}, nb_midi_input_modules_(0),
-													   sources_midi_input_modules_{},
-													   nb_audio_input_modules_(0),
-													   sources_audio_input_modules_{},
-												       processing_setup_(),
-													   bypass_(false)
+		processor_modules_{}, nb_midi_input_modules_(0),
+		sources_midi_input_modules_{},
+		nb_audio_input_modules_(0),
+		sources_audio_input_modules_{},
+		processing_setup_(),
+		bypass_(false)
 	{
 	}
 
@@ -138,7 +138,7 @@ namespace live::tritone::vie
 		{
 			processor_modules_[i] = processor_modules_[i + 1];
 		}
-		
+
 		nb_modules_--;
 	}
 
@@ -164,7 +164,7 @@ namespace live::tritone::vie
 	}
 
 	uint_fast8_t processor_orchestrator::link_modules(nlohmann::json link_definition)
-	{		
+	{
 		//Get source module
 		const uint16_t source_module_id = link_definition["source_module"];
 		auto source_module = processor_modules_[source_module_id];
@@ -218,17 +218,17 @@ namespace live::tritone::vie
 		switch (event.type)
 		{
 		case event::type::note_on:
-			{
-				note_event& note_on_event = event.core_event.note_on;
-				midi_input_module->note_on(note_on_event);
-			}
-			break;
+		{
+			note_event& note_on_event = event.core_event.note_on;
+			midi_input_module->note_on(note_on_event);
+		}
+		break;
 		case event::type::note_off:
-			{
-				note_event& note_off_event = event.core_event.note_off;
-				midi_input_module->note_off(note_off_event);
-			}
-			break;
+		{
+			note_event& note_off_event = event.core_event.note_off;
+			midi_input_module->note_off(note_off_event);
+		}
+		break;
 		case event::type::data_event:
 		{
 			note_event& note_off_event = event.core_event.note_off;
@@ -244,7 +244,7 @@ namespace live::tritone::vie
 			break;
 		}
 	}
-	
+
 	void processor_orchestrator::process_input_audio(audio_bus_buffers* buffer, int32_t buffer_id) const
 	{
 		auto audio_input = get_audio_input_module_for_buffer(buffer_id);
@@ -275,7 +275,7 @@ namespace live::tritone::vie
 	}
 
 	void processor_orchestrator::process(std::shared_ptr<processor_module> source_module,
-	                                     output_process_data& output_process_data)
+		output_process_data& output_process_data)
 	{
 		// If all input of source module are not filled in by parent module, we cannot process it.
 		// We need to wait for each parent to process before this module.
@@ -288,14 +288,14 @@ namespace live::tritone::vie
 			//Get all children of source modules
 			uint_fast8_t nb_module_links;
 			std::array<std::shared_ptr<module_link>, 32>& module_links = source_module->get_modules_links(nb_module_links);
-			
+
 			//Process all children.
 			for (int i = 0; i < nb_module_links; i++)
 			{
 				const auto [source_slot_id, target_module, target_slot_id] = *(module_links[i]);
 
 				std::array<module_output*, 32> source_output_values;
-				
+
 				//Because module has been processed, we can get its output values.
 				uint_fast8_t nb_outputs = source_module->get_output_values(
 					source_slot_id, source_output_values);
@@ -313,10 +313,10 @@ namespace live::tritone::vie
 	{
 		unsigned int component_id = parameter_id >> 16;
 		unsigned int component_parameter_id = parameter_id & 0xffff;
-		
+
 		float_module_output input(0, parameter_value);
 		std::array<module_output*, 32> input_values = { &input };
-		
+
 		processor_modules_[component_id]->set_input_values(component_parameter_id, input_values, 1);
 	}
 
