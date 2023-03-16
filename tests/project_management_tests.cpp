@@ -794,3 +794,41 @@ SCENARIO("Create a project, add 3 modules and a link between them, delete the se
         }
     }
 }
+
+SCENARIO("Create a project add a modules and move it, load the project to verify saving.", "[editor view]") {
+    SECTION("Initialisation") {
+        reinit();
+    }
+
+    GIVEN("A project is created, a module is inserted.") {
+        //Create a new project.
+        edit_view->on_message_received(L"{\"action\": \"new_project\"}");
+        //Create a midi-input module.
+        edit_view->on_message_received(L"{\"action\":\"add_module\", \"body\": { \"type\": \"midi-in\", \"position\": { \"x\": 0, \"y\": 1, \"z\": 2 } }}");
+
+        WHEN("The module is moved") {
+            //Move module.
+            edit_view->on_message_received(L"{\"action\":\"move_module\",  \"body\": {\"module_id\": 0, \"position\": { \"x\": 3, \"y\": 4, \"z\": 5 } }}");
+
+            THEN("Module has new position.") {
+                auto module_view = *(edit_view->modules_views_instances_)[0];
+                REQUIRE(module_view.id == 0);
+                REQUIRE(module_view.position[0] == 3);
+                REQUIRE(module_view.position[1] == 4);
+                REQUIRE(module_view.position[2] == 5);
+            }
+        }
+        AND_WHEN("We load the project") {
+            //Load project.
+            edit_view->on_message_received(L"{\"action\":\"load_project\",  \"body\": {\"id\": 0}}");
+
+            THEN("The module has the latest given position.") {
+                auto module_view = *(edit_view->modules_views_instances_)[0];
+                REQUIRE(module_view.id == 0);
+                REQUIRE(module_view.position[0] == 3);
+                REQUIRE(module_view.position[1] == 4);
+                REQUIRE(module_view.position[2] == 5);
+            }
+        }
+    }
+}

@@ -62,6 +62,8 @@ namespace live::tritone::vie::vst
 
 		void delete_module(int id);
 
+		void move_module(uint_fast8_t module_id, std::array<uint_fast8_t, 3> position);
+
 		void render();
 
 #ifdef UNIT_TESTING

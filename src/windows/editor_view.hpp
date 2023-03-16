@@ -43,6 +43,8 @@ namespace live::tritone::vie {
 
 		void delete_module(int id);
 
+		void move_module(uint_fast8_t module_id, std::array<uint_fast8_t, 3> position);
+
 #ifdef UNIT_TESTING
 	public:
 #else
@@ -77,6 +79,7 @@ namespace live::tritone::vie {
 		void on_message_delete_module(nlohmann::json message);
 		void on_message_set_module_name(nlohmann::json message);
 		void on_message_set_module_parameter_value(nlohmann::json message);
+		void on_message_move_module(nlohmann::json message);
 		void on_message_undo(nlohmann::json message);
 		void on_message_redo(nlohmann::json message);
 	};

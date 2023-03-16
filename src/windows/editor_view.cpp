@@ -142,6 +142,10 @@ namespace live::tritone::vie
 			on_message_link_modules(json_message);
 			application_.save_project();
 		}
+		else if (action_name.compare("move_module") == 0) {
+			on_message_move_module(json_message);
+			application_.save_project();
+		}
 		else if (action_name.compare("undo") == 0) {
 			on_message_undo(json_message);
 			application_.save_project();
@@ -212,6 +216,13 @@ namespace live::tritone::vie
 		modules_views_instances_[i]->position[2] = module_definition["position"]["z"];
 
 		nb_modules_++;
+	}
+
+	void editor_view::move_module(uint_fast8_t module_id, std::array<uint_fast8_t, 3> position)
+	{
+		modules_views_instances_[module_id]->position[0] = position[0];
+		modules_views_instances_[module_id]->position[1] = position[1];
+		modules_views_instances_[module_id]->position[2] = position[2];
 	}
 
 	void editor_view::delete_module(int id)
@@ -482,6 +493,27 @@ namespace live::tritone::vie
 		std::wstringstream reply;
 		reply << L"{";
 		reply << L" \"action\": \"link_modules_callback\",";
+		reply << L" \"body\": {";
+		reply << L" }";
+		reply << L" }";
+		ptr_web_view_window_->PostWebMessageAsJson(reply.str().c_str());
+	}
+
+	void editor_view::on_message_move_module(json message) {
+		nlohmann::json body_json = message.at("body");
+
+		uint_fast8_t module_id = body_json["module_id"];
+		
+		std::array<uint_fast8_t, 3> position;
+		position[0] = body_json["position"]["x"];
+		position[1] = body_json["position"]["y"];
+		position[2] = body_json["position"]["z"];
+
+		application_.move_module(module_id, position);
+
+		std::wstringstream reply;
+		reply << L"{";
+		reply << L" \"action\": \"move_module_callback\",";
 		reply << L" \"body\": {";
 		reply << L" }";
 		reply << L" }";

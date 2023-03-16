@@ -160,6 +160,11 @@ namespace live::tritone::vie::vst
 	{
 		editor_view_.delete_module(id);
 	}
+	
+	void vst_view::move_module(uint_fast8_t module_id, std::array<uint_fast8_t, 3> position)
+	{
+		editor_view_.move_module(module_id, position);
+	}
 
 	void vst_view::clear()
 	{

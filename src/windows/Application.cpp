@@ -260,6 +260,12 @@ uint16_t application::link_modules(nlohmann::json link)
 	return vie_processor_.link_modules(link);
 }
 
+void application::move_module(uint_fast8_t module_id, std::array<uint_fast8_t, 3> position)
+{
+	//FIXME: Never use vst_view. Prefer vie_view.
+	return vst_view_->move_module(module_id, position);
+}
+
 std::shared_ptr<processor_module> application::get_processor_by_id(uint_fast8_t id)
 {
 	return vie_processor_.get_processor(id);
