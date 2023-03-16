@@ -150,6 +150,7 @@ namespace live::tritone::vie
 	class processor_module;
 	struct module_link
 	{
+		bool enabled = true;
 		/**
 		* Id of output slot in source module.
 		**/
@@ -277,6 +278,16 @@ namespace live::tritone::vie
 		* Unlink a slot id of this processor from a target slot of a processor.
 		*/
 		uint_fast8_t unlink(uint_fast8_t source_slot_id, std::shared_ptr<processor_module> target_module, uint_fast8_t target_slot_id);
+
+		/**
+		* Enable a link from a slot id of this processor to a target slot of a processor.
+		*/
+		void enable_link(uint_fast8_t source_slot_id, std::shared_ptr<processor_module> target_module, uint_fast8_t target_slot_id);
+
+		/**
+		* Disable a link from a slot id of this processor to a target slot of a processor.
+		*/
+		void disable_link(uint_fast8_t source_slot_id, std::shared_ptr<processor_module> target_module, uint_fast8_t target_slot_id);
 
 		/**
 		* Unlink all slots pointing to the target processor.

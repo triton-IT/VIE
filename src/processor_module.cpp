@@ -66,6 +66,36 @@ namespace live::tritone::vie
 		return nb_modules_links_;
 	}
 
+	void processor_module::enable_link(uint_fast8_t source_slot_id, std::shared_ptr<processor_module> target_module, uint_fast8_t target_slot_id)
+	{
+		for (uint_fast8_t i = 0; i < nb_modules_links_; i++)
+		{
+			auto& link = modules_links_[i];
+			if (link->source_slot_id == source_slot_id &&
+				link->target_module == target_module &&
+				link->target_slot_id == target_slot_id)
+			{
+				link->enabled = true;
+				break;
+			}
+		}
+	}
+
+	void processor_module::disable_link(uint_fast8_t source_slot_id, std::shared_ptr<processor_module> target_module, uint_fast8_t target_slot_id)
+	{
+		for (uint_fast8_t i = 0; i < nb_modules_links_; i++)
+		{
+			auto& link = modules_links_[i];
+			if (link->source_slot_id == source_slot_id &&
+				link->target_module == target_module &&
+				link->target_slot_id == target_slot_id)
+			{
+				link->enabled = false;
+				break;
+			}
+		}
+	}
+
 	void processor_module::unlink(std::shared_ptr<processor_module> target_module)
 	{
 		for (uint_fast8_t i = 0; i < nb_modules_links_ - 1; i++)

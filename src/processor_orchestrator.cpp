@@ -163,23 +163,24 @@ namespace live::tritone::vie
 		return processor_modules_;
 	}
 
-	uint_fast8_t processor_orchestrator::link_modules(nlohmann::json link_definition)
+	uint16_t processor_orchestrator::link_modules(uint_fast8_t source_module_id, uint_fast16_t source_slot_id, uint_fast8_t target_module_id, uint_fast16_t target_slot_id)
 	{
-		//Get source module
-		const uint16_t source_module_id = link_definition["source_module"];
-		auto source_module = processor_modules_[source_module_id];
-
-		//Get source slot
-		const uint_fast16_t source_slot_id = link_definition["source_slot"];
-
-		//Get target module
-		const uint16_t target_module_id = link_definition["target_module"];
-		auto target_module = processor_modules_[target_module_id];
-
-		//Get target slot
-		const uint_fast16_t target_slot_id = link_definition["target_slot"];
-
 		return processor_modules_[source_module_id]->link(source_slot_id, processor_modules_[target_module_id], target_slot_id);
+	}
+
+	void processor_orchestrator::unlink_modules(uint_fast8_t source_module_id, uint_fast16_t source_slot_id, uint_fast8_t target_module_id, uint_fast16_t target_slot_id)
+	{
+		processor_modules_[source_module_id]->unlink(source_slot_id, processor_modules_[target_module_id], target_slot_id);
+	}
+
+	void processor_orchestrator::enable_modules_link(uint_fast8_t source_module_id, uint_fast16_t source_slot_id, uint_fast8_t target_module_id, uint_fast16_t target_slot_id)
+	{
+		processor_modules_[source_module_id]->enable_link(source_slot_id, processor_modules_[target_module_id], target_slot_id);
+	}
+
+	void processor_orchestrator::disable_modules_link(uint_fast8_t source_module_id, uint_fast16_t source_slot_id, uint_fast8_t target_module_id, uint_fast16_t target_slot_id)
+	{
+		processor_modules_[source_module_id]->disable_link(source_slot_id, processor_modules_[target_module_id], target_slot_id);
 	}
 
 	void processor_orchestrator::terminate()
@@ -292,7 +293,7 @@ namespace live::tritone::vie
 			//Process all children.
 			for (int i = 0; i < nb_module_links; i++)
 			{
-				const auto [source_slot_id, target_module, target_slot_id] = *(module_links[i]);
+				const auto [enabled, source_slot_id, target_module, target_slot_id] = *(module_links[i]);
 
 				std::array<module_output*, 32> source_output_values;
 

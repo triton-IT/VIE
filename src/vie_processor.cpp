@@ -50,10 +50,11 @@ namespace live::tritone::vie {
 				auto link = modules_links[i];
 
 				json link_json = json();
-				link_json["source_module"] = module->get_id();
-				link_json["source_slot"] = link->source_slot_id;
-				link_json["target_module"] = link->target_module->get_id();
-				link_json["target_slot"] = link->target_slot_id;
+				link_json["enabled"] = link->enabled;
+				link_json["source_module_id"] = module->get_id();
+				link_json["source_slot_id"] = link->source_slot_id;
+				link_json["target_module_id"] = link->target_module->get_id();
+				link_json["target_slot_id"] = link->target_slot_id;
 
 				links_json.push_back(link_json);
 			}
@@ -116,8 +117,24 @@ namespace live::tritone::vie {
 		return orchestrator_.get_processor(id);
 	}
 
-	uint8_t vie_processor::link_modules(nlohmann::json json) {
-		return orchestrator_.link_modules(json);
+	uint16_t vie_processor::link_modules(uint_fast8_t source_module_id, uint_fast16_t source_slot_id, uint_fast8_t target_module_id, uint_fast16_t target_slot_id)
+	{
+		return orchestrator_.link_modules(source_module_id, source_slot_id, target_module_id, target_slot_id);
+	}
+
+	void vie_processor::unlink_modules(uint_fast8_t source_module_id, uint_fast16_t source_slot_id, uint_fast8_t target_module_id, uint_fast16_t target_slot_id)
+	{
+		orchestrator_.unlink_modules(source_module_id, source_slot_id, target_module_id, target_slot_id);
+	}
+
+	void vie_processor::enable_modules_link(uint_fast8_t source_module_id, uint_fast16_t source_slot_id, uint_fast8_t target_module_id, uint_fast16_t target_slot_id)
+	{
+		orchestrator_.enable_modules_link(source_module_id, source_slot_id, target_module_id, target_slot_id);
+	}
+
+	void vie_processor::disable_modules_link(uint_fast8_t source_module_id, uint_fast16_t source_slot_id, uint_fast8_t target_module_id, uint_fast16_t target_slot_id)
+	{
+		orchestrator_.disable_modules_link(source_module_id, source_slot_id, target_module_id, target_slot_id);
 	}
 
 	void vie_processor::terminate() {

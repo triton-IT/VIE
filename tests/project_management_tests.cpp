@@ -574,6 +574,44 @@ SCENARIO("Create a project, add a module, export project then import it and retr
     }
 }
 
+SCENARIO("Create a project add a modules and move it, load the project to verify saving.", "[editor view]") {
+    SECTION("Initialisation") {
+        reinit();
+    }
+
+    GIVEN("A project is created, a module is inserted.") {
+        //Create a new project.
+        edit_view->on_message_received(L"{\"action\": \"new_project\"}");
+        //Create a midi-input module.
+        edit_view->on_message_received(L"{\"action\":\"add_module\", \"body\": { \"type\": \"midi-in\", \"position\": { \"x\": 0, \"y\": 1, \"z\": 2 } }}");
+
+        WHEN("The module is moved") {
+            //Move module.
+            edit_view->on_message_received(L"{\"action\":\"move_module\",  \"body\": {\"module_id\": 0, \"position\": { \"x\": 3, \"y\": 4, \"z\": 5 } }}");
+
+            THEN("Module has new position.") {
+                auto module_view = *(edit_view->modules_views_instances_)[0];
+                REQUIRE(module_view.id == 0);
+                REQUIRE(module_view.position[0] == 3);
+                REQUIRE(module_view.position[1] == 4);
+                REQUIRE(module_view.position[2] == 5);
+            }
+        }
+        AND_WHEN("We load the project") {
+            //Load project.
+            edit_view->on_message_received(L"{\"action\":\"load_project\",  \"body\": {\"id\": 0}}");
+
+            THEN("The module has the latest given position.") {
+                auto module_view = *(edit_view->modules_views_instances_)[0];
+                REQUIRE(module_view.id == 0);
+                REQUIRE(module_view.position[0] == 3);
+                REQUIRE(module_view.position[1] == 4);
+                REQUIRE(module_view.position[2] == 5);
+            }
+        }
+    }
+}
+
 SCENARIO("Create a project, add a module, create another project, then load first one and retrieve project and module.", "[editor view]") {
     SECTION("Initialisation") {
         reinit();
@@ -646,7 +684,7 @@ SCENARIO("Create a project, add 2 modules and a link between them, save then loa
         edit_view->on_message_received(L"{\"action\": \"new_project\"}");
         edit_view->on_message_received(L"{\"action\":\"add_module\", \"body\": { \"type\": \"midi-in\", \"position\": { \"x\": 0, \"y\": 1, \"z\": 2 } }}");
         edit_view->on_message_received(L"{\"action\":\"add_module\", \"body\": { \"type\": \"audio-out\", \"position\": { \"x\": 3, \"y\": 4, \"z\": 5 } }}");
-        edit_view->on_message_received(L"{\"action\":\"link_modules\", \"body\": { \"source_module\": 0, \"source_slot\": 3, \"target_module\": 1, \"target_slot\": 1 }}");
+        edit_view->on_message_received(L"{\"action\":\"link_modules\", \"body\": { \"source_module_id\": 0, \"source_slot_id\": 3, \"target_module_id\": 1, \"target_slot_id\": 1 }}");
 
         WHEN("We load the project") {
             reinit();
@@ -730,9 +768,9 @@ SCENARIO("Create a project, add 3 modules and a link between them, delete the se
         //Create a audio-output module.
         edit_view->on_message_received(L"{\"action\":\"add_module\", \"body\": { \"type\": \"audio-out\", \"position\": { \"x\": 6, \"y\": 7, \"z\": 8 } }}");
 		//Link midi-in to oscillator.
-        edit_view->on_message_received(L"{\"action\":\"link_modules\", \"body\": { \"source_module\": 0, \"source_slot\": 3, \"target_module\": 1, \"target_slot\": 1 }}");
+        edit_view->on_message_received(L"{\"action\":\"link_modules\", \"body\": { \"source_module_id\": 0, \"source_slot_id\": 3, \"target_module_id\": 1, \"target_slot_id\": 1 }}");
 		//Link oscillator to audio-out.
-        edit_view->on_message_received(L"{\"action\":\"link_modules\", \"body\": { \"source_module\": 1, \"source_slot\": 3, \"target_module\": 2, \"target_slot\": 1 }}");
+        edit_view->on_message_received(L"{\"action\":\"link_modules\", \"body\": { \"source_module_id\": 1, \"source_slot_id\": 3, \"target_module_id\": 2, \"target_slot_id\": 1 }}");
 
         WHEN("We delete the second module") {
 			//Delete oscillator module.
@@ -795,39 +833,169 @@ SCENARIO("Create a project, add 3 modules and a link between them, delete the se
     }
 }
 
-SCENARIO("Create a project add a modules and move it, load the project to verify saving.", "[editor view]") {
+SCENARIO("Create a project, add 2 module and a link between them, disable the link and re-enable it then reload project to verify saving.", "[editor view]") {
     SECTION("Initialisation") {
         reinit();
     }
 
-    GIVEN("A project is created, a module is inserted.") {
+    GIVEN("A project is created, 2 modules are inserted and a link is created between them and disabled.") {
         //Create a new project.
         edit_view->on_message_received(L"{\"action\": \"new_project\"}");
         //Create a midi-input module.
         edit_view->on_message_received(L"{\"action\":\"add_module\", \"body\": { \"type\": \"midi-in\", \"position\": { \"x\": 0, \"y\": 1, \"z\": 2 } }}");
+        //Create a oscillator module.
+        edit_view->on_message_received(L"{\"action\":\"add_module\", \"body\": { \"type\": \"oscillator\", \"position\": { \"x\": 3, \"y\": 4, \"z\": 5 } }}");
+        //Link midi-in to oscillator.
+        edit_view->on_message_received(L"{\"action\":\"link_modules\", \"body\": { \"source_module_id\": 0, \"source_slot_id\": 3, \"target_module_id\": 1, \"target_slot_id\": 1 }}");
+		//Disable link
+        edit_view->on_message_received(L"{\"action\":\"disable_modules_link\",  \"body\": {\"source_module_id\": 0, \"source_slot_id\": 3, \"target_module_id\": 1, \"target_slot_id\": 1}}");
 
-        WHEN("The module is moved") {
-            //Move module.
-            edit_view->on_message_received(L"{\"action\":\"move_module\",  \"body\": {\"module_id\": 0, \"position\": { \"x\": 3, \"y\": 4, \"z\": 5 } }}");
+        WHEN("We re-enable the link") {
+            //Re-enable link.
+            edit_view->on_message_received(L"{\"action\":\"enable_modules_link\",  \"body\": {\"source_module_id\": 0, \"source_slot_id\": 3, \"target_module_id\": 1, \"target_slot_id\": 1}}");
 
-            THEN("Module has new position.") {
-                auto module_view = *(edit_view->modules_views_instances_)[0];
-                REQUIRE(module_view.id == 0);
-                REQUIRE(module_view.position[0] == 3);
-                REQUIRE(module_view.position[1] == 4);
-                REQUIRE(module_view.position[2] == 5);
+            THEN("We get a correct response.") {
+                LPCWSTR actual = mock_core_web_view_.get_last_message();
+                std::wstringstream expected;
+                expected << L"{";
+                expected << L" \"action\": \"enable_modules_link_callback\",";
+                expected << L" \"body\": {";
+                expected << L" }";
+                expected << L" }";
+
+                REQUIRE(actual == expected.str());
+
+                AND_THEN("The link is enbabled.") {
+                    uint_fast8_t nb_link_for_module;
+                    auto module = application_.vie_processor_.orchestrator_.get_processor(0);
+                    auto module_links = module->get_modules_links(nb_link_for_module);
+                    auto enabled_link = module_links[0];
+
+                    REQUIRE(enabled_link->enabled == true);
+                }
             }
         }
         AND_WHEN("We load the project") {
             //Load project.
             edit_view->on_message_received(L"{\"action\":\"load_project\",  \"body\": {\"id\": 0}}");
 
-            THEN("The module has the latest given position.") {
-                auto module_view = *(edit_view->modules_views_instances_)[0];
-                REQUIRE(module_view.id == 0);
-                REQUIRE(module_view.position[0] == 3);
-                REQUIRE(module_view.position[1] == 4);
-                REQUIRE(module_view.position[2] == 5);
+            THEN("The link is still enabled.") {
+                uint_fast8_t nb_link_for_module;
+                auto module = application_.vie_processor_.orchestrator_.get_processor(0);
+                auto module_links = module->get_modules_links(nb_link_for_module);
+                auto enabled_link = module_links[0];
+
+                REQUIRE(enabled_link->enabled == true);
+            }
+        }
+    }
+}
+
+SCENARIO("Create a project, add 2 module and a link between them, disable the link then reload project to verify saving.", "[editor view]") {
+    SECTION("Initialisation") {
+        reinit();
+    }
+
+    GIVEN("A project is created, 2 modules are inserted and a link is created between them.") {
+        //Create a new project.
+        edit_view->on_message_received(L"{\"action\": \"new_project\"}");
+        //Create a midi-input module.
+        edit_view->on_message_received(L"{\"action\":\"add_module\", \"body\": { \"type\": \"midi-in\", \"position\": { \"x\": 0, \"y\": 1, \"z\": 2 } }}");
+        //Create a oscillator module.
+        edit_view->on_message_received(L"{\"action\":\"add_module\", \"body\": { \"type\": \"oscillator\", \"position\": { \"x\": 3, \"y\": 4, \"z\": 5 } }}");
+        //Link midi-in to oscillator.
+        edit_view->on_message_received(L"{\"action\":\"link_modules\", \"body\": { \"source_module_id\": 0, \"source_slot_id\": 3, \"target_module_id\": 1, \"target_slot_id\": 1 }}");
+
+        WHEN("We disable the link") {
+            //Delete oscillator module.
+            edit_view->on_message_received(L"{\"action\":\"disable_modules_link\",  \"body\": {\"source_module_id\": 0, \"source_slot_id\": 3, \"target_module_id\": 1, \"target_slot_id\": 1}}");
+
+            THEN("We get a correct response.") {
+                LPCWSTR actual = mock_core_web_view_.get_last_message();
+                std::wstringstream expected;
+                expected << L"{";
+                expected << L" \"action\": \"disable_modules_link_callback\",";
+                expected << L" \"body\": {";
+                expected << L" }";
+                expected << L" }";
+
+                REQUIRE(actual == expected.str());
+
+                AND_THEN("The link is disabled.") {
+                    uint_fast8_t nb_link_for_module;
+                    auto module = application_.vie_processor_.orchestrator_.get_processor(0);
+                    auto module_links = module->get_modules_links(nb_link_for_module);
+                    auto disabled_link = module_links[0];
+
+                    REQUIRE(disabled_link->enabled == false);
+                }
+            }
+        }
+        AND_WHEN("We load the project") {
+            //Load project.
+            edit_view->on_message_received(L"{\"action\":\"load_project\",  \"body\": {\"id\": 0}}");
+
+            THEN("The link is still disabled.") {
+                uint_fast8_t nb_link_for_module;
+                auto module = application_.vie_processor_.orchestrator_.get_processor(0);
+                auto module_links = module->get_modules_links(nb_link_for_module);
+                auto disabled_link = module_links[0];
+
+                REQUIRE(disabled_link->enabled == false);
+            }
+        }
+    }
+}
+
+SCENARIO("Create a project, add 2 module and a link between them, delete the link then reload project to verify saving.", "[editor view]") {
+    SECTION("Initialisation") {
+        reinit();
+    }
+
+    GIVEN("A project is created, 2 modules are inserted and a link is created between them.") {
+        //Create a new project.
+        edit_view->on_message_received(L"{\"action\": \"new_project\"}");
+        //Create a midi-input module.
+        edit_view->on_message_received(L"{\"action\":\"add_module\", \"body\": { \"type\": \"midi-in\", \"position\": { \"x\": 0, \"y\": 1, \"z\": 2 } }}");
+        //Create a oscillator module.
+        edit_view->on_message_received(L"{\"action\":\"add_module\", \"body\": { \"type\": \"oscillator\", \"position\": { \"x\": 3, \"y\": 4, \"z\": 5 } }}");
+        //Link midi-in to oscillator.
+        edit_view->on_message_received(L"{\"action\":\"link_modules\", \"body\": { \"source_module_id\": 0, \"source_slot_id\": 3, \"target_module_id\": 1, \"target_slot_id\": 1 }}");
+
+        WHEN("We delete the link") {
+            //Delete modules link.
+            edit_view->on_message_received(L"{\"action\":\"unlink_modules\",  \"body\": {\"source_module_id\": 0, \"source_slot_id\": 3, \"target_module_id\": 1, \"target_slot_id\": 1}}");
+
+            THEN("We get a correct response.") {
+                LPCWSTR actual = mock_core_web_view_.get_last_message();
+                std::wstringstream expected;
+                expected << L"{";
+                expected << L" \"action\": \"unlink_modules_callback\",";
+                expected << L" \"body\": {";
+                expected << L" }";
+                expected << L" }";
+
+                REQUIRE(actual == expected.str());
+
+                AND_THEN("The link is deleted.") {
+                    uint_fast8_t nb_link_for_module;
+                    auto module = application_.vie_processor_.orchestrator_.get_processor(0);
+                    auto module_links = module->get_modules_links(nb_link_for_module);
+
+                    REQUIRE(nb_link_for_module == 0);
+                }
+            }
+        }
+        AND_WHEN("We load the project") {
+            //Load project.
+            edit_view->on_message_received(L"{\"action\":\"load_project\",  \"body\": {\"id\": 0}}");
+
+            THEN("The link is still deleted.") {
+                uint_fast8_t nb_link_for_module;
+                auto module = application_.vie_processor_.orchestrator_.get_processor(0);
+                auto module_links = module->get_modules_links(nb_link_for_module);
+
+                REQUIRE(nb_link_for_module == 0);
             }
         }
     }

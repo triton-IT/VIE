@@ -75,8 +75,12 @@ namespace live::tritone::vie {
 		void on_message_import_project(nlohmann::json message);
 		void on_message_get_modules(nlohmann::json message);
 		void on_message_add_module(nlohmann::json message);
-		void on_message_link_modules(nlohmann::json message);
 		void on_message_delete_module(nlohmann::json message);
+		void on_message_link_modules(nlohmann::json message);
+		void on_message_unlink_modules(nlohmann::json message);
+		void on_message_enable_modules_link(nlohmann::json message);
+		void on_message_disable_modules_link(nlohmann::json message);
+		void on_message_disable_module_link(nlohmann::json message);
 		void on_message_set_module_name(nlohmann::json message);
 		void on_message_set_module_parameter_value(nlohmann::json message);
 		void on_message_move_module(nlohmann::json message);

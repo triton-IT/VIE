@@ -189,8 +189,20 @@ project_info application::import_project(std::wstring project_path)
 	for (auto& [index, module] : instrument_json["modules"].items()) {
 		import_module(module);
 	}
-	for (auto& [index, link] : instrument_json["links"].items()) {
-		link_modules(link);
+	for (auto& [index, link] : instrument_json["links"].items())
+	{
+		bool enabled = link["enabled"];
+		uint_fast8_t source_module_id = link["source_module_id"];
+		uint16_t source_slot_id = link["source_slot_id"];
+		uint_fast8_t target_module_id = link["target_module_id"];
+		uint_fast16_t target_slot_id = link["target_slot_id"];
+		
+		link_modules(source_module_id, source_slot_id, target_module_id, target_slot_id);
+
+		if (!enabled)
+		{
+			disable_modules_link(source_module_id, source_slot_id, target_module_id, target_slot_id);
+		}
 	}
 
 	//Load view.
@@ -255,9 +267,24 @@ uint_fast8_t application::get_nb_modules()
 	return vie_processor_.get_nb_processors();
 }
 
-uint16_t application::link_modules(nlohmann::json link)
+uint16_t application::link_modules(uint_fast8_t source_module_id, uint_fast16_t source_slot_id, uint_fast8_t target_module_id, uint_fast16_t target_slot_id)
 {
-	return vie_processor_.link_modules(link);
+	return vie_processor_.link_modules(source_module_id, source_slot_id, target_module_id, target_slot_id);
+}
+
+void application::unlink_modules(uint_fast8_t source_module_id, uint_fast16_t source_slot_id, uint_fast8_t target_module_id, uint_fast16_t target_slot_id)
+{
+	vie_processor_.unlink_modules(source_module_id, source_slot_id, target_module_id, target_slot_id);
+}
+
+void application::enable_modules_link(uint_fast8_t source_module_id, uint_fast16_t source_slot_id, uint_fast8_t target_module_id, uint_fast16_t target_slot_id)
+{
+	vie_processor_.enable_modules_link(source_module_id, source_slot_id, target_module_id, target_slot_id);
+}
+
+void application::disable_modules_link(uint_fast8_t source_module_id, uint_fast16_t source_slot_id, uint_fast8_t target_module_id, uint_fast16_t target_slot_id)
+{
+	vie_processor_.disable_modules_link(source_module_id, source_slot_id, target_module_id, target_slot_id);
 }
 
 void application::move_module(uint_fast8_t module_id, std::array<uint_fast8_t, 3> position)

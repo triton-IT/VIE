@@ -29,8 +29,14 @@ namespace live::tritone::vie {
 		void clear();
 
 		std::shared_ptr<processor_module> get_processor(int id);
-
-		uint8_t link_modules(nlohmann::json json);
+		
+		uint16_t link_modules(uint_fast8_t source_module_id, uint_fast16_t source_slot_id, uint_fast8_t target_module_id, uint_fast16_t target_slot_id);
+		
+		void unlink_modules(uint_fast8_t source_module_id, uint_fast16_t source_slot_id, uint_fast8_t target_module_id, uint_fast16_t target_slot_id);
+		
+		void enable_modules_link(uint_fast8_t source_module_id, uint_fast16_t source_slot_id, uint_fast8_t target_module_id, uint_fast16_t target_slot_id);
+		
+		void disable_modules_link(uint_fast8_t source_module_id, uint_fast16_t source_slot_id, uint_fast8_t target_module_id, uint_fast16_t target_slot_id);
 
 		void terminate();
 

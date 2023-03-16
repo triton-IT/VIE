@@ -142,6 +142,18 @@ namespace live::tritone::vie
 			on_message_link_modules(json_message);
 			application_.save_project();
 		}
+		else if (action_name.compare("unlink_modules") == 0) {
+			on_message_unlink_modules(json_message);
+			application_.save_project();
+		}
+		else if (action_name.compare("enable_modules_link") == 0) {
+			on_message_enable_modules_link(json_message);
+			application_.save_project();
+		}
+		else if (action_name.compare("disable_modules_link") == 0) {
+			on_message_disable_modules_link(json_message);
+			application_.save_project();
+		}
 		else if (action_name.compare("move_module") == 0) {
 			on_message_move_module(json_message);
 			application_.save_project();
@@ -486,13 +498,71 @@ namespace live::tritone::vie
 	}
 
 	void editor_view::on_message_link_modules(json message) {
-		nlohmann::json link_json = message.at("body");
+		nlohmann::json body_json = message.at("body");
+		uint_fast8_t source_module_id = body_json["source_module_id"];
+		uint_fast16_t source_slot_id = body_json["source_slot_id"];
+		uint_fast8_t target_module_id = body_json["target_module_id"];
+		uint_fast16_t target_slot_id = body_json["target_slot_id"];
 
-		uint16_t module_id = application_.link_modules(link_json);
+		uint16_t module_id = application_.link_modules(source_module_id, source_slot_id, target_module_id, target_slot_id);
 
 		std::wstringstream reply;
 		reply << L"{";
 		reply << L" \"action\": \"link_modules_callback\",";
+		reply << L" \"body\": {";
+		reply << L" }";
+		reply << L" }";
+		ptr_web_view_window_->PostWebMessageAsJson(reply.str().c_str());
+	}
+
+	void editor_view::on_message_unlink_modules(json message) {
+		nlohmann::json body_json = message.at("body");
+		uint_fast8_t source_module_id = body_json["source_module_id"];
+		uint_fast16_t source_slot_id = body_json["source_slot_id"];
+		uint_fast8_t target_module_id = body_json["target_module_id"];
+		uint_fast16_t target_slot_id = body_json["target_slot_id"];
+
+		application_.unlink_modules(source_module_id, source_slot_id, target_module_id, target_slot_id);
+
+		std::wstringstream reply;
+		reply << L"{";
+		reply << L" \"action\": \"unlink_modules_callback\",";
+		reply << L" \"body\": {";
+		reply << L" }";
+		reply << L" }";
+		ptr_web_view_window_->PostWebMessageAsJson(reply.str().c_str());
+	}
+
+	void editor_view::on_message_disable_modules_link(json message) {
+		nlohmann::json body_json = message.at("body");
+		uint_fast8_t source_module_id = body_json["source_module_id"];
+		uint_fast16_t source_slot_id = body_json["source_slot_id"];
+		uint_fast8_t target_module_id = body_json["target_module_id"];
+		uint_fast16_t target_slot_id = body_json["target_slot_id"];
+
+		application_.disable_modules_link(source_module_id, source_slot_id, target_module_id, target_slot_id);
+
+		std::wstringstream reply;
+		reply << L"{";
+		reply << L" \"action\": \"disable_modules_link_callback\",";
+		reply << L" \"body\": {";
+		reply << L" }";
+		reply << L" }";
+		ptr_web_view_window_->PostWebMessageAsJson(reply.str().c_str());
+	}
+
+	void editor_view::on_message_enable_modules_link(json message) {
+		nlohmann::json body_json = message.at("body");
+		uint_fast8_t source_module_id = body_json["source_module_id"];
+		uint_fast16_t source_slot_id = body_json["source_slot_id"];
+		uint_fast8_t target_module_id = body_json["target_module_id"];
+		uint_fast16_t target_slot_id = body_json["target_slot_id"];
+
+		application_.enable_modules_link(source_module_id, source_slot_id, target_module_id, target_slot_id);
+
+		std::wstringstream reply;
+		reply << L"{";
+		reply << L" \"action\": \"enable_modules_link_callback\",";
 		reply << L" \"body\": {";
 		reply << L" }";
 		reply << L" }";
