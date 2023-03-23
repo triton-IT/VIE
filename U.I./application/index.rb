@@ -19,8 +19,8 @@ end
 
 def get_projects_callback(body)
   body.each do |project|
-    content = "project is : #{project[:name]}\nid:  #{project[:id]}"
-    grab(:inspector).text({ data: content, top: 60, visual: { size: 12 } })
+    content = "project is : #{project.JS[:name]}\nid:  #{project.JS[:id]}\ndescription:  #{project.JS[:description]}"
+    grab(:inspector).text({ data: content, top: 60, visual: { size: 12 } })##
   end
   return unless body.length == 0
   grab(:inspector).text({ data: "no project", top: 60, visual: { size: 12 } })
@@ -28,7 +28,7 @@ end
 
 def new_project_callback(body)
 
-    content = "new project is : #{body[:name]}\nid:  #{body[:id]}"
+    content = "new project is : #{body.JS[:name]}\nid:  #{body.JS[:id]}"
     grab(:inspector).text({ data: content, top: 60, visual: { size: 12 } })
 
 end
@@ -37,7 +37,9 @@ def response_listener(hashed_msg)
   # hashed_msg=JSON.parse(data_for_test)
   # alert hashed_msg.class
   # alert hashed_msg[:action]
-  send(hashed_msg[:action], hashed_msg[:body])
+  js_action=hashed_msg.JS[:action]
+  js_body=hashed_msg.JS[:body]
+  send(js_action, js_body)
 end
 
 def controller_listener
@@ -46,8 +48,8 @@ def controller_listener
 // write code here:
     } else {
      window.chrome.webview.addEventListener('message', arg => {
-var response= Opal.hash(arg.data)
-Opal.Object.$response_listener(response)
+//var response= Opal.hash(arg.data)
+Opal.Object.$response_listener(arg.data)
     // console.log("data received from the controller : "+arg.data);
        });
     }
@@ -421,3 +423,7 @@ end
 # TODO : Children can't be removed , idem for attach
 # TODO : remove doesn't work with shadow
 # FIXME:
+
+
+# a=`{toto: 'hello'}`
+# alert a.JS[:toto]
