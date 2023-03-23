@@ -445,7 +445,6 @@ end
 
 module_box = box({ id: :get_modules, bottom: 0 })
 
-module_box.touch do
+module_box.touch(true) do
   action_get_modules
-
 end
