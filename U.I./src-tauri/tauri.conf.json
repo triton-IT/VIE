@@ -7,14 +7,14 @@
     "withGlobalTauri": true
   },
   "package": {
-    "productName": "Triton's Vie",
+    "productName": "atome",
     "version": "0.0.0"
   },
   "tauri": {
     "allowlist": {
-      "all": false,
+      "all": true,
       "shell": {
-        "all": false,
+        "all": true,
         "open": true
       }
     },
@@ -62,7 +62,7 @@
         "fullscreen": false,
         "height": 600,
         "resizable": true,
-        "title": "Triton's Vie",
+        "title": "Vie",
         "width": 800
       }
     ]

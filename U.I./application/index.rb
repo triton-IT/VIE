@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-def controller_test(msg)
-  puts JSON.parse(msg).to_json # => {"val"=>"test","val1"=>"test1","val2"=>"test2"}
-end
+# def controller_test(msg)
+#   puts JSON.parse(msg).to_json # => {"val"=>"test","val1"=>"test1","val2"=>"test2"}
+# end
 
 def controller_sender(params)
   json_msg = params.to_json
@@ -19,6 +19,33 @@ console.log('=====>'+typeof json_msg);
 `
 end
 
+# class Vie
+#   def initialize
+#     super
+#   end
+#
+#
+# end
+
+
+def get_projects_callback(body)
+  # formated_text=[]
+  # body.each do |k,v|
+  #   formated_text << "#{k} : #{v}\n"
+  # end
+  body= body[0]
+  content= "name : #{body[:name]}\nid:  #{body[:id]}"
+  # content=formated_text.to_s
+  #
+  grab(:inspector).text({ data: content, top: 60, visual: { size: 12 } })
+end
+
+def dummy_listener(data_for_test)
+  hashed_msg=JSON.parse(data_for_test)
+  # alert hashed_msg.class
+  # alert hashed_msg[:action]
+  send(hashed_msg[:action], hashed_msg[:body])
+end
 def controller_listener
   `
   if (window.webkit) {
@@ -29,9 +56,7 @@ def controller_listener
        });
     }
 `
-
 end
-
 
 controller_listener
 
@@ -67,13 +92,13 @@ logo_color = 'rgba(99, 255, 99, 0.3)'
 
 grab(:action).box({ id: :logo_support, width: 33, height: 33, left: :auto, top: 7, right: 15, attached: :invisible_color })
 
-logo=<<STR
+logo = <<STR
 <svg  xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" >
 <path id="vieCanvas-bezier" stroke="rgb(0, 0, 0)" stroke-width="1" stroke-miterlimit="10" fill="rgb(255, 0, 0)" d="M 73.04,26.41 C 50.57,12.14 15.77,53.39 15.81,85.33 15.83,107.68 23.49,124.45 35.37,139.38 97.06,203.55 73.1,232.52 109.61,231.71 134.09,231.16 181.15,134.57 220.5,138.31 232.63,123.3 240.52,106.7 240.5,85.07 240.5,84.51 240.49,83.95 240.47,83.4 211.52,29.92 146.74,182.8 114.45,179.38 69.64,174.65 90.68,37.61 73.04,26.41 Z M 172.32,76.13 C 172.32,94.63 157.34,109.64 138.85,109.64 120.36,109.64 105.37,94.63 105.37,76.13 105.37,57.62 120.36,42.62 138.85,42.62 157.34,42.62 172.32,57.62 172.32,76.13 Z M 172.32,76.13" />
 </svg>
 STR
 
-    display_svg(logo, logo_color, :logo_support)
+display_svg(logo, logo_color, :logo_support)
 # svg_fetch(:vie, logo_color, :logo_support)
 
 # project title
@@ -201,10 +226,10 @@ def fill_toolzone (ids)
   icon_spacing = vie_styles[:support_style][:height] + margin * 2
   ids.each_with_index do |id_found, index|
     support = grab(:toolbox).box(support_style.merge({ top: (icon_spacing * index) + margin, id: "tool_support_#{index}" }))
-    #TODO: important for futur use  keep to code below to fetch items
+    # TODO: important for futur use  keep to code below to fetch items
     # svg_fetch(id_found, svg_color, support.id)
 
-#     puts "=> id_found is #{get_icon(id_found)}"
+    #     puts "=> id_found is #{get_icon(id_found)}"
 
     display_svg(get_icon(id_found), svg_color, support.id)
     support.touch(true) do
@@ -255,16 +280,13 @@ end
 
 # main methods
 def action_load
-
-  `
-  on_message_get_modules("json_msg");
-`
   # we send the command get_projects to the server
-  controller_sender({ action: :get_projects })
-  # inspector = grab(:inspector)
-  # clear_zone(inspector)
-  # text_list_style = vie_styles[:list_style].merge({ classes: :project_list })
-  # list(inspector, text_list_style, project_list)
+  # controller_sender({ action: :get_projects })
+
+  # test s below
+  data_for_test='{"action": "get_projects_callback", "body": [ {"id": 0, "name": "Project 0", "description": "" } ] }'
+  dummy_listener(data_for_test)
+
 end
 
 def rename_project
@@ -400,12 +422,5 @@ end
 
 # TODO : text should be define in 'vw' to resize according to it's parent
 # TODO : Children can't be removed , idem for attach
-# TODO : remmove doesn't work with shadow
-
+# TODO : remove doesn't work with shadow
 # FIXME:
-
-
-
-
-
-
