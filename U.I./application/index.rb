@@ -20,7 +20,7 @@ end
 def get_projects_callback(body)
   body.each do |project|
     content = "project is : #{project.JS[:name]}\nid:  #{project.JS[:id]}\ndescription:  #{project.JS[:description]}"
-    grab(:inspector).text({ data: content, top: 60, visual: { size: 12 } })##
+    grab(:inspector).text({ data: content, top: 60, visual: { size: 12 } }) ##
   end
   return unless body.length == 0
   grab(:inspector).text({ data: "no project", top: 60, visual: { size: 12 } })
@@ -28,8 +28,8 @@ end
 
 def new_project_callback(body)
 
-    content = "new project is : #{body.JS[:name]}\nid:  #{body.JS[:id]}"
-    grab(:inspector).text({ data: content, top: 60, visual: { size: 12 } })
+  content = "new project is : #{body.JS[:name]}\nid:  #{body.JS[:id]}"
+  grab(:inspector).text({ data: content, top: 60, visual: { size: 12 } })
 
 end
 
@@ -37,8 +37,8 @@ def response_listener(hashed_msg)
   # hashed_msg=JSON.parse(data_for_test)
   # alert hashed_msg.class
   # alert hashed_msg[:action]
-  js_action=hashed_msg.JS[:action]
-  js_body=hashed_msg.JS[:body]
+  js_action = hashed_msg.JS[:action]
+  js_body = hashed_msg.JS[:body]
   send(js_action, js_body)
 end
 
@@ -424,30 +424,28 @@ end
 # TODO : remove doesn't work with shadow
 # FIXME:
 
-
 # a=`{toto: 'hello'}`
 # alert a.JS[:toto]
-
 
 def action_get_modules_callback(body)
   body.each do |module_found|
     content = "project is : #{module_found.JS[:name]}\nid:  #{module_found.JS[:id]}}"
     puts module_found.JS[:icon]
-    grab(:inspector).text({ data: content, top: 60, visual: { size: 12 } })##
+    grab(:inspector).text({ data: content, top: 60, visual: { size: 12 } }) ##
   end
   return unless body.length == 0
   grab(:inspector).text({ data: "no project", top: 60, visual: { size: 12 } })
 
 end
+
 def action_get_modules
   controller_sender({ action: :get_modules })
 
 end
 
-  module_box=box({id: :get_modules, bottom: 0})
+module_box = box({ id: :get_modules, bottom: 0 })
 
-
-  module_box.touch do
-
+module_box.touch do
+  action_get_modules
 
 end
