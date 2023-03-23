@@ -35,7 +35,7 @@ def controller_listener
 // write code here:
     } else {
      window.chrome.webview.addEventListener('message', arg => {
-val response= Opal.hash(arg.data)
+var response= Opal.hash(arg.data)
 Opal.Object.$response_listener(response)
     // console.log("data received from the controller : "+arg.data);
        });
