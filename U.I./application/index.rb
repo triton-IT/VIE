@@ -431,24 +431,19 @@ end
 ##### code deg
 
 
-def new_svg_fetch(svg_name, svg_color = :lightgray, target)
+def new_svg_fetch(svg_body, svg_color = :lightgray, target)
 
   `
-
         let svgContainer = document.getElementById(#{target});
-        let parser = new DOMParser();
-        let svgDoc = parser.parseFromString(svgText, "image/svg+xml");
-        let importedSVG = svgDoc.getElementsByTagName("svg")[0];
-        importedSVG.style.width =  "100%";
-        importedSVG.style.height =  "100%";
+        let svg_body =   #{svg_body};
+        svg_body.style.width =  "100%";
+        svg_body.style.height =  "100%";
         let elements = importedSVG.getElementsByTagName("path");
         Array.from(elements).forEach(el => {
             el.setAttribute("fill", #{svg_color});
             el.setAttribute("stroke", #{svg_color});
         });
-        svgContainer.appendChild(importedSVG);
-
-
+        svgContainer.appendChild(svg_body);
 `
 end
 

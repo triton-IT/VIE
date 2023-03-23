@@ -556,7 +556,7 @@ Opal.Object.$response_listener(arg.data)
     return self.$clear_zone(inspector);
   });
   
-  $def(self, '$new_svg_fetch', function $$new_svg_fetch(svg_name, $a, $b) {
+  $def(self, '$new_svg_fetch', function $$new_svg_fetch(svg_body, $a, $b) {
     var $post_args, svg_color, target;
 
     
@@ -568,17 +568,14 @@ Opal.Object.$response_listener(arg.data)
     
 
         let svgContainer = document.getElementById(target);
-        let parser = new DOMParser();
-        let svgDoc = parser.parseFromString(svgText, "image/svg+xml");
-        let importedSVG = svgDoc.getElementsByTagName("svg")[0];
-        importedSVG.style.width =  "100%";
-        importedSVG.style.height =  "100%";
-        let elements = importedSVG.getElementsByTagName("path");
+        svg_body.style.width =  "100%";
+        svg_body.style.height =  "100%";
+        let elements = svg_body.getElementsByTagName("path");
         Array.from(elements).forEach(el => {
             el.setAttribute("fill", svg_color);
             el.setAttribute("stroke", svg_color);
         });
-        svgContainer.appendChild(importedSVG);
+        svgContainer.appendChild(svg_body);
 
 
 ;
