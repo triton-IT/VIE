@@ -23,8 +23,8 @@ def get_projects_callback(body)
   grab(:inspector).text({ data: content, top: 60, visual: { size: 12 } })
 end
 
-def response_listener(data_for_test)
-  hashed_msg=JSON.parse(data_for_test)
+def response_listener(hashed_msg)
+  # hashed_msg=JSON.parse(data_for_test)
   # alert hashed_msg.class
   # alert hashed_msg[:action]
   send(hashed_msg[:action], hashed_msg[:body])
