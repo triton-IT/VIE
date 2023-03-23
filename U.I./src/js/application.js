@@ -167,7 +167,6 @@ console.log('=====>'+typeof json_msg);
     } else {
        window.chrome.webview.postMessage(json_msg);
     }
-
 ;
   });
   
@@ -180,7 +179,7 @@ console.log('=====>'+typeof json_msg);
     return self.$grab("inspector").$text($hash2(["data", "top", "visual"], {"data": content, "top": 60, "visual": $hash2(["size"], {"size": 12})}));
   });
   
-  $def(self, '$controller_listener', function $$controller_listener(data_for_test) {
+  $def(self, '$response_listener', function $$response_listener(data_for_test) {
     var self = this, hashed_msg = nil;
 
     

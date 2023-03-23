@@ -6,7 +6,6 @@
 
 def controller_sender(params)
   json_msg = params.to_json
-
   `
  var json_msg = JSON.parse(#{json_msg});
     if (window.webkit) {
@@ -15,23 +14,16 @@ console.log('=====>'+typeof json_msg);
     } else {
        window.chrome.webview.postMessage(json_msg);
     }
-
 `
 end
 
 def get_projects_callback(body)
-  # formated_text=[]
-  # body.each do |k,v|
-  #   formated_text << "#{k} : #{v}\n"
-  # end
   body= body[0]
   content= "name : #{body[:name]}\nid:  #{body[:id]}"
-  # content=formated_text.to_s
-  #
   grab(:inspector).text({ data: content, top: 60, visual: { size: 12 } })
 end
 
-def controller_listener(data_for_test)
+def response_listener(data_for_test)
   hashed_msg=JSON.parse(data_for_test)
   # alert hashed_msg.class
   # alert hashed_msg[:action]
