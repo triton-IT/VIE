@@ -427,3 +427,27 @@ end
 
 # a=`{toto: 'hello'}`
 # alert a.JS[:toto]
+
+
+def action_get_modules_callback(body)
+  body.each do |module_found|
+    content = "project is : #{module_found.JS[:name]}\nid:  #{module_found.JS[:id]}}"
+    puts module_found.JS[:icon]
+    grab(:inspector).text({ data: content, top: 60, visual: { size: 12 } })##
+  end
+  return unless body.length == 0
+  grab(:inspector).text({ data: "no project", top: 60, visual: { size: 12 } })
+
+end
+def action_get_modules
+  controller_sender({ action: :get_modules })
+
+end
+
+  module_box=box({id: :get_modules, bottom: 0})
+
+
+  module_box.touch do
+
+
+end
