@@ -187,14 +187,11 @@ console.log('=====>'+typeof json_msg);
   });
   
   $def(self, '$new_project_callback', function $$new_project_callback(body) {
-    var self = this;
+    var self = this, content = nil;
 
-    return $send(body, 'each', [], function $$2(project){var self = $$2.$$s == null ? this : $$2.$$s, content = nil;
-
-      
-      if (project == null) project = nil;
-      content = "new project is : " + (project['$[]']("name")) + "\nid:  " + (project['$[]']("id"));
-      return self.$grab("inspector").$text($hash2(["data", "top", "visual"], {"data": content, "top": 60, "visual": $hash2(["size"], {"size": 12})}));}, {$$s: self})
+    
+    content = "new project is : " + (body['$[]']("name")) + "\nid:  " + (body['$[]']("id"));
+    return self.$grab("inspector").$text($hash2(["data", "top", "visual"], {"data": content, "top": 60, "visual": $hash2(["size"], {"size": 12})}));
   });
   
   $def(self, '$response_listener', function $$response_listener(hashed_msg) {
@@ -250,23 +247,23 @@ Opal.Object.$response_listener(response)
     modules.$width("auto");
     modules.$right(0);
     inspector = self.$grab("inspector");
-    return $send(modules.$materials(), 'each_with_index', [], function $$3(_module_found, index){var self = $$3.$$s == null ? this : $$3.$$s;
+    return $send(modules.$materials(), 'each_with_index', [], function $$2(_module_found, index){var self = $$2.$$s == null ? this : $$2.$$s;
 
       
       if (_module_found == null) _module_found = nil;
       if (index == null) index = nil;
-      $send(modules.$cell(index), 'touch', ["down"], function $$4(){var $a, self = $$4.$$s == null ? this : $$4.$$s;
+      $send(modules.$cell(index), 'touch', ["down"], function $$3(){var $a, self = $$3.$$s == null ? this : $$3.$$s;
 
         
         self.$puts("down context is: " + (self.$grab("context").$data()));
         return ($a = [0, index], $send(self.$grab("connection").$data(), '[]=', $a), $a[$a.length - 1]);}, {$$s: self});
-      $send(modules.$cell(index), 'touch', ["long"], function $$5(){var self = $$5.$$s == null ? this : $$5.$$s;
+      $send(modules.$cell(index), 'touch', ["long"], function $$4(){var self = $$4.$$s == null ? this : $$4.$$s;
 
         
         self.$puts("up context is: " + (self.$grab("context").$data()));
         if ($truthy(self.$grab("selected").$data()['$include?'](self.$id()))) {
           
-          $send(self.$grab("selected").$data(), 'each', [], function $$6(cell_id){var self = $$6.$$s == null ? this : $$6.$$s, selected_cell = nil;
+          $send(self.$grab("selected").$data(), 'each', [], function $$5(cell_id){var self = $$5.$$s == null ? this : $$5.$$s, selected_cell = nil;
 
             
             if (cell_id == null) cell_id = nil;
@@ -280,7 +277,7 @@ Opal.Object.$response_listener(response)
           self.$attached(["active_color"]);
           return self.$detached("cell_color");
         };}, {$$s: self});
-      return $send(modules.$cell(index), 'touch', ["up"], function $$7(){var self = $$7.$$s == null ? this : $$7.$$s, source_cell = nil, target_cell = nil, new_connection = nil;
+      return $send(modules.$cell(index), 'touch', ["up"], function $$6(){var self = $$6.$$s == null ? this : $$6.$$s, source_cell = nil, target_cell = nil, new_connection = nil;
 
         
         self.$grab("connection").$data()['$[]='](1, index);
@@ -300,7 +297,7 @@ Opal.Object.$response_listener(response)
           modules.$cell(target_cell).$detached("cell_color");
           modules.$cell(source_cell).$attached("cell_connected");
           modules.$cell(target_cell).$attached("cell_connected");
-          return $send(self, 'wait', [0.6], function $$8(){
+          return $send(self, 'wait', [0.6], function $$7(){
             
             modules.$cell(source_cell).$attached("cell_color");
             modules.$cell(target_cell).$attached("cell_color");
@@ -343,14 +340,14 @@ Opal.Object.$response_listener(response)
     margin = self.$vie_styles()['$[]']("margin");
     support_style = self.$vie_styles()['$[]']("support_style");
     icon_spacing = $rb_plus(self.$vie_styles()['$[]']("support_style")['$[]']("height"), $rb_times(margin, 2));
-    return $send(ids, 'each_with_index', [], function $$9(id_found, index){var self = $$9.$$s == null ? this : $$9.$$s, support = nil;
+    return $send(ids, 'each_with_index', [], function $$8(id_found, index){var self = $$8.$$s == null ? this : $$8.$$s, support = nil;
 
       
       if (id_found == null) id_found = nil;
       if (index == null) index = nil;
       support = self.$grab("toolbox").$box(support_style.$merge($hash2(["top", "id"], {"top": $rb_plus($rb_times(icon_spacing, index), margin), "id": "tool_support_" + (index)})));
       self.$display_svg(self.$get_icon(id_found), svg_color, support.$id());
-      return $send(support, 'touch', [true], function $$10(){var self = $$10.$$s == null ? this : $$10.$$s;
+      return $send(support, 'touch', [true], function $$9(){var self = $$9.$$s == null ? this : $$9.$$s;
 
         return self.$send("action_" + (id_found))}, {$$s: self});}, {$$s: self});
   });
@@ -359,11 +356,11 @@ Opal.Object.$response_listener(response)
   $def(self, '$action_clear', function $$action_clear() {
     var self = this;
 
-    return $send(self.$grab("selected").$data(), 'each', [], function $$11(selected_slot){var self = $$11.$$s == null ? this : $$11.$$s;
+    return $send(self.$grab("selected").$data(), 'each', [], function $$10(selected_slot){var self = $$10.$$s == null ? this : $$10.$$s;
 
       
       if (selected_slot == null) selected_slot = nil;
-      return $send(self.$grab(selected_slot).$materials(), 'each', [], function $$12(child_found){var self = $$12.$$s == null ? this : $$12.$$s;
+      return $send(self.$grab(selected_slot).$materials(), 'each', [], function $$11(child_found){var self = $$11.$$s == null ? this : $$11.$$s;
 
         
         if (child_found == null) child_found = nil;
@@ -378,7 +375,7 @@ Opal.Object.$response_listener(response)
     var self = this;
 
     
-    $send(zone.$materials(), 'each', [], function $$13(child_found){var self = $$13.$$s == null ? this : $$13.$$s;
+    $send(zone.$materials(), 'each', [], function $$12(child_found){var self = $$12.$$s == null ? this : $$12.$$s;
 
       
       if (child_found == null) child_found = nil;
@@ -393,7 +390,7 @@ Opal.Object.$response_listener(response)
   $def(self, '$remove_active', function $$remove_active(items) {
     var self = this;
 
-    return $send(items, 'each', [], function $$14(id_found, _properties){var self = $$14.$$s == null ? this : $$14.$$s;
+    return $send(items, 'each', [], function $$13(id_found, _properties){var self = $$13.$$s == null ? this : $$13.$$s;
 
       
       if (id_found == null) id_found = nil;
@@ -413,7 +410,7 @@ Opal.Object.$response_listener(response)
 
     
     margin = self.$vie_styles()['$[]']("margin");
-    return $send(items, 'each_with_index', [], function $$15($mlhs_tmp1, index){var $a, $b, self = $$15.$$s == null ? this : $$15.$$s, id_found = nil, properties = nil, label = nil, item = nil;
+    return $send(items, 'each_with_index', [], function $$14($mlhs_tmp1, index){var $a, $b, self = $$14.$$s == null ? this : $$14.$$s, id_found = nil, properties = nil, label = nil, item = nil;
 
       
       if ($mlhs_tmp1 == null) $mlhs_tmp1 = nil;
@@ -422,7 +419,7 @@ Opal.Object.$response_listener(response)
       label = properties['$[]']("name");
       item = parent.$text($hash2(["data", "id"], {"data": label, "id": id_found}).$merge(style));
       item.$top($rb_plus($rb_times(25, index), margin));
-      return $send(item, 'touch', [true], function $$16(){var self = $$16.$$s == null ? this : $$16.$$s;
+      return $send(item, 'touch', [true], function $$15(){var self = $$15.$$s == null ? this : $$15.$$s;
 
         
         self.$remove_active(items);
@@ -477,7 +474,7 @@ Opal.Object.$response_listener(response)
     support_style = self.$vie_styles()['$[]']("support_style");
     icon_spacing = $rb_plus(self.$vie_styles()['$[]']("support_style")['$[]']("height"), $rb_times(margin, 2));
     index = 0;
-    return $send(self.$tool_list(), 'each_value', [], function $$17(data){var self = $$17.$$s == null ? this : $$17.$$s, icon_found = nil, action_found = nil, id_found = nil, support = nil;
+    return $send(self.$tool_list(), 'each_value', [], function $$16(data){var self = $$16.$$s == null ? this : $$16.$$s, icon_found = nil, action_found = nil, id_found = nil, support = nil;
 
       
       if (data == null) data = nil;
@@ -486,7 +483,7 @@ Opal.Object.$response_listener(response)
       id_found = data['$[]']("id");
       support = self.$grab("inspector").$box(support_style.$merge($hash2(["top", "id"], {"top": $rb_plus($rb_times(icon_spacing, index), margin), "id": "module_support_" + (index)})));
       self.$svg_fetch(icon_found, svg_color, support.$id());
-      $send(support, 'touch', [true], function $$18(){var self = $$18.$$s == null ? this : $$18.$$s;
+      $send(support, 'touch', [true], function $$17(){var self = $$17.$$s == null ? this : $$17.$$s;
 
         return self.$send(action_found, id_found)}, {$$s: self});
       support.$drag(true);
@@ -496,12 +493,12 @@ Opal.Object.$response_listener(response)
   $def(self, '$insert_module', function $$insert_module(module_id) {
     var self = this;
 
-    return $send(self.$grab("selected").$data(), 'each', [], function $$19(module_id_found){var self = $$19.$$s == null ? this : $$19.$$s, module_found = nil, tool_found = nil, tool_color = nil;
+    return $send(self.$grab("selected").$data(), 'each', [], function $$18(module_id_found){var self = $$18.$$s == null ? this : $$18.$$s, module_found = nil, tool_found = nil, tool_color = nil;
 
       
       if (module_id_found == null) module_id_found = nil;
       module_found = self.$grab(module_id_found);
-      $send(module_found.$materials(), 'each', [], function $$20(child_found){var self = $$20.$$s == null ? this : $$20.$$s;
+      $send(module_found.$materials(), 'each', [], function $$19(child_found){var self = $$19.$$s == null ? this : $$19.$$s;
 
         
         if (child_found == null) child_found = nil;
