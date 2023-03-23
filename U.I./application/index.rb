@@ -427,14 +427,41 @@ end
 # a=`{toto: 'hello'}`
 # alert a.JS[:toto]
 
+
+##### code deg
+
+
+def new_svg_fetch(svg_name, svg_color = :lightgray, target)
+
+  `
+
+        let svgContainer = document.getElementById(#{target});
+        let parser = new DOMParser();
+        let svgDoc = parser.parseFromString(svgText, "image/svg+xml");
+        let importedSVG = svgDoc.getElementsByTagName("svg")[0];
+        importedSVG.style.width =  "100%";
+        importedSVG.style.height =  "100%";
+        let elements = importedSVG.getElementsByTagName("path");
+        Array.from(elements).forEach(el => {
+            el.setAttribute("fill", #{svg_color});
+            el.setAttribute("stroke", #{svg_color});
+        });
+        svgContainer.appendChild(importedSVG);
+
+
+`
+end
+
 def get_modules_callback(body)
   body.each do |module_found|
-    content = "project is : #{module_found.JS[:name]}\nid:  #{module_found.JS[:id]}}"
-    puts module_found.JS[:icon]
+    content = "module is : #{module_found.JS[:name]}\nid:  #{module_found.JS[:id]}}"
+    # puts module_found.JS[:icon]
+
+    new_svg_fetch(module_found.JS[:icon], :lightgray, :get_modules_box )
     grab(:inspector).text({ data: content, top: 60, visual: { size: 12 } }) ##
   end
   return unless body.length == 0
-  grab(:inspector).text({ data: "no project", top: 60, visual: { size: 12 } })
+  grab(:inspector).text({ data: "no project", top: 60, visual: { size: 12 }, width: 333 })
 
 end
 
@@ -443,7 +470,7 @@ def action_get_modules
 
 end
 
-module_box = box({ id: :get_modules, bottom: 0 })
+module_box = box({ id: :get_modules_box, bottom: 0 })
 
 module_box.touch(true) do
   action_get_modules
