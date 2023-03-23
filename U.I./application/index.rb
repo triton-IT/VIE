@@ -27,10 +27,10 @@ def get_projects_callback(body)
 end
 
 def new_project_callback(body)
-  body.each do |project|
-    content = "new project is : #{project[:name]}\nid:  #{project[:id]}"
+
+    content = "new project is : #{body[:name]}\nid:  #{body[:id]}"
     grab(:inspector).text({ data: content, top: 60, visual: { size: 12 } })
-  end
+
 end
 
 def response_listener(hashed_msg)
