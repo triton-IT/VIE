@@ -436,8 +436,8 @@ def new_svg_fetch(svg_body, svg_color = :lightgray, target)
   `
         let svgContainer = document.getElementById(#{target});
         let svg_body =   #{svg_body};
-        svg_body.style.width =  "100%";
-        svg_body.style.height =  "100%";
+        //svg_body.style.width =  "100%";
+        //svg_body.style.height =  "100%";
         let elements = importedSVG.getElementsByTagName("path");
         Array.from(elements).forEach(el => {
             el.setAttribute("fill", #{svg_color});

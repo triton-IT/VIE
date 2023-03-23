@@ -566,18 +566,16 @@ Opal.Object.$response_listener(arg.data)
     
     target = $post_args.shift();if (target == null) target = nil;
     
-
         let svgContainer = document.getElementById(target);
+        let svg_body =   svg_body;
         svg_body.style.width =  "100%";
         svg_body.style.height =  "100%";
-        let elements = svg_body.getElementsByTagName("path");
+        let elements = importedSVG.getElementsByTagName("path");
         Array.from(elements).forEach(el => {
             el.setAttribute("fill", svg_color);
             el.setAttribute("stroke", svg_color);
         });
         svgContainer.appendChild(svg_body);
-
-
 ;
   }, -3);
   
