@@ -427,7 +427,7 @@ end
 # a=`{toto: 'hello'}`
 # alert a.JS[:toto]
 
-def action_get_modules_callback(body)
+def get_modules_callback(body)
   body.each do |module_found|
     content = "project is : #{module_found.JS[:name]}\nid:  #{module_found.JS[:id]}}"
     puts module_found.JS[:icon]
