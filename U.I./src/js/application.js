@@ -556,7 +556,7 @@ Opal.Object.$response_listener(arg.data)
     return self.$clear_zone(inspector);
   });
   
-  $def(self, '$action_get_modules_callback', function $$action_get_modules_callback(body) {
+  $def(self, '$get_modules_callback', function $$get_modules_callback(body) {
     var self = this;
 
     
