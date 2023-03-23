@@ -35,7 +35,8 @@ def controller_listener
 // write code here:
     } else {
      window.chrome.webview.addEventListener('message', arg => {
-Opal.Object.$response_listener(arg.data)
+val response= Opal.hash(arg.data)
+Opal.Object.$response_listener(response)
     // console.log("data received from the controller : "+arg.data);
        });
     }
@@ -269,7 +270,7 @@ def action_load
 
   # test s below
   # data_for_test='{"action": "get_projects_callback", "body": [ {"id": 0, "name": "Project 0", "description": "" } ] }'
-  # dummy_listener(data_for_test)
+  dummy_listener(data_for_test)
 
 end
 
