@@ -18,9 +18,19 @@ console.log('=====>'+typeof json_msg);
 end
 
 def get_projects_callback(body)
-  body= body[0]
-  content= "name : #{body[:name]}\nid:  #{body[:id]}"
-  grab(:inspector).text({ data: content, top: 60, visual: { size: 12 } })
+  body.each do |project|
+    content = "project is : #{project[:name]}\nid:  #{project[:id]}"
+    grab(:inspector).text({ data: content, top: 60, visual: { size: 12 } })
+  end
+  return unless body.length == 0
+  grab(:inspector).text({ data: "no project", top: 60, visual: { size: 12 } })
+end
+
+def new_project_callback(body)
+  body.each do |project|
+    content = "new project is : #{project[:name]}\nid:  #{project[:id]}"
+    grab(:inspector).text({ data: content, top: 60, visual: { size: 12 } })
+  end
 end
 
 def response_listener(hashed_msg)
@@ -29,6 +39,7 @@ def response_listener(hashed_msg)
   # alert hashed_msg[:action]
   send(hashed_msg[:action], hashed_msg[:body])
 end
+
 def controller_listener
   `
   if (window.webkit) {
@@ -270,12 +281,13 @@ def action_load
 
   # test s below
   # data_for_test='{"action": "get_projects_callback", "body": [ {"id": 0, "name": "Project 0", "description": "" } ] }'
-  dummy_listener(data_for_test)
+  # dummy_listener(data_for_test)
 
 end
 
 def rename_project
-  alert "rename : #{grab(:current_project).data}"
+  controller_sender({ action: :new_project })
+  # alert "rename : #{grab(:current_project).data}"
 end
 
 def delete_project
