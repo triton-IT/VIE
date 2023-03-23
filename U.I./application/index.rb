@@ -19,15 +19,6 @@ console.log('=====>'+typeof json_msg);
 `
 end
 
-# class Vie
-#   def initialize
-#     super
-#   end
-#
-#
-# end
-
-
 def get_projects_callback(body)
   # formated_text=[]
   # body.each do |k,v|
@@ -40,7 +31,7 @@ def get_projects_callback(body)
   grab(:inspector).text({ data: content, top: 60, visual: { size: 12 } })
 end
 
-def dummy_listener(data_for_test)
+def controller_listener(data_for_test)
   hashed_msg=JSON.parse(data_for_test)
   # alert hashed_msg.class
   # alert hashed_msg[:action]
@@ -52,7 +43,8 @@ def controller_listener
 // write code here:
     } else {
      window.chrome.webview.addEventListener('message', arg => {
-     console.log("data received from the controller : "+arg.data);
+Opal.Object.$response_listener(arg.data)
+    // console.log("data received from the controller : "+arg.data);
        });
     }
 `
@@ -281,11 +273,11 @@ end
 # main methods
 def action_load
   # we send the command get_projects to the server
-  # controller_sender({ action: :get_projects })
+  controller_sender({ action: :get_projects })
 
   # test s below
-  data_for_test='{"action": "get_projects_callback", "body": [ {"id": 0, "name": "Project 0", "description": "" } ] }'
-  dummy_listener(data_for_test)
+  # data_for_test='{"action": "get_projects_callback", "body": [ {"id": 0, "name": "Project 0", "description": "" } ] }'
+  # dummy_listener(data_for_test)
 
 end
 
