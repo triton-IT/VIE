@@ -1,0 +1,517 @@
+{
+    "action": "get_modules",
+    "body": {}
+}
+
+{
+    "action": "get_modules_callback",
+    "body": [
+    {
+        "id": 0,
+        "name": "audio-in",
+        "icon": "<svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" xmlns=\\http://www.w3.org/2000/svg\\ fill=\"currentColor\">  <path id=\"mainPath\" d=\"M15 5.5a4.394 4.394 0 0 1-4 4.5 2.955 2.955 0 0 0-.2-1A3.565 3.565 0 0 0 14 5.5a3.507 3.507 0 0 0-7-.3A3.552 3.552 0 0 0 6 5a4.622 4.622 0 0 1 4.5-4A4.481 4.481 0 0 1 15 5.5zM5.5 6a4.5 4.5 0 1 0 0 9.001 4.5 4.5 0 0 0 0-9z\"/></svg>",
+        "input_slots": [
+            {
+                "id": 0,
+                "name": "audio-in"
+            }
+        ],
+        "output_slots": [
+            {
+                "id": 0,
+                "name": "audio-out"
+            }
+        ]
+    },
+    {
+        "id": 1,
+        "name": "audio-out",
+        "icon": "<svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" xmlns=\\http://www.w3.org/2000/svg\\ fill=\"currentColor\">  <path id=\"mainPath\" d=\"M15 5.5a4.394 4.394 0 0 1-4 4.5 2.955 2.955 0 0 0-.2-1A3.565 3.565 0 0 0 14 5.5a3.507 3.507 0 0 0-7-.3A3.552 3.552 0 0 0 6 5a4.622 4.622 0 0 1 4.5-4A4.481 4.481 0 0 1 15 5.5zM5.5 6a4.5 4.5 0 1 0 0 9.001 4.5 4.5 0 0 0 0-9z\"/></svg>",
+        "input_slots": [
+            {
+                "id": 0,
+                "name": "on/off"
+            },
+            {
+                "id": 1,
+                "name": "amplitudes"
+            }
+        ],
+        "output_slots": []
+    },
+    {
+        "id": 3,
+        "name": "envelope",
+        "icon": "<svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" xmlns=\\http://www.w3.org/2000/svg\\ fill=\"currentColor\">  <path id=\"mainPath\" d=\"M15 5.5a4.394 4.394 0 0 1-4 4.5 2.955 2.955 0 0 0-.2-1A3.565 3.565 0 0 0 14 5.5a3.507 3.507 0 0 0-7-.3A3.552 3.552 0 0 0 6 5a4.622 4.622 0 0 1 4.5-4A4.481 4.481 0 0 1 15 5.5zM5.5 6a4.5 4.5 0 1 0 0 9.001 4.5 4.5 0 0 0 0-9z\"/></svg>",
+        "input_slots": [
+            {
+                "id": 0,
+                "name": "on/off"
+            },
+            {
+                "id": 1,
+                "name": "velocities"
+            },
+            {
+                "id": 2,
+                "name": "notes on"
+            },
+            {
+                "id": 3,
+                "name": "notes off"
+            }
+        ],
+        "output_slots": [
+            {
+                "id": 4,
+                "name": "amplitudes"
+            },
+            {
+                "id": 5,
+                "name": "notes off"
+            },
+            {
+                "id": 6,
+                "name": "sustain start"
+            },
+            {
+                "id": 7,
+                "name": "sustain end"
+            },
+            {
+                "id": 8,
+                "name": "sustain loop"
+            }
+        ]
+    },
+    {
+        "id": 4,
+        "name": "gain",
+        "icon": "<svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" xmlns=\\http://www.w3.org/2000/svg\\ fill=\"currentColor\">  <path id=\"mainPath\" d=\"M15 5.5a4.394 4.394 0 0 1-4 4.5 2.955 2.955 0 0 0-.2-1A3.565 3.565 0 0 0 14 5.5a3.507 3.507 0 0 0-7-.3A3.552 3.552 0 0 0 6 5a4.622 4.622 0 0 1 4.5-4A4.481 4.481 0 0 1 15 5.5zM5.5 6a4.5 4.5 0 1 0 0 9.001 4.5 4.5 0 0 0 0-9z\"/></svg>",
+        "input_slots": [
+            {
+                "id": 0,
+                "name": "on/off"
+            },
+            {
+                "id": 1,
+                "name": "signal"
+            },
+            {
+                "id": 2,
+                "name": "gain"
+            }
+        ],
+        "output_slots": [
+            {
+                "id": 3,
+                "name": "amplitudes"
+            }
+        ]
+    },
+    {
+        "id": 5,
+        "name": "high-pass",
+        "icon": "<svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" xmlns=\\http://www.w3.org/2000/svg\\ fill=\"currentColor\">  <path id=\"mainPath\" d=\"M15 5.5a4.394 4.394 0 0 1-4 4.5 2.955 2.955 0 0 0-.2-1A3.565 3.565 0 0 0 14 5.5a3.507 3.507 0 0 0-7-.3A3.552 3.552 0 0 0 6 5a4.622 4.622 0 0 1 4.5-4A4.481 4.481 0 0 1 15 5.5zM5.5 6a4.5 4.5 0 1 0 0 9.001 4.5 4.5 0 0 0 0-9z\"/></svg>",
+        "input_slots": [
+            {
+                "id": 0,
+                "name": "on/off"
+            },
+            {
+                "id": 1,
+                "name": "signal"
+            },
+            {
+                "id": 2,
+                "name": "cutoff"
+            },
+            {
+                "id": 3,
+                "name": "resonance"
+            }
+        ],
+        "output_slots": [
+            {
+                "id": 4,
+                "name": "amplitudes"
+            }
+        ]
+    },
+    {
+        "id": 6,
+        "name": "low-pass",
+        "icon": "<svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" xmlns=\\http://www.w3.org/2000/svg\\ fill=\"currentColor\">  <path id=\"mainPath\" d=\"M15 5.5a4.394 4.394 0 0 1-4 4.5 2.955 2.955 0 0 0-.2-1A3.565 3.565 0 0 0 14 5.5a3.507 3.507 0 0 0-7-.3A3.552 3.552 0 0 0 6 5a4.622 4.622 0 0 1 4.5-4A4.481 4.481 0 0 1 15 5.5zM5.5 6a4.5 4.5 0 1 0 0 9.001 4.5 4.5 0 0 0 0-9z\"/></svg>",
+        "input_slots": [
+            {
+                "id": 0,
+                "name": "on/off"
+            },
+            {
+                "id": 1,
+                "name": "signal"
+            },
+            {
+                "id": 2,
+                "name": "cutoff"
+            },
+            {
+                "id": 3,
+                "name": "resonance"
+            }
+        ],
+        "output_slots": [
+            {
+                "id": 4,
+                "name": "amplitudes"
+            }
+        ]
+    },
+    {
+        "id": 7,
+        "name": "midi-in",
+        "icon": "<svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" xmlns=\\http://www.w3.org/2000/svg\\ fill=\"currentColor\">  <path id=\"mainPath\" d=\"M15 5.5a4.394 4.394 0 0 1-4 4.5 2.955 2.955 0 0 0-.2-1A3.565 3.565 0 0 0 14 5.5a3.507 3.507 0 0 0-7-.3A3.552 3.552 0 0 0 6 5a4.622 4.622 0 0 1 4.5-4A4.481 4.481 0 0 1 15 5.5zM5.5 6a4.5 4.5 0 1 0 0 9.001 4.5 4.5 0 0 0 0-9z\"/></svg>",
+        "input_slots": [
+            {
+                "id": 0,
+                "name": "on/off"
+            }
+        ],
+        "output_slots": [
+            {
+                "id": 1,
+                "name": "notes on"
+            },
+            {
+                "id": 2,
+                "name": "notes off"
+            },
+            {
+                "id": 3,
+                "name": "frequencies"
+            },
+            {
+                "id": 4,
+                "name": "velocities"
+            }
+        ]
+    },
+    {
+        "id": 8,
+        "name": "mixer",
+        "icon": "<svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" xmlns=\\http://www.w3.org/2000/svg\\ fill=\"currentColor\">  <path id=\"mainPath\" d=\"M15 5.5a4.394 4.394 0 0 1-4 4.5 2.955 2.955 0 0 0-.2-1A3.565 3.565 0 0 0 14 5.5a3.507 3.507 0 0 0-7-.3A3.552 3.552 0 0 0 6 5a4.622 4.622 0 0 1 4.5-4A4.481 4.481 0 0 1 15 5.5zM5.5 6a4.5 4.5 0 1 0 0 9.001 4.5 4.5 0 0 0 0-9z\"/></svg>",
+        "input_slots": [
+            {
+                "id": 0,
+                "name": "on/off"
+            },
+            {
+                "id": 1,
+                "name": "amplitudes"
+            }
+        ],
+        "output_slots": [
+            {
+                "id": 2,
+                "name": "amplitudes"
+            }
+        ]
+    },
+    {
+        "id": 9,
+        "name": "multiplier",
+        "icon": "<svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" xmlns=\\http://www.w3.org/2000/svg\\ fill=\"currentColor\">  <path id=\"mainPath\" d=\"M15 5.5a4.394 4.394 0 0 1-4 4.5 2.955 2.955 0 0 0-.2-1A3.565 3.565 0 0 0 14 5.5a3.507 3.507 0 0 0-7-.3A3.552 3.552 0 0 0 6 5a4.622 4.622 0 0 1 4.5-4A4.481 4.481 0 0 1 15 5.5zM5.5 6a4.5 4.5 0 1 0 0 9.001 4.5 4.5 0 0 0 0-9z\"/></svg>",
+        "input_slots": [
+            {
+                "id": 0,
+                "name": "on/off"
+            },
+            {
+                "id": 1,
+                "name": "multipliers"
+            },
+            {
+                "id": 2,
+                "name": "mutiplicands"
+            }
+        ],
+        "output_slots": [
+            {
+                "id": 3,
+                "name": "amplitudes"
+            }
+        ]
+    },
+    {
+        "id": 10,
+        "name": "noise",
+        "icon": "<svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" xmlns=\\http://www.w3.org/2000/svg\\ fill=\"currentColor\">  <path id=\"mainPath\" d=\"M15 5.5a4.394 4.394 0 0 1-4 4.5 2.955 2.955 0 0 0-.2-1A3.565 3.565 0 0 0 14 5.5a3.507 3.507 0 0 0-7-.3A3.552 3.552 0 0 0 6 5a4.622 4.622 0 0 1 4.5-4A4.481 4.481 0 0 1 15 5.5zM5.5 6a4.5 4.5 0 1 0 0 9.001 4.5 4.5 0 0 0 0-9z\"/></svg>",
+        "input_slots": [
+            {
+                "id": 0,
+                "name": "on/off"
+            }
+        ],
+        "output_slots": [
+            {
+                "id": 1,
+                "name": "amplitudes"
+            }
+        ]
+    },
+    {
+        "id": 11,
+        "name": "oscillator",
+        "icon": "<svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" xmlns=\\http://www.w3.org/2000/svg\\ fill=\"currentColor\">  <path id=\"mainPath\" d=\"M15 5.5a4.394 4.394 0 0 1-4 4.5 2.955 2.955 0 0 0-.2-1A3.565 3.565 0 0 0 14 5.5a3.507 3.507 0 0 0-7-.3A3.552 3.552 0 0 0 6 5a4.622 4.622 0 0 1 4.5-4A4.481 4.481 0 0 1 15 5.5zM5.5 6a4.5 4.5 0 1 0 0 9.001 4.5 4.5 0 0 0 0-9z\"/></svg>",
+        "input_slots": [
+            {
+                "id": 0,
+                "name": "on/off"
+            },
+            {
+                "id": 1,
+                "name": "frequencies"
+            },
+            {
+                "id": 2,
+                "name": "signal type"
+            }
+        ],
+        "output_slots": [
+            {
+                "id": 3,
+                "name": "amplitudes"
+            }
+        ]
+    },
+    {
+        "id": 12,
+        "name": "recorder",
+        "icon": "<svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" xmlns=\\http://www.w3.org/2000/svg\\ fill=\"currentColor\">  <path id=\"mainPath\" d=\"M15 5.5a4.394 4.394 0 0 1-4 4.5 2.955 2.955 0 0 0-.2-1A3.565 3.565 0 0 0 14 5.5a3.507 3.507 0 0 0-7-.3A3.552 3.552 0 0 0 6 5a4.622 4.622 0 0 1 4.5-4A4.481 4.481 0 0 1 15 5.5zM5.5 6a4.5 4.5 0 1 0 0 9.001 4.5 4.5 0 0 0 0-9z\"/></svg>",
+        "input_slots": [
+            {
+                "id": 0,
+                "name": "on/off"
+            },
+            {
+                "id": 1,
+                "name": "amplitudes"
+            }
+        ],
+        "output_slots": [
+            {
+                "id": 2,
+                "name": "amplitudes"
+            }
+        ]
+    },
+    {
+        "id": 13,
+        "name": "sample",
+        "icon": "<svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" xmlns=\\http://www.w3.org/2000/svg\\ fill=\"currentColor\">  <path id=\"mainPath\" d=\"M15 5.5a4.394 4.394 0 0 1-4 4.5 2.955 2.955 0 0 0-.2-1A3.565 3.565 0 0 0 14 5.5a3.507 3.507 0 0 0-7-.3A3.552 3.552 0 0 0 6 5a4.622 4.622 0 0 1 4.5-4A4.481 4.481 0 0 1 15 5.5zM5.5 6a4.5 4.5 0 1 0 0 9.001 4.5 4.5 0 0 0 0-9z\"/></svg>",
+        "input_slots": [
+            {
+                "id": 0,
+                "name": "on/off"
+            },
+            {
+                "id": 1,
+                "name": "play"
+            },
+            {
+                "id": 2,
+                "name": "stop"
+            },
+            {
+                "id": 3,
+                "name": "sample name"
+            }
+        ],
+        "output_slots": [
+            {
+                "id": 4,
+                "name": "play at"
+            },
+            {
+                "id": 5,
+                "name": "amplitudes"
+            }
+        ]
+    }
+]
+}
+
+{
+    "action": "new_project"
+}
+
+{
+    "action": "new_project_callback",
+    "body": {
+    "id": 0,
+        "name": "Project 0"
+}
+}
+
+{
+    "action": "get_projects"
+}
+
+{
+    "action": "get_projects_callback",
+    "body": [
+    {
+        "id": 0,
+        "name": "Project 0",
+        "description": ""
+    }
+]
+}
+
+{
+    "action": "add_module",
+    "body": {
+    "type": "midi-in",
+        "position": {
+        "x": 1,
+            "y": 2,
+            "z": 3
+    }
+}
+}
+
+{
+    "action": "add_module_callback",
+    "body": {
+    "module": {
+        "id": 0
+    }
+}
+}
+
+{
+    "action": "export_project",
+    "body": {
+    "path": "c:/tmp/project0.json"
+}
+}
+
+{
+    "action": "export_project_callback",
+    "body": {}
+}
+
+{
+    "action": "import_project",
+    "body": {
+    "path": "c:/tmp/project0.json"
+}
+}
+
+{
+    "action": "import_project_callback",
+    "body": {
+    "id": 0,
+        "name": "Project 0",
+        "description": ""
+}
+}
+
+{
+    "action": "load_project",
+    "body": {
+    "id": 0
+}
+}
+
+{
+    "action": "load_project_callback",
+    "body": {
+    "id": 0,
+        "name": "Project 0",
+        "description": ""
+}
+}
+
+{
+    "action": "enable_modules_link",
+    "body": {
+    "source_module_id": 0,
+        "source_slot_id": 3,
+        "target_module_id": 1,
+        "target_slot_id": 1
+}
+}
+
+{
+    "action": "enable_modules_link_callback",
+    "body": {}
+}
+
+{
+    "action": "disable_modules_link",
+    "body": {
+    "source_module_id": 0,
+        "source_slot_id": 3,
+        "target_module_id": 1,
+        "target_slot_id": 1
+}
+}
+
+{
+    "action": "disable_modules_link_callback",
+    "body": {}
+}
+
+{
+    "action": "link_modules",
+    "body": {
+    "source_module_id": 0,
+        "source_slot_id": 3,
+        "target_module_id": 1,
+        "target_slot_id": 1
+}
+}
+
+{
+    "action": "link_modules_callback",
+    "body": {}
+}
+
+{
+    "action": "unlink_modules",
+    "body": {
+    "source_module_id": 0,
+        "source_slot_id": 3,
+        "target_module_id": 1,
+        "target_slot_id": 1
+}
+}
+
+{
+    "action": "unlink_modules_callback",
+    "body": {}
+}
+
+{
+    "action": "bypass_module",
+    "body": {
+    "module_id": 1,
+        "on": true
+}
+}
+
+{
+    "action": "bypass_module_callback",
+    "body": {}
+}
+
+
+
+image001.png
+Régis Ramillien
+
++33 7 74 81 18 78
+r.ramillien@tritonit.tech
+
+https://tritonit.tech
