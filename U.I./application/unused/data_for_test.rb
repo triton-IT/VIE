@@ -196,9 +196,9 @@
 # }
 #
 # json_test = vie_object_format.to_json
-# # alert "#{json_test.class }: #{json_test.class}"
+
 # hash_test = JSON.parse(json_test)
-# # alert "#{hash_test.class} : #{hash_test}"
+
 #
 # # get_vie_module(json_test)
 #

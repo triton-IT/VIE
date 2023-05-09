@@ -87,7 +87,7 @@ def project_list
   }
 end
 
-def tool_list
+def modules_list
   {
     t1: { id: :t1, action: :insert_module, label: :saw, type: :oscillator, icon: :'wave-saw' },
     t2: { id: :t2, action: :insert_module, label: :sin, type: :oscillator, icon: :'wave-sine' },

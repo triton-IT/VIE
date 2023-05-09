@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-
 # we init the controller_listener
 Atome.controller_listener
 
@@ -10,8 +9,7 @@ def response_listener(hashed_msg)
   send(js_action, js_body)
 end
 
-def load_modules(module_id)
-
+def load_modules(_module_id)
   Atome.controller_sender({ action: :get_modules })
 end
 
@@ -20,10 +18,9 @@ def rename_project
 end
 
 def delete_project
-  alert "delete : #{grab(:current_project).data}"
+  log "delete : #{grab(:current_project).data}"
 end
 
 def duplicate_project
-  alert "duplicate : #{grab(:current_project).data}"
-
+  log "duplicate : #{grab(:current_project).data}"
 end
