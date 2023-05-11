@@ -8,8 +8,7 @@ def action_router(id_found, options)
   # we set the context
   grab(:context).data[:mode] = id_found
   # if debug mode then we log the above messages
-  log("=> mode activated: #{grab(:context).data}\n
-=> function call : action_#{id_found}")
+  log("action_router say, call :  action_#{id_found}\nNew  context: #{grab(:context).data}")
 end
 
 # tools actions

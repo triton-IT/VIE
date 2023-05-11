@@ -59,7 +59,7 @@ def cells_up_touch(module_slot, current_matrix, inspector, index)
     case context[:mode]
 
     when :default
-      test_link_cell(current_matrix, inspector, index)
+      request_link_cell(current_matrix, inspector, index)
     when :edit
       # fill later
     when :select
@@ -72,7 +72,7 @@ end
 
 def cells_dropped_item(module_slot)
   module_slot.drop(true) do |event_content|
-    log "received : #{event_content}"
+    log "received : #{event_content} , on : #{self.id}"
   end
 end
 

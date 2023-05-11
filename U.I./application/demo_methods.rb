@@ -9,7 +9,7 @@ class Atome
     support_style = vie_styles[:support_style]
     icon_spacing = vie_styles[:support_style][:height] + margin * 2
     index = 0
-    modules_list.each_value do |data|
+    fake_modules_list.each_value do |data|
       icon_found = data[:icon]
       action_found = data[:action]
       id_found = data[:id]
@@ -72,32 +72,19 @@ elem.style.transform = "none";
     end
   end
 
-  def self.get_settings
-    log 'create the get_settings callback here'
-    inspector = grab(:inspector)
-    item_to_list = [
-      { label: :module_1, id: :p1 },
-      { label: :module_2, id: :p2 },
-      { label: :module_3, id: :p3 },
-      { label: :module_4, id: :p4 },
-      { label: :module_5, id: :p5, code: :test }
-    ]
-    inspector.sort(true) do |_el|
-    end
-
-    # code will send the id of each item to the load method
-    inspector.list({ listing: item_to_list, code: :load_modules,
-                     style: { colors: %i[gray white], width: :auto, left: 0, right: 0, height: 15, items: { color: :orange, size: 36, align: :left, margin: 3 } } })
-  end
-
-  def self.controller_sender(action)
-    action_found = action[:action]
-    log "controller_sender, received: #{action}"
+  def self.controller_sender(message)
+    action_found = message[:action]
+    log "controller_sender, received: #{message}"
     case action_found
+
+    when :new_project
+      new_project_callback(fake_new_project_data)
     when :get_projects
-      ''
+      get_projects_callback(fake_project_list_data)
+    when :load_project
+      load_project_callback(fake_project_data)
     when :get_settings
-      Atome.get_settings
+      get_settings_callback
     when :get_modules
       Atome.get_modules
     else

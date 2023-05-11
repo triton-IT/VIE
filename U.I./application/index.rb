@@ -11,6 +11,7 @@ require 'application/communication'
 require 'application/callbacks'
 require 'application/events'
 require 'application/actions'
+require 'application/tool_methods'
 
 # set demo mode:
 require 'application/demo_methods'
@@ -47,28 +48,19 @@ tools_list = {
 fill_tool_zone(tools_list)
 
 # we ask the atome named ':current_matrix' for the current active matrix ID
-current_matrix_id = grab(:current_matrix).data
+# current_matrix_id = grab(:current_matrix).data
 # we initialize the matrix
-current_matrix = create_matrix(current_matrix_id)
+current_matrix = build_matrix
 # now we assign events to it
 matrix_events(current_matrix)
 
-# utils for vie
-#
-def clear_zone(zone)
-  zone.materials.each do |child_found|
-    grab(child_found)&.delete(true)
-  end
-  zone.delete(:materials)
-end
+# now we store the active matrix
+grab(:active_matrix).data = 0
 
-def remove_active(items)
-  items.each do |id_found, _properties|
-    grab(id_found)&.detached(:active_color)
-    grab(id_found)&.attached(:inactive_color)
-  end
-end
+log "active matrix is #{grab(:active_matrix).data}"
 
 # main methods
 
 # tests
+current_matrix.cell(1).text({ data: :hello, visual: { size: 12 } })
+current_matrix.cell(9).text({ data: :cool, visual: { size: 12 } })

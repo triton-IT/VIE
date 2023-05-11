@@ -20,16 +20,18 @@ box(vie_styles[:toolbox_style]) # the toolbox zone at the left side of the scree
 box(vie_styles[:inspector_style]) # the inspector where at the right of the tool zone
 
 # this the atome used to store the module to be associated
-element(id: :connection, data: [1, 3])
-# used to store current matrix ID (initial matrix id is : '0_0_0')
-element(id: :current_matrix, data: ['0_0_0'])
+element(id: :connection, data: [])
 # this the atome used to store the selected module
 element(id: :selected, data: [])
 # this the atome used to store the selected module
 element(id: :context, data: { mode: :default, event: :released })
 # this the atome used to store the current project
 element(id: :current_project)
-# # this the atome used to store the module linked
+# this the atome used to store the content for every matrix in the current project
+element(id: :project_matrix, data: {})
+# this the atome used to store the active matrix (the one the screen)
+element(id: :active_matrix)
+# this the atome used to store all available user projects
 element(id: :debug, data: { debug: false })
 
 def add_icons_to_tool_zone(tool, index, tool_style)
@@ -40,7 +42,7 @@ def add_icons_to_tool_zone(tool, index, tool_style)
   margin = tool_style[:margin]
   support = grab(:toolbox).box(support_style.merge({ top: (icon_spacing * index) + margin,
                                                      id: "tool_support_#{tool_name}" }))
-  # TODO: important for future use  keep to code below to fetch items
+  # TODO: important for future use keep to code below to fetch items
   display_svg(get_icon(tool_name), svg_color, support.id)
   options = tool[1]
   tool_events(support, tool_name, options)
@@ -58,20 +60,22 @@ def fill_tool_zone(tools_list)
   end
 end
 
-def create_matrix(id)
+def build_matrix
   center = grab(:center)
-  matrix_style = vie_styles[:matrix_style].merge(id: "matrix_cell_#{id}", cells: {
+  matrix_id="vie_matrix"
+  matrix_style = vie_styles[:matrix_style].merge(id: matrix_id, cells: {
                                                    particles: { margin: 9, smooth: 3, color: vie_styles[:cell_color],
                                                                 shadow: { blur: 9, left: 3, top: 3,
                                                                           id: :default_cell_shadow,
                                                                           red: 0, green: 0, blue: 0, alpha: 0.3 } }
                                                  })
 
-  modules = center.matrix(matrix_style)
-  modules.right(0)
+  new_matrix = center.matrix(matrix_style)
+  # grab(:project_matrix).data[matrix_id] = new_matrix
+  new_matrix.right(0)
 
   # we return the matrix
-  modules
+  new_matrix
 end
 
 # now the fill the U.I.
