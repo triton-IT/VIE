@@ -27,13 +27,19 @@ end
 
 def cells_over(module_slot)
   module_slot.over(:enter) do
-    module_slot.detached(:cell_color)
-    module_slot.attached(:cell_over)
+    unless module_slot.tag[:selected] == true
+      module_slot.detached(:cell_color)
+      module_slot.attached(:cell_over)
+    end
+
   end
 
   module_slot.over(:leave) do
-    module_slot.detached(:cell_over)
-    module_slot.attached(:cell_color)
+    unless module_slot.tag[:selected] == true
+      module_slot.detached(:cell_over)
+      module_slot.attached(:cell_color)
+    end
+
   end
 end
 
@@ -63,7 +69,20 @@ def cells_up_touch(module_slot, current_matrix, inspector, index)
     when :edit
       # fill later
     when :select
-      # fill later
+      selection = grab(:selected).data
+      if module_slot.tag[:selected] == true
+        module_slot.detached(:active_color)
+        module_slot.attached(:cell_over)
+        module_slot.tag({ selected: false })
+        selection.delete(module_slot.id)
+      else
+        module_slot.detached(:cell_color)
+        module_slot.detached(:cell_over)
+        module_slot.attached(:active_color)
+        module_slot.tag({ selected: true })
+        selection << module_slot.id unless selection.include?(module_slot.id)
+      end
+      log "selection : #{selection}"
     else
       log 'else for mouse up '
     end

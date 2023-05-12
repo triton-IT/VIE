@@ -71,8 +71,12 @@ def build_matrix
                                                  })
 
   new_matrix = center.matrix(matrix_style)
-  # grab(:project_matrix).data[matrix_id] = new_matrix
-  new_matrix.right(0)
+
+
+  # we initialize the cells tags
+  new_matrix.cells.each do |cell|
+    grab(cell).tag({})
+  end
 
   # we return the matrix
   new_matrix
