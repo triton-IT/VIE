@@ -195,7 +195,7 @@ namespace live::tritone::vie::processor::module
 
 	void midi_input::set_parameter(parameter parameter)
 	{
-		if (parameter.get_title() == L"on") {
+		if (parameter.is_title(L"on")) {
 			if (parameter.get_normalized_value() == 0.0f) {
 				is_on = false;
 			}

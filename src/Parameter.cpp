@@ -2,13 +2,14 @@
 
 #include <cwchar>
 #include <limits>
+#include <pluginterfaces/base/ustring.h>
 
 namespace live::tritone::vie {
 	parameter::parameter(
 		const unsigned long id,
-		const wchar_t title[128],
-		const wchar_t short_title[128],
-		const wchar_t units[128],
+		const Steinberg::char16 title[128],
+		const Steinberg::char16 short_title[128],
+		const Steinberg::char16 units[128],
 		const long step_count,
 		const double default_normalized_value)
 		: id_(id),
@@ -18,9 +19,9 @@ namespace live::tritone::vie {
 		  flags_(1), //Equivalent ParameterInfo::kCanAutomate
 		  normalized_value_(default_normalized_value)
 	{
-		wcscpy(title_, title);
-		wcscpy(short_title_, short_title);
-		wcscpy(units_, units);
+		std::char_traits<Steinberg::char16>::copy(title_, title, std::char_traits<Steinberg::char16>::length(title) + 1);
+		std::char_traits<Steinberg::char16>::copy(short_title_, short_title, std::char_traits<Steinberg::char16>::length(short_title) + 1);
+		std::char_traits<Steinberg::char16>::copy(units_, units, std::char_traits<Steinberg::char16>::length(units) + 1);
 	}
 
 	unsigned long parameter::get_id() const
@@ -28,23 +29,19 @@ namespace live::tritone::vie {
 		return id_;
 	}
 
-	std::wstring parameter::get_title() {
-		return std::wstring(title_);
+	void parameter::get_title(Steinberg::char16 out[128]) const
+	{
+		std::char_traits<Steinberg::char16>::copy(out, title_, std::char_traits<Steinberg::char16>::length(title_) + 1);
 	}
 
-	void parameter::get_title(wchar_t out[128]) const
+	void parameter::get_short_title(Steinberg::char16 out[128]) const
 	{
-		wcscpy(out, title_);
+		std::char_traits<Steinberg::char16>::copy(out, short_title_, std::char_traits<Steinberg::char16>::length(short_title_) + 1);
 	}
 
-	void parameter::get_short_title(wchar_t out[128]) const
+	void parameter::get_units(Steinberg::char16 out[128]) const
 	{
-		wcscpy(out, short_title_);
-	}
-
-	void parameter::get_units(wchar_t out[128]) const
-	{
-		wcscpy(out, units_);
+		std::char_traits<Steinberg::char16>::copy(out, units_, std::char_traits<Steinberg::char16>::length(units_) + 1);
 	}
 
 	long parameter::get_step_count() const
@@ -92,12 +89,18 @@ namespace live::tritone::vie {
 		return plain_value;
 	}
 
-	void parameter::to_string(const double normalized_value, wchar_t string[128]) {
-		swprintf_s(string, 128, L"%.4f", normalized_value);
+	void parameter::to_string(const double normalized_value, Steinberg::char16 out[128]) {
+		Steinberg::char16 out_buffer[128];
+		Steinberg::UString128 ustr_out(out_buffer, 128);
+		ustr_out.scanFloat(*const_cast<double*>(&normalized_value));
 	}
 
-	bool parameter::from_string(const wchar_t* string, double& normalized_value) {
-		const int nb_items = swscanf(string, L"%.4f", &normalized_value);
-		return nb_items > 0;
+	void parameter::from_string(const Steinberg::char16 str_value[128], double& normalized_value) {
+		Steinberg::UString u_string(const_cast<Steinberg::char16*>(str_value), 128);
+		u_string.printFloat(normalized_value);
+	}
+
+	bool parameter::is_title(Steinberg::char16* expected) {
+		return std::memcmp(title_, expected, sizeof(title_)) == 0;
 	}
 }

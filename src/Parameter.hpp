@@ -1,15 +1,17 @@
 #pragma once
 
 #include <string>
+#include <pluginterfaces/base/iupdatehandler.h>
+#include <pluginterfaces/base/ftypes.h>
 
 namespace live::tritone::vie {
 	class parameter {
 	public:
 		parameter(
 			unsigned long id,
-			const wchar_t title[128],
-			const wchar_t short_title[128],
-			const wchar_t units[128],
+			const Steinberg::char16 title[128],
+			const Steinberg::char16 short_title[128],
+			const Steinberg::char16 units[128],
 			long step_count,
 			double default_normalized_value);
 
@@ -23,13 +25,11 @@ namespace live::tritone::vie {
 
 		[[nodiscard]] unsigned long get_id() const;
 
-		std::wstring get_title();
+		void get_title(Steinberg::char16 out[128]) const;
 
-		void get_title(wchar_t out[128]) const;
+		void get_short_title(Steinberg::char16 out[128]) const;
 
-		void get_short_title(wchar_t out[128]) const;
-
-		void get_units(wchar_t out[128]) const;
+		void get_units(Steinberg::char16 out[128]) const;
 
 		[[nodiscard]] long get_step_count() const;
 
@@ -47,15 +47,17 @@ namespace live::tritone::vie {
 
 		virtual double to_normalized_value(double plain_value);
 
-		virtual void to_string(double normalized_value, wchar_t string[128]);
+		virtual void to_string(double normalized_value, Steinberg::char16 string[128]);
 
-		virtual bool from_string(const wchar_t* string, double& normalized_value);
+		virtual void from_string(const Steinberg::char16 string[128], double& normalized_value);
+
+		bool is_title(Steinberg::char16* expected);
 
 	private:
 		unsigned long id_;
-		wchar_t title_[128]{};
-		wchar_t short_title_[128]{};
-		wchar_t units_[128]{};
+		Steinberg::char16 title_[128]{};
+		Steinberg::char16 short_title_[128]{};
+		Steinberg::char16 units_[128]{};
 		long step_count_;
 		double default_normalized_value_;
 		long unit_id_;

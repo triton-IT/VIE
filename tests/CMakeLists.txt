@@ -52,7 +52,6 @@ source_group("Test source Files" FILES ${TESTS_SOURCE_FILES})
 
 set(ALL_FILES
         ${HEADER_FILES}
-#        ${RESOURCES}
         ${SOURCE_FILES}
         ${TESTS_SOURCE_FILES}
         )
@@ -60,9 +59,16 @@ set(ALL_FILES
 add_executable(${TEST_PROJECT_NAME} ${ALL_FILES})
 
 add_dependencies(${TEST_PROJECT_NAME}
+        vst_interfaces
         cycfi_q
         libsndfile
         )
+
+message(STATUS "VIE> Set target C++ standard to 17")
+target_compile_features(${TEST_PROJECT_NAME} PRIVATE cxx_std_17)
+
+message(STATUS "VIE> Linking-up VST interfaces")
+target_link_libraries(${TEST_PROJECT_NAME} PRIVATE vst_interfaces)
 
 message(STATUS "VIE> tests>  Linking-up cycfi Q")
 target_link_libraries(${TEST_PROJECT_NAME} PRIVATE cycfi_q)

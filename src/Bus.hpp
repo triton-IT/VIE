@@ -4,6 +4,7 @@
 #include <cstdint>
 
 #include "processor_module.hpp"
+#include <pluginterfaces/base/ftypes.h>
 
 namespace live::tritone::vie {
 	enum class media_type {
@@ -25,7 +26,7 @@ namespace live::tritone::vie {
 		media_type media_type;
 		bus_direction direction;
 		long channel_count;
-		wchar_t name[128];
+		Steinberg::char16 name[128];
 		bus_type bus_type;
 		bool is_default_active;
 		bool is_control_voltage;
@@ -33,10 +34,10 @@ namespace live::tritone::vie {
 
 	class bus {
 	public:
-		bus(std::wstring name, bus_type type, processor_module* processor_module, short channel_count = 2,
+		bus(Steinberg::char16 name[128], bus_type type, processor_module* processor_module, short channel_count = 2,
 		    bool is_default_active = true, bool is_control_voltage = false);
 
-		std::wstring get_name();
+		Steinberg::char16* get_name();
 
 		[[nodiscard]] bus_type get_type() const;
 
@@ -57,7 +58,7 @@ namespace live::tritone::vie {
 		[[nodiscard]] processor_module* get_processor_module() const;
 
 	private:
-		std::wstring name_;
+		Steinberg::char16 name_[128];
 		bus_type type_;
 		short channel_count_;
 		bool is_default_active_;

@@ -5,6 +5,7 @@
 
 #include "../boolean_parameter.hpp"
 #include "../float_parameter.hpp"
+#include <pluginterfaces/base/ustring.h>
 
 extern "C" {
 	bool InitDll() {
@@ -60,21 +61,25 @@ parameter application::add_parameter(uint_fast8_t id, parameter parameter)
 	return *parameter_ptr;
 }
 
-parameter application::add_parameter(uint_fast8_t id, std::string name, std::string short_name, std::string type, std::string unit, float value) {
-	if (type == "boolean") {
+parameter application::add_parameter(uint_fast8_t id, Steinberg::char16 name[128], Steinberg::char16 short_name[128], Steinberg::char16 type[128], Steinberg::char16 unit[128], float value) {
+	Steinberg::UString128 ustr_type(type, 128);
+	char ascii_type[128];
+	ustr_type.toAscii(ascii_type, 128);
+	
+	if (std::strcmp("boolean", ascii_type) == 0) {
 		//FIXME: use wstring in parameters and fund a way to parse wstring with json.
 		boolean_parameter parameter(id,
-			std::wstring(name.begin(), name.end()).c_str(),
-			std::wstring(short_name.begin(), short_name.end()).c_str(),
-			std::wstring(unit.begin(), unit.end()).c_str(),
+			name,
+			short_name,
+			unit,
 			value);
 		return add_parameter(id, parameter);
 	}
 	else {
 		float_parameter parameter(id,
-			std::wstring(name.begin(), name.end()).c_str(),
-			std::wstring(short_name.begin(), short_name.end()).c_str(),
-			std::wstring(unit.begin(), unit.end()).c_str(),
+			name,
+			short_name,
+			unit,
 			value);
 		return add_parameter(id, parameter);
 	}

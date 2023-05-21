@@ -2,8 +2,9 @@
 
 #include <string>
 #include "logger.hpp"
-#include "parameters.hpp"
 #include "processor_modules.hpp"
+
+#include <pluginterfaces/base/ftypes.h>
 
 using namespace live::tritone::vie;
 
@@ -29,9 +30,9 @@ public:
 	static processor_modules& get_processor_modules() {
 		return processor_modules::get_instance();
 	}
-
 	static parameter add_parameter(uint_fast8_t id, parameter parameter);
-	static parameter add_parameter(uint_fast8_t id, std::string name, std::string short_name, std::string type, std::string unit, float value);
+
+	static parameter add_parameter(uint_fast8_t id, Steinberg::char16 name[128], Steinberg::char16 short_name[128], Steinberg::char16 type[128], Steinberg::char16 unit[128], float value);
 
 	static parameter get_parameter(uint_fast8_t id);
 

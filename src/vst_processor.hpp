@@ -3,8 +3,8 @@
 #include <pluginterfaces/vst/ivstcomponent.h>
 #include <pluginterfaces/vst/ivstaudioprocessor.h>
 #include <pluginterfaces/vst/ivstmessage.h>
-#include <pluginterfaces/base/iupdatehandler.h>
 #include <pluginterfaces/vst/ivstevents.h>
+#include <pluginterfaces/base/iupdatehandler.h>
 
 #include "processor_definition.hpp"
 #include "processor_module.hpp"

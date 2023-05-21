@@ -2,10 +2,6 @@ set(PROJECT_NAME VIE)
 
 project(${PROJECT_NAME})
 
-set(JSON_DIRECTORY
-        "../third_party/nlohman_json"
-        )
-
 # Source groups
 set(HEADER_FILES
         "application.hpp"
@@ -115,15 +111,16 @@ message(STATUS "VIE> Setting-up dependencies")
 add_dependencies(${PROJECT_NAME}
         vst_interfaces
         cycfi_q
+        libsndfile
         webview2
         wil
-        libsndfile
         )
 
 message(STATUS "VIE> Set target C++ standard to 17")
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_17)
 
 message(STATUS "VIE> Adding nlohman's json header directory")
+set(JSON_DIRECTORY "../third_party/nlohman_json")
 target_include_directories(${PROJECT_NAME} PUBLIC ${JSON_DIRECTORY})
 
 message(STATUS "VIE> Linking-up VST interfaces")

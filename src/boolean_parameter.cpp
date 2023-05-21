@@ -4,9 +4,9 @@
 namespace live::tritone::vie {
 	boolean_parameter::boolean_parameter(
 		unsigned long id,
-		const wchar_t title[128],
-		const wchar_t short_title[128],
-		const wchar_t unit[128],
+		const Steinberg::char16 title[128],
+		const Steinberg::char16 short_title[128],
+		const Steinberg::char16 unit[128],
 		double default_value) : 
 		parameter(id, title, short_title, unit, 1, default_value) {
 	}

@@ -1,22 +1,24 @@
 #include "bus.hpp"
+#include <pluginterfaces/base/ustring.h>
 
 namespace live::tritone::vie {
-	bus::bus(std::wstring name,
+	bus::bus(Steinberg::char16 name[128],
 		const bus_type type,
 		processor_module* processor_module,
 		const short channel_count,
 		const bool is_default_active,
 		const bool is_control_voltage):
-	name_(std::move(name)),
 	type_(type), channel_count_(channel_count),
 	is_default_active_(is_default_active),
 	is_control_voltage_(is_control_voltage),
 	active_(false),
 	arrangement_(0),
 	processor_module_(processor_module) {
+		Steinberg::UString128 ustr_name(name, 128);
+		ustr_name.copyTo(name_, 128);
 	}
 
-	std::wstring bus::get_name()
+	Steinberg::char16* bus::get_name()
 	{
 		return name_;
 	}

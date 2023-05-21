@@ -14,7 +14,7 @@
 #include "pluginterfaces/base/ipluginbase.h"
 
 using namespace std;
-using json = nlohmann::basic_json<std::map, std::vector, std::wstring>;
+using json = nlohmann::basic_json<std::map, std::vector, std::u16string>;
 
 namespace live::tritone::vie::vst
 {
