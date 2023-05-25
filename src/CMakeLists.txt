@@ -41,6 +41,8 @@ source_group("Header Files" FILES ${HEADER_FILES})
 
 if (WIN32)
     list(APPEND HEADER_FILES "windows/editor_view.hpp")
+else()
+    list(APPEND HEADER_FILES "ios/editor_view.hpp")
 endif ()
 
 set(RESOURCES
@@ -87,6 +89,9 @@ source_group("Source Files" FILES ${SOURCE_FILES})
 if (WIN32)
     list(APPEND SOURCE_FILES "windows/application.cpp")
     list(APPEND SOURCE_FILES "windows/editor_view.cpp")
+else()
+    list(APPEND SOURCE_FILES "ios/application.cpp")
+    list(APPEND HEADER_FILES "ios/editor_view.cpp")
 endif ()
 
 set(ALL_FILES

@@ -62,7 +62,7 @@ namespace live::tritone::vie {
 		double default_normalized_value_;
 		long unit_id_;
 		long flags_;            //DAW dependent parameters
-
+	
 		double normalized_value_;
 	};
 }

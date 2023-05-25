@@ -107,7 +107,7 @@ namespace live::tritone::vie::processor::module
 
 			for (uint_fast32_t amplitude_id = 0; amplitude_id < nb_inputs_; amplitude_id++)
 			{
-				float_array& input_array = inputs_[amplitude_id];
+                float_array& input_array = inputs_[amplitude_id];
 				
 				for (uint_fast32_t frame = 0; frame < output_process_data.num_samples; frame++)
 				{

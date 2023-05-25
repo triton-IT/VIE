@@ -11,9 +11,9 @@
 #include "parameter.hpp"
 
 #ifdef _WIN32
-
 #include "windows/editor_view.hpp"
-
+#else
+#include "ios/editor_view.hpp"
 #endif
 
 namespace live::tritone::vie
