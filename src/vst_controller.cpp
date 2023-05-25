@@ -8,6 +8,12 @@
 using namespace Steinberg;
 using namespace Vst;
 
+#ifdef _WIN32
+#define ON_PARAMETER_ID std::u16string on_parameter_id = L"On";
+#else
+#define ON_PARAMETER_ID std::u16string on_parameter_id = u"On";
+#endif
+
 namespace live::tritone::vie::vst {
 	vst_controller::vst_controller() : nb_ref_(0),
 	                                   view_(nullptr),
@@ -130,7 +136,8 @@ namespace live::tritone::vie::vst {
 	{
 		// Set 0 or 1 if value is "on" or "off" or set value as float otherwise.
 		if (parameter parameter = application::get_parameter(id); parameter.get_step_count() == 1) {
-			if (wcscmp(string, L"On") == 0) {
+            ON_PARAMETER_ID
+			if (on_parameter_id.compare(string) == 0) {
 				valueNormalized = 0.0;
 			}
 			else {

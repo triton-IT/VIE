@@ -5,6 +5,12 @@
 #include "../application.hpp"
 #include "../constants.hpp"
 
+#ifdef _WIN32
+#define ON_PARAMETER_ID Ls"on"
+#else
+#define ON_PARAMETER_ID u"on"
+#endif
+
 using namespace std;
 
 namespace live::tritone::vie::processor::module
@@ -195,7 +201,7 @@ namespace live::tritone::vie::processor::module
 
 	void midi_input::set_parameter(parameter parameter)
 	{
-		if (parameter.is_title(L"on")) {
+		if (parameter.is_title(ON_PARAMETER_ID)) {
 			if (parameter.get_normalized_value() == 0.0f) {
 				is_on = false;
 			}
