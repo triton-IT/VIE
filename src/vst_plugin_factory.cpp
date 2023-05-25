@@ -168,7 +168,7 @@ using namespace live::tritone::vie::vst;
 
 static vst_plugin_factory* gPluginFactory = nullptr;
 
-__declspec (dllexport) IPluginFactory* __stdcall GetPluginFactory() {
+SMTG_EXPORT_SYMBOL IPluginFactory* PLUGIN_API GetPluginFactory() {
 	if (!gPluginFactory) {
 		gPluginFactory = new vst_plugin_factory;
 	}

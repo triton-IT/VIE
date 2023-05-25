@@ -51,7 +51,7 @@ namespace live::tritone::vie {
 
 		virtual void from_string(const Steinberg::char16 string[128], double& normalized_value);
 
-		bool is_title(Steinberg::char16* expected);
+		bool is_title(const Steinberg::char16* expected);
 
 	private:
 		unsigned long id_;

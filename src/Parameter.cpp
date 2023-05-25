@@ -100,7 +100,7 @@ namespace live::tritone::vie {
 		u_string.printFloat(normalized_value);
 	}
 
-	bool parameter::is_title(Steinberg::char16* expected) {
+	bool parameter::is_title(const Steinberg::char16* expected) {
 		return std::memcmp(title_, expected, sizeof(title_)) == 0;
 	}
 }

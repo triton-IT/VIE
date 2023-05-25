@@ -12,6 +12,7 @@
 #include "constants.hpp"
 
 #include "pluginterfaces/base/ipluginbase.h"
+#include <pluginterfaces/base/ustring.h>
 
 using namespace std;
 using json = nlohmann::basic_json<std::map, std::vector, std::u16string>;
@@ -155,7 +156,8 @@ namespace live::tritone::vie::vst
 			bus_info.mediaType = (core_bus_info.media_type == media_type::audio)
 				? Steinberg::Vst::kAudio
 				: Steinberg::Vst::kEvent;
-			wcscpy(bus_info.name, core_bus_info.name);
+			Steinberg::UString128 core_bus_info_name(core_bus_info.name);
+			core_bus_info_name.copyTo(bus_info.name, 128);
 
 			return Steinberg::kResultTrue;
 		}
@@ -363,7 +365,7 @@ namespace live::tritone::vie::vst
 			if (Steinberg::Vst::IParamValueQueue* param_value_queue = input_parameter_changes->getParameterData(index))
 			{
 				double parameter_value;
-				long sample_offset;
+				Steinberg::int32 sample_offset;
 				const long points_count = param_value_queue->getPointCount();
 				const unsigned long parameter_id = param_value_queue->getParameterId();
 				for (int i = 0; i < points_count; i++)
