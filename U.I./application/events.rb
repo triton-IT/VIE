@@ -2,6 +2,33 @@
 
 def cells_long_touch(module_slot)
   module_slot.touch(:long) do
+
+    case context[:mode]
+
+    when :default
+      # request_link_cell(current_matrix, inspector, index)
+    when :edit
+      # fill later
+    when :select
+      # on long touch in selected mode we made a boolean selection
+      current_matrix = grab(:vie_matrix)
+      selection = grab(:selected).data
+      current_matrix.cells.each do |module_slot_id|
+        slot_found = grab(module_slot_id)
+        # unless module_slot_id== module_slot.id
+        if slot_found.tag[:selected] == true
+          log "deselect_cell => #{module_slot_id}"
+          deselect_cell(slot_found, selection)
+        else
+          log "select_cell => #{module_slot_id}"
+          select_cell(slot_found, selection)
+        end
+        # end
+      end
+      # alert selection = grab(:selected).data
+    else
+      #
+    end
     # if grab(:selected).data.include?(self.id)
     #   grab(:selected).data.each do |cell_id|
     #
@@ -69,18 +96,12 @@ def cells_up_touch(module_slot, current_matrix, inspector, index)
     when :edit
       # fill later
     when :select
+
       selection = grab(:selected).data
       if module_slot.tag[:selected] == true
-        module_slot.detached(:active_color)
-        module_slot.attached(:cell_over)
-        module_slot.tag({ selected: false })
-        selection.delete(module_slot.id)
+        deselect_cell(module_slot, selection)
       else
-        module_slot.detached(:cell_color)
-        module_slot.detached(:cell_over)
-        module_slot.attached(:active_color)
-        module_slot.tag({ selected: true })
-        selection << module_slot.id unless selection.include?(module_slot.id)
+        select_cell(module_slot, selection)
       end
       log "selection : #{selection}"
     else
@@ -109,6 +130,9 @@ end
 
 def tool_events(support, tool_name, options)
   support.touch(true) do
-    action_router(tool_name, options)
+    action_touch_router(tool_name, options)
+  end
+  support.touch(:long) do
+    action_long_touch_router(tool_name, options)
   end
 end

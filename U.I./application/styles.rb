@@ -23,8 +23,10 @@ def vie_styles
     toolbox_color: { red: 0.10, green: 0.10, blue: 0.10, id: :toolbox_color },
     center_color: { red: 0, green: 0, blue: 0, alpha: 0, id: :center_color },
     action_color: { red: 0, green: 0, blue: 0, alpha: 0, id: :action_color },
+    module_color: { red: 0.7, green: 0.3, blue: 0, alpha: 1, id: :module_color },
     inspector_color: { red: 0.09, green: 0.09, blue: 0.09, id: :inspector_color },
     active_color: { red: 0.8, green: 0.8, blue: 0.8, id: :active_color },
+    select_color: { red: 0.8, green: 0, blue: 0.3, id: :select_color },
     inactive_color: { red: 0.3, green: 0.3, blue: 0.3, id: :inactive_color },
     dark_color: { red: 0.127, green: 0.127, blue: 0.127, id: :dark_color },
     invisible_color: { red: 0, green: 0, blue: 0, alpha: 0, id: :invisible_color },
@@ -46,6 +48,7 @@ def vie_styles
     filer: { id: :filer, top: 12, bottom: 36, left: 6, width: inspector_with - 12, overflow: :auto, height: :auto,
              attached: [:darker_color], smooth: 6 },
     support_style: { left: 6, width: 23, height: 23, attached: [:invisible_color] },
+    module_style: { left: 6, width: 23, height: 23, attached: [:module_color] },
     center_style: { id: :center, left: toolbox_with + inspector_with + margin * 3, bottom: navigation_height,
                     top: action_height, right: 0, width: :auto, height: :auto, attached: [:center_color] },
     matrix_style: { top: 0, left: 0, smooth: 0, columns: { count: 8 },
@@ -53,7 +56,11 @@ def vie_styles
                     width: 440,
                     height: 440,
                     color: { alpha: 0 },
-    }
+    },
+    active_state: {attached: :active_color},
+    default_state: {detached: [:select_color,:active_color]},
+    select_state: {attached: :active_color}
+
   }
 end
 
@@ -75,6 +82,7 @@ color(vie_styles[:active_color])
 color(vie_styles[:inactive_color])
 color(vie_styles[:cell_connected])
 color(vie_styles[:invisible_color])
-
+color(vie_styles[:module_color])
 shadow(vie_styles[:cell_shadow])
 shadow(vie_styles[:invert_shadow])
+color(vie_styles[:select_color])

@@ -79,8 +79,10 @@ end
 
 def remove_active(items)
   items.each do |id_found, _properties|
-    grab(id_found)&.detached(:active_color)
-    grab(id_found)&.attached(:inactive_color)
+    # grab(id_found)&.detached(:active_color)
+    # grab(id_found)&.attached(:inactive_color)
+        grab(id_found)&.style(:active_style)
+        # grab(id_found)&.attached(:inactive_color)
   end
 end
 
@@ -101,6 +103,29 @@ def request_link_cell(current_matrix, inspector, index)
 
   clear_zone(inspector)
   link_cells(current_matrix, inspector, source_cell, target_cell)
+end
+
+def select_cell(module_slot,selection)
+
+  module_slot.detached(:cell_color)
+  module_slot.detached(:cell_over)
+  # module_slot.attached(:active_color)
+  module_slot.style(vie_styles[:active_state])
+  module_slot.tag({ selected: true })
+  selection << module_slot.id unless selection.include?(module_slot.id)
+
+
+end
+
+def deselect_cell(module_slot,selection)
+
+  module_slot.style(vie_styles[:default_state])
+
+  module_slot.detached(:cell_over)
+  module_slot.attached(:cell_color)
+  module_slot.tag({ selected: false })
+  selection.delete(module_slot.id)
+
 end
 
 

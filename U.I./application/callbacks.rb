@@ -51,7 +51,7 @@ def load_project_callback(msg_body)
 end
 
 def get_modules_callback(body)
-  log 'getting_display_svg'
+  # log 'getting_display_svg'
   body.each do |module_found|
     content = "module is : #{module_found.JS[:name]}\nid:  #{module_found.JS[:id]}}"
     display_svg(module_found.JS[:icon], :lightgray, :get_modules_box)

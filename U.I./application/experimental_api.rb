@@ -24,44 +24,44 @@ new({ post: :list }) do |params|
   end
 end
 
-def svg_fetch(svg_name, svg_color = :lightgray, target)
-  `
- fetch("./medias/images/icons/" +#{svg_name} +".svg")
-    .then(response => response.text())
-   .then(svgText => {
-        let svgContainer = document.getElementById(#{target});
-        let parser = new DOMParser();
-        let svgDoc = parser.parseFromString(svgText, "image/svg+xml");
-        let importedSVG = svgDoc.getElementsByTagName("svg")[0];
-        importedSVG.style.width =  "100%";
-        importedSVG.style.height =  "100%";
-        let elements = importedSVG.getElementsByTagName("path");
-        Array.from(elements).forEach(el => {
-            el.setAttribute("fill", #{svg_color});
-            el.setAttribute("stroke", #{svg_color});
-        });
-        svgContainer.appendChild(importedSVG);
-    });
+# def svg_fetch(svg_name, svg_color = :lightgray, target)
+#   `
+#  fetch("./medias/images/icons/" +#{svg_name} +".svg")
+#     .then(response => response.text())
+#    .then(svgText => {
+#         let svgContainer = document.getElementById(#{target});
+#         let parser = new DOMParser();
+#         let svgDoc = parser.parseFromString(svgText, "image/svg+xml");
+#         let importedSVG = svgDoc.getElementsByTagName("svg")[0];
+#         importedSVG.style.width =  "100%";
+#         importedSVG.style.height =  "100%";
+#         let elements = importedSVG.getElementsByTagName("path");
+#         Array.from(elements).forEach(el => {
+#             el.setAttribute("fill", #{svg_color});
+#             el.setAttribute("stroke", #{svg_color});
+#         });
+#         svgContainer.appendChild(importedSVG);
+#     });
+#
+# `
+# end
 
-`
-end
-
-def display_svg(svg_content, svg_color = :lightgray, target)
-  `
-       let svgContainer = document.getElementById(#{target});
-        let parser = new DOMParser();
-        let svgDoc = parser.parseFromString(#{svg_content}, "image/svg+xml");
-        let importedSVG = svgDoc.getElementsByTagName("svg")[0];
-        importedSVG.style.width =  "100%";
-        importedSVG.style.height =  "100%";
-        let elements = importedSVG.getElementsByTagName("path");
-        Array.from(elements).forEach(el => {
-            el.setAttribute("fill", #{svg_color});
-            el.setAttribute("stroke", #{svg_color});
-        });
-        svgContainer.appendChild(importedSVG);
-`
-end
+# def display_svg(svg_content, svg_color = :lightgray, target)
+#   `
+#        let svgContainer = document.getElementById(#{target});
+#         let parser = new DOMParser();
+#         let svgDoc = parser.parseFromString(#{svg_content}, "image/svg+xml");
+#         let importedSVG = svgDoc.getElementsByTagName("svg")[0];
+#         importedSVG.style.width =  "100%";
+#         importedSVG.style.height =  "100%";
+#         let elements = importedSVG.getElementsByTagName("path");
+#         Array.from(elements).forEach(el => {
+#             el.setAttribute("fill", #{svg_color});
+#             el.setAttribute("stroke", #{svg_color});
+#         });
+#         svgContainer.appendChild(importedSVG);
+# `
+# end
 
 # <div class="atome invisible_color" id="module_support_0" style="width: 23px; height: 23px; left: 6px; top: 9px; z-index: 5;"></div>
 #
