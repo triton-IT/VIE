@@ -17,7 +17,10 @@ class Atome
       module_id = "module_#{module_name}"
       support = grab(:inspector).vector(module_style.merge({ definition: icon_found, top: (icon_spacing * index) + margin,
                                                              id: module_id }))
-
+      label_found=module_id.sub('module_','').gsub('_',' ')
+      label=grab(:inspector).text(module_style.merge({ top: (icon_spacing * index) + margin+12,left: 39,
+                                                       width: :auto, data: label_found, visual: {size: 12},
+                                                       id: "#{module_id}_label" }))
       index += 1
 
       support.depth(5)
@@ -30,6 +33,14 @@ class Atome
         # id_found = support.id
         @prev_pos_left = support.left
         @prev_pos_top = support.top
+
+      end
+
+      support.touch(:up) do
+        unless @item_moved
+          alert :populate_selection
+        end
+
 
       end
 

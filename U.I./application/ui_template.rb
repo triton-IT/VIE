@@ -48,7 +48,7 @@ element(id: :debug, data: { debug: false })
 def add_icons_to_tool_zone(tool, index, tool_style)
   tool_name = tool[0]
 
-  svg_color = tool_style[:color]
+  # svg_color = tool_style[:color]
   support_style = tool_style[:style]
   icon_spacing = tool_style[:spacing]
   margin = tool_style[:margin]

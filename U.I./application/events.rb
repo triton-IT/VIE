@@ -112,7 +112,12 @@ end
 
 def cells_dropped_item(module_slot)
   module_slot.drop(true) do |event_content|
-    log "received : #{event_content} , on : #{self.id}"
+    # log "received : #{event_content} , on : #{self.id}"
+    # self.color(:red)
+    # log "===>w #{grab(event_content[:id]).definition}"
+    icon_drop=grab(event_content[:id]).definition
+    drop_module=self.vector({definition: icon_drop, height: self.height/2, width:  self.width/2,center: true})
+    drop_module.color({ red: 1 })
   end
 end
 
