@@ -1,4 +1,4 @@
-#include "Application.hpp"
+#include "application.hpp"
 #include "processor_modules.hpp"
 
 #include "modules/midi_input.hpp"

@@ -14,11 +14,13 @@ add_subdirectory(third_party/vst)
 message(STATUS "VIE> Adding cycfi Q")
 add_subdirectory(third_party/cycfi_q)
 
-message(STATUS "VIE> Adding webView 2")
-add_subdirectory(third_party/webview2)
+if (WIN32)
+	message(STATUS "VIE> Adding webView 2")
+	add_subdirectory(third_party/webview2)
 
-message(STATUS "VIE> Adding wil")
-add_subdirectory(third_party/wil)
+	message(STATUS "VIE> Adding wil")
+	add_subdirectory(third_party/wil)
+endif ()
 
 message(STATUS "VIE> Adding libsndfile")
 add_subdirectory(third_party/libsndfile)
@@ -26,8 +28,11 @@ add_subdirectory(third_party/libsndfile)
 message(STATUS "VIE> Adding main application")
 add_subdirectory(src)
 
-message(STATUS "VIE> Adding catch2")
-add_subdirectory(third_party/catch2)
+# TODO: Make tests compile on MACOSs
+if (WIN32)
+	message(STATUS "VIE> Adding catch2")
+	add_subdirectory(third_party/catch2)
 
-message(STATUS "VIE> Adding tests application")
-add_subdirectory(tests)
+	message(STATUS "VIE> Adding tests application")
+	add_subdirectory(tests)
+endif ()

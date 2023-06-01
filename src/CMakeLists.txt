@@ -113,13 +113,21 @@ endif ()
 
 # Dependencies
 message(STATUS "VIE> Setting-up dependencies")
-add_dependencies(${PROJECT_NAME}
+if (WIN32)
+    add_dependencies(${PROJECT_NAME}
+            vst_interfaces
+            cycfi_q
+            libsndfile
+            webview2
+            wil
+        )
+else ()
+    add_dependencies(${PROJECT_NAME}
         vst_interfaces
         cycfi_q
         libsndfile
-        webview2
-        wil
-        )
+    )
+endif ()
 
 message(STATUS "VIE> Set target C++ standard to 17")
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_17)
@@ -134,14 +142,20 @@ target_link_libraries(${PROJECT_NAME} vst_interfaces)
 message(STATUS "VIE> Linking-up cycfi Q")
 target_link_libraries(${PROJECT_NAME} cycfi_q)
 
-message(STATUS "VIE> Linking-up webview2")
-target_link_libraries(${PROJECT_NAME} webview2)
+if (WIN32)
+    message(STATUS "VIE> Linking-up webview2")
+    target_link_libraries(${PROJECT_NAME} webview2)
 
-message(STATUS "VIE> Linking-up wil")
-target_link_libraries(${PROJECT_NAME} wil)
+    message(STATUS "VIE> Linking-up wil")
+    target_link_libraries(${PROJECT_NAME} wil)
+endif ()
 
 message(STATUS "VIE> Linking-up libsndfile")
 target_link_libraries(${PROJECT_NAME} sndfile)
+
+if(APPLE)
+    target_link_libraries(${PROJECT_NAME} "-framework CoreFoundation")
+endif ()
 
 # Copy built VST to VST3 system folder
 if (DEPLOY_TO_VST_FOLDER)

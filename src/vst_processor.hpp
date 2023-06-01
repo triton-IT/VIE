@@ -10,6 +10,10 @@
 #include "processor_module.hpp"
 #include "vie_processor.hpp"
 
+#ifndef _WIN32
+#define __stdcall
+#endif
+
 namespace live::tritone::vie::vst {
 	class vst_processor final :
 		public Steinberg::Vst::IComponent,

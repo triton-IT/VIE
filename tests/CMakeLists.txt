@@ -67,17 +67,17 @@ add_dependencies(${TEST_PROJECT_NAME}
 message(STATUS "VIE> Set target C++ standard to 17")
 target_compile_features(${TEST_PROJECT_NAME} PRIVATE cxx_std_17)
 
-message(STATUS "VIE> Linking-up VST interfaces")
-target_link_libraries(${TEST_PROJECT_NAME} PRIVATE vst_interfaces)
-
-message(STATUS "VIE> tests>  Linking-up cycfi Q")
-target_link_libraries(${TEST_PROJECT_NAME} PRIVATE cycfi_q)
-
-message(STATUS "VIE> tests>  Linking-up libsndfile")
-target_link_libraries(${TEST_PROJECT_NAME} PRIVATE sndfile)
-
-target_link_libraries(${TEST_PROJECT_NAME} PRIVATE Catch2::Catch2WithMain)
-
 message(STATUS "VIE> tests> Adding nlohman's json header directory")
 set(JSON_DIRECTORY "../third_party/nlohman_json")
 target_include_directories(${TEST_PROJECT_NAME} PUBLIC ${JSON_DIRECTORY})
+
+message(STATUS "VIE> Linking-up VST interfaces")
+target_link_libraries(${TEST_PROJECT_NAME} vst_interfaces)
+
+message(STATUS "VIE> tests>  Linking-up cycfi Q")
+target_link_libraries(${TEST_PROJECT_NAME} cycfi_q)
+
+message(STATUS "VIE> tests>  Linking-up libsndfile")
+target_link_libraries(${TEST_PROJECT_NAME} sndfile)
+
+target_link_libraries(${TEST_PROJECT_NAME} Catch2::Catch2WithMain)

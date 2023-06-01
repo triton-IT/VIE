@@ -200,4 +200,9 @@ namespace live::tritone::vie::processor::module
 	void noise::set_noise_type(noise_type noise_type) {
 		noise_type_ = noise_type;
 	}
+
+	void noise::set_parameter(parameter parameter)
+	{
+
+	}
 } // namespace

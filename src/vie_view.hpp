@@ -14,6 +14,7 @@
 #include "windows/editor_view.hpp"
 #else
 #include "ios/editor_view.hpp"
+#define __stdcall
 #endif
 
 namespace live::tritone::vie

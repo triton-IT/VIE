@@ -134,10 +134,10 @@ namespace live::tritone::vie::processor::module
 				if (envelope_info.position >= sustain_end) {
 					envelope_info.position = sustain_start;
 
-					sustains_ends_[nb_sustains_ends_]->value = float(sustain_end) * sample_rate_;
+					sustains_ends_[nb_sustains_ends_]->value = as_float(sustain_end) * sample_rate_;
 					nb_sustains_ends_++;
 
-					sustains_loops_[nb_sustains_loops_]->value = float(sustain_start) * sample_rate_;
+					sustains_loops_[nb_sustains_loops_]->value = as_float(sustain_start) * sample_rate_;
 					nb_sustains_loops_++;
 				}
 
@@ -146,7 +146,7 @@ namespace live::tritone::vie::processor::module
 					//Sustain state is triggered when decay state is finished.
 					sustains_starts_[nb_sustains_starts_]->note_id = note_id;
 					//FIXME: 1 second just for testing.
-					sustains_starts_[nb_sustains_starts_]->value = float(sustain_start) * sample_rate_;
+					sustains_starts_[nb_sustains_starts_]->value = as_float(sustain_start) * sample_rate_;
 					nb_sustains_starts_++;
 					break;
 				case cycfi::q::envelope::note_off_state:

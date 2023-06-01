@@ -50,6 +50,8 @@ namespace live::tritone::vie::processor::module
 
 		void set_noise_type(noise_type noise_type);
 
+		void set_parameter(parameter parameter) override;
+
 	private:
 		static constexpr const char* onoff_input_name = "on/off input";
 		static constexpr int onoff_input_id = 0;
