@@ -6,7 +6,7 @@
 #include "../constants.hpp"
 
 #ifdef _WIN32
-#define ON_PARAMETER_ID Ls"on"
+#define ON_PARAMETER_ID L"on"
 #else
 #define ON_PARAMETER_ID u"on"
 #endif

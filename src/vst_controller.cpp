@@ -9,7 +9,7 @@ using namespace Steinberg;
 using namespace Vst;
 
 #ifdef _WIN32
-#define ON_PARAMETER_ID std::u16string on_parameter_id = L"On";
+#define ON_PARAMETER_ID std::wstring on_parameter_id = L"On";
 #else
 #define ON_PARAMETER_ID std::u16string on_parameter_id = u"On";
 #endif
