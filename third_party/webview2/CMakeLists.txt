@@ -13,22 +13,15 @@ if(NOT webview2_POPULATED)
 	FetchContent_Populate(webview2)
 endif()
 
-if (AMD64 STREQUAL ${CMAKE_SYSTEM_PROCESSOR})
-    set(ARCH x64)
-elseif(ARM64 STREQUAL ${CMAKE_SYSTEM_PROCESSOR})
-    set(ARCH arm64)
-else()
-    set(ARCH x86)
-endif()
-message(STATUS "VIE> webview2> webview-architecture=${ARCH}")
+message(STATUS "VIE> webview2> webview-architecture=x64")
 
 add_library(webview2 INTERFACE)
 
 message(STATUS "VIE> webview2> Include directories: ${webview2_SOURCE_DIR}/include/")
 target_include_directories(webview2 INTERFACE ${webview2_SOURCE_DIR}/include/)
 
-message(STATUS "VIE> webview2> Link directories: ${webview2_SOURCE_DIR}/${ARCH}/")
-target_link_directories(webview2 INTERFACE ${webview2_SOURCE_DIR}/${ARCH}/)
+message(STATUS "VIE> webview2> Link directories: ${webview2_SOURCE_DIR}/x64/")
+target_link_directories(webview2 INTERFACE ${webview2_SOURCE_DIR}/x64/)
 
 message(STATUS "VIE> webview2> Link libraries: WebView2LoaderStatic")
 target_link_libraries(webview2 INTERFACE WebView2LoaderStatic)
