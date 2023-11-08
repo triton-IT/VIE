@@ -20,8 +20,15 @@ add_library(webview2 INTERFACE)
 message(STATUS "VIE> webview2> Include directories: ${webview2_SOURCE_DIR}/include/")
 target_include_directories(webview2 INTERFACE ${webview2_SOURCE_DIR}/include/)
 
-message(STATUS "VIE> webview2> Link directories: ${webview2_SOURCE_DIR}/x64/")
-target_link_directories(webview2 INTERFACE ${webview2_SOURCE_DIR}/x64/)
+if (CMAKE_SIZE_OF_VOID_P EQUAL 4)
+    message(STATUS "VIE> webview2> Link directories: ${webview2_SOURCE_DIR}/x86/")
+    target_link_directories(webview2 INTERFACE ${webview2_SOURCE_DIR}/x86/)
+endif()
+
+if (CMAKE_SIZE_OF_VOID_P EQUAL 8)
+    message(STATUS "VIE> webview2> Link directories: ${webview2_SOURCE_DIR}/x64/")
+    target_link_directories(webview2 INTERFACE ${webview2_SOURCE_DIR}/x64/)
+endif()
 
 message(STATUS "VIE> webview2> Link libraries: WebView2LoaderStatic")
 target_link_libraries(webview2 INTERFACE WebView2LoaderStatic)

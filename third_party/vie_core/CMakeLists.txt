@@ -5,7 +5,7 @@ include(FetchContent)
 FetchContent_Declare(
         vie_core
         GIT_REPOSITORY https://github.com/triton-IT/vie-core.git
-        GIT_TAG        c0693cdbf0a73b16a9d39d0cfec403303e35d3ac
+        GIT_TAG        1bc4d75cfc6720de77239cba67045910499f784c
 )
 
 FetchContent_MakeAvailable(vie_core)
