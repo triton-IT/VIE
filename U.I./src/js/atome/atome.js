@@ -1,161 +1,155 @@
-const atomeJS = Object.assign(atomeAnimate,atomeDrag,atomeFile,atomeSort, atomeTime, atomeVideo);
-// This const is used to store and get all atome created canvas by id
-const Atome_canvas={}
-// // class AtomeDrag {
-// //     constructor() {
-// //     }
-// //
-// //     drag(atome_drag_id) {
-// //         // target elements with the "draggable" class
-// //         self.current_obj = Opal.Utilities.$grab(atome_drag_id)
-// //         interact('.'+atome_drag_id)
-// //             .draggable({
-// //                 // enable inertial throwing
-// //                 startAxis: 'x',
-// //                 lockAxis: 'x',
-// //                 // lockAxis: ''+lock_axis,
-// //                 inertia: true,
-// //                 // keep the element within the area of it's parent
-// //                 modifiers: [
-// //                     interact.modifiers.restrictRect({
-// //                         restriction: 'parent',
-// //                         endOnly: true
-// //                     })
-// //                 ],
-// //                 // enable autoScroll
-// //                 autoScroll: true,
-// //
-// //                 listeners: {
-// //                     // call this function on every dragmove event
-// //
-// //                     move: dragMoveListener,
-// //                     start(event) {
-// // //TODO:  optimise this passing the proc to the drag callback
-// //                         // lets get the current atome Object
-// //                         // self.current_obj = Opal.Utilities.$grab(atome_drag_id)
-// //                         // now get the grab proc
-// //                         self.proc_meth = current_obj.bloc
-// //                     },
-// //                     // call this function on every dragend event
-// //                     end(event) {
-// //                     }
-// //                 }
-// //             })
-// //
-// //         function dragMoveListener(event) {
-// //             const target = event.target
-// //             // the code below can be conditioned to receive the drag event without moving the object
-// //             // keep the dragged position in the data-x/data-y attributes
-// //             const x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx;
-// //             const y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy
-// //             // translate the element
-// //             target.style.transform = 'translate(' + x + 'px, ' + y + 'px)'
-// //             // update the position attributes
-// //             target.setAttribute('data-x', x)
-// //             target.setAttribute('data-y', y)
-// //             // CallBack here
-// //             self.current_obj.$dragCallback(event.pageX, event.pageY, event.rect.left, event.rect.top, self.current_obj, self.proc_meth);
-// //         }
-// //     }
-// //
-// // }
+const atomeJS = Object.assign(communication, File);
+
+// generic callback method
+
+
+async function callback(callback_method, cmd) {
+    let ruby_callback_method = 'A.callback(:' + callback_method + ')'
+    let instance_variable_to_set = '@' + callback_method + '_code'
+    let cmd_result;
+    try {
+        let response;
+        response = await 'ok'
+        cmd_result = response;
+    } catch (error) {
+        cmd_result = error;
+    }
+    rubyVMCallback("Atome.instance_variable_set('" + instance_variable_to_set + "','" + cmd_result + "')")
+    rubyVMCallback(ruby_callback_method)
+}
+
+//read file
+
+
+async function readFile(atome_id, filePath) {
+    let fileContent;
+    try {
+        fileContent = await window.__TAURI__.invoke('read_file', {filePath: filePath});
+    } catch (error) {
+        fileContent = error;
+    }
+    // alert(fileContent);
+    rubyVMCallback("grab(:" + atome_id + ").callback({ read: '" + fileContent + "' })");
+    rubyVMCallback("grab(:" + atome_id + ").call(:read)");
+}
+
+
+// list folder
+
+// almost works
+async function browseFile(atome_id, directoryPath) {
+    let directoryContent;
+    try {
+        directoryContent = await window.__TAURI__.invoke('list_directory_content', {directoryPath: directoryPath});
+    } catch (error) {
+        directoryContent = error;
+    }
+    rubyVMCallback("grab(:" + atome_id + ").callback({ browse: '" + directoryContent + "' })");
+    rubyVMCallback("grab(:" + atome_id + ").call(:browse)");
+}
+
+
+// change dir
+
+async function changeCurrentDirectory(atome_id, newPath) {
+    let result;
+    try {
+        // Utilisez Tauri pour changer le répertoire de travail courant
+        result = await window.__TAURI__.invoke('change_dir', {path: newPath});
+    } catch (error) {
+        result = error;
+    }
+    alert(result);
+}
+
+
+
+
+// Terminal
+
+async function terminal(atome_id, cmd) {
+    let cmd_result;
+    try {
+        const command = cmd;
+        let response;
+        response = await window.__TAURI__.invoke('execute_command', {command});
+        cmd_result = response;
+    } catch (error) {
+        cmd_result = error;
+    }
+    cmd_result = cmd_result.replace(/\r?\n/g, "");
+
+    rubyVMCallback("grab(:" + atome_id + ").callback({ terminal: '" + cmd_result + "' })");
+    rubyVMCallback("grab(:" + atome_id + ").call(:terminal)");
+
+}
+
+
+function distant_terminal(id, cmd) {
+    let myd_data_test = 'Terminal particle will soon be implemented when using  a non native mode\nYou can switch to OSX to test';
+    let call_back_to_send = `grab(:${id}).callback({terminal: "${myd_data_test}"})`
+    let call = `grab(:${id}).call(:terminal)`
+    rubyVMCallback(call_back_to_send)
+    rubyVMCallback(call)
+}
+
+
+// we check if we are in tauri context
+// if (typeof window.__TAURI__ !== 'undefined') {
+//     callExecuteCommand('pwd');
 //
-// // Usage:
-// // let atomeDrag = new AtomeDrag();
-// // atomeDrag.drag('atome_id', 'options');
-// // const Atomeanimation = {}
-//
-//
-//
-// // TODO: put in a class
-//
-//
-// const atome = {
-//     jsSchedule: function (years, months, days, hours, minutes, seconds, atome, proc) {
-//         const now = new Date();
-//         const formatDate = new Date(years, months - 1, days, hours, minutes, seconds);
-//         const diffTime = Math.abs(formatDate - now);
-//         setTimeout(function () {
-//             atome.$schedule_callback(proc);
-//         }, diffTime);
-//     },
-//     jsReader: function (file, atome, proc) {
-//         fetch('medias/' + file)
-//             .then(response => response.text())
-//             .then(text => atome.$read_callback(text, proc))
-//     },
-//     js_Fullscreen: function (atome_id){
-//         let elem = document.getElementById(atome_id)
-//         if (elem.requestFullscreen) {
-//             elem.requestFullscreen();
-//         } else if (elem.webkitRequestFullscreen) { /* Safari */
-//             elem.webkitEnterFullscreen();
-//         } else if (elem.msRequestFullscreen) { /* IE11 */
-//             elem.msRequestFullscreen();
-//         }
-//
-//     }
-//
+// } else {
 // }
 
 
-///////////////////////////////////////////////////////////
-// //// example ruby equivalent in js ///
-// Opal.queue(function (Opal) {/* Generated by Opal 1.6.0 */
-//     const $klass = Opal.klass, $defs = Opal.defs, $def = Opal.def;
-// // The line below create the AtomicJS cons to simplify access to js object from ruby
-//
-//     // var $const_set = Opal.const_set, $nesting = [], nil = Opal.nil;
-//     // return $const_set($nesting[0], 'AtomicJS', atome)
-//
-//     (function ($base, $super) {
-//         const self = $klass($base, $super, 'AtomeJS');
-//         $def(self, '$initialize', function $$initialize(val) {
-//             // Init code below
-//         }, 1);
-//
-//         $defs(self, '$check_this', function $$check_this(val) {
-//             // getter code below
-//             // alert ('Suoer cool!!'+val)
-//             // alert(atomeJS)
-//             return (val);
-//         }, 0);
-//
-//         $def(self, '$way', function $way() {
-//             // getter code below
-//             return (self.my_var);
-//         }, 0);
-//
-//         return $def(self, '$way=', function $way(val) {
-//             //self method example
-//             return (self.my_var = val);
-//         }, 0);
-//
-//
-//     })();
-//
-//     // new class below
-//     return (function ($base, $super) {
-//         const self = $klass($base, $super, 'Atome');
-//
-//         $defs(self, '$verif', function $$verif(val) {
-//             //self method example
-//             return (val);
-//         }, 0);
-//
-//         $def(self, '$new_method', function $way() {
-//             // getter code below
-//             return (self.new_method);
-//         }, 0);
-//
-//
-//         return $def(self, '$new_method=', function $way(val) {
-//             //setter code below
-//             return (self.atome = val);
-//         }, 0);
-//
-//     })();
-// });
+// 'ls -l'
 
+
+//read/write
+//
+// // Créer un fichier
+// async function createAndWriteFile(filePath, contentToWrite) {
+//     try {
+//         await window.__TAURI__.invoke('write_file', {
+//             file_path: filePath,
+//             content: contentToWrite
+//         });
+//         console.log('File written successfully.');
+//     } catch (error) {
+//         console.error('Error writing to file:', error);
+//     }
+// }
+//
+// // Lire un fichier
+// async function readAndDisplayFile(filePath) {
+//     try {
+//         const fileContent = await window.__TAURI__.invoke('read_file', {
+//             file_path: filePath
+//         });
+//         console.log('File content:', fileContent);
+//     } catch (error) {
+//         console.error('Error reading file:', error);
+//     }
+// }
+//
+// // Utiliser les fonctions pour créer et lire le fichier
+// const filePath = 'example.txt'; // Remplacez ceci par le chemin du fichier souhaité
+// const contentToWrite = 'This is some content to write to the file.';
+//
+// // Créer un fichier avec le contenu
+// createAndWriteFile(filePath, contentToWrite);
+//
+// // Lire le fichier
+// readAndDisplayFile(filePath);
+
+function createSvgElement(tagName, attributes) {
+    var elem = document.createElementNS('http://www.w3.org/2000/svg', tagName);
+    for (var attr in attributes) {
+        if (attributes.hasOwnProperty(attr)) {
+            elem.setAttribute(attr, attributes[attr]);
+        }
+    }
+    return elem;
+}
 
 
