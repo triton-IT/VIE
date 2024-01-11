@@ -36,4 +36,15 @@
 </head>
 <body id='user_view' class='atome' oncontextmenu="return false;"></body>
 <script src='js/application.js' defer></script>
+<script>
+    (function() {
+        var oldLog = console.log;
+        console.log = function(message) {
+            window.webkit.messageHandlers.logHandler.postMessage(message);
+            oldLog.apply(console, arguments);
+        };
+
+        // Répétez pour console.error, console.warn, etc. si nécessaire
+    }());
+    </script>
 </html>

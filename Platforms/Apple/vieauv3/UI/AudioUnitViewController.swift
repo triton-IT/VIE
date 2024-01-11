@@ -9,6 +9,8 @@ import CoreAudioKit
 import WebKit
 ///////////////////////: Two-way communication between an iOS WKWebView add on
  extension AudioUnitViewController: WKScriptMessageHandler{
+     
+     
      public func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
         guard let dict = message.body as? [String : AnyObject] else {
             return
@@ -27,10 +29,13 @@ import WebKit
                  print("An error occurred: \(error)")
              }
          }
+         
+         
     }
 }
 
 public class AudioUnitViewController: AUViewController, AUAudioUnitFactory {
+    
     
     
     var audioUnit: AUAudioUnit?
