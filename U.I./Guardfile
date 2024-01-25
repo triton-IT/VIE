@@ -1,0 +1,4 @@
+guard 'rake', first_match: true, :task => 'build_opal' do
+  watch(%r{^server.+.rb})
+  watch(%r{^application.+.rb})
+end
